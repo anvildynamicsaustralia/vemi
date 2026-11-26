@@ -1,0 +1,19 @@
+/* The AI group in Account: a heading, then the same rows the panel already uses. */
+.ai { margin-top: 34px; }
+.ai-group {
+  margin: 0 0 14px;
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+}
+.ai-code {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--t-chip);
+  font-weight: 400;
+  color: var(--vemi-dim);
+  overflow-wrap: anywhere;
+}
+.ai-address .account-row-title { min-width: 0; }

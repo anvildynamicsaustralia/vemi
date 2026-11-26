@@ -1,0 +1,221 @@
+/*
+ * The shared control and accessibility layer of the signed-in app (VEMI-013, DEN lessons).
+ *
+ * One look for a choice of one of a few (`.seg`, the pressed pill), one for a chip that is
+ * chosen or not (`.chip`), one for an on/off setting (`.switch`) and one for a state drawn as
+ * a dot and its word (`.led`). The same file lays the focus ring on every control, brings a
+ * control's border to 3:1, raises targets to 44px on touch and 32px with a mouse, and clears
+ * the notch and the home indicator for the bars that are fixed to an edge.
+ *
+ * It is imported last, and a lazily loaded screen's own sheet can arrive after it, so each
+ * rule that must win leads with `:root`. Colours are tokens (`--vemi-*`); nothing here names
+ * one. Every duration is a token, which `app.css` takes to zero under reduced motion.
+ */
+
+:root {
+  /* Softer than the rest of the app by a little: the pill's outer and inner corner. */
+  --r-seg: 12px;
+  --r-seg-pill: 9px;
+  /* The smallest target for a mouse; touch uses --touch (44px) from app.css. */
+  --target-fine: 32px;
+  --switch-w: 42px;
+  --switch-h: 24px;
+}
+
+/* ---------- the focus ring: 2px, accent, never removed ---------- */
+
+/* A field that had `outline: none` and showed focus by its border colour alone now shows the
+   ring as well. The specificity beats the older `.big-field:focus-visible { outline: none }`. */
+html :is(input, textarea, select, [contenteditable="true"]):focus-visible {
+  outline: 2px solid var(--vemi-live);
+  outline-offset: 1px;
+}
+html :is(.field, .editing, .control-field, .add-line input, .pick-button):focus-visible {
+  outline-offset: 2px;
+}
+/* A control inside a pressed pill keeps the ring inside the pill's edge, so it is not clipped. */
+:root .seg > :focus-visible { outline-offset: -2px; }
+:root .switch:focus-visible { outline-offset: 3px; }
+
+/* ---------- a control's border is seen: 3:1 against its ground ---------- */
+
+:root :is(.chip, .quiet-button, .word-button, .square-button, .icon-button, .pick-button, .cal-step,
+  .editing, .field, .control-field, .add-line input, .today-add-sheet, .search-save-name) {
+  border-color: var(--vemi-line);
+}
+:root .today-add { border-color: var(--vemi-line); }
+:root :is(.chip, .quiet-button, .word-button, .icon-button, .pick-button, .today-add-sheet):hover:not(:disabled) {
+  border-color: var(--vemi-live);
+}
+:root .chip:disabled, :root .quiet-button:disabled, :root .word-button:disabled { border-color: var(--vemi-hair); }
+:root :is(.editing, .field, .control-field, .add-line input):focus { border-color: var(--vemi-live); }
+
+/* ---------- the chip: softer, and its chosen state reads as text on its tint ---------- */
+
+:root .chip { font-weight: 500; }
+:root .chip.on { border-color: var(--vemi-live); background: var(--vemi-live-tint); color: var(--vemi-live-text); font-weight: 600; }
+:root .chip:hover:not(:disabled):not(.on) { color: var(--vemi-live-text); }
+
+/* ---------- the segmented control: one pressed pill among a few ---------- */
+
+:root .seg {
+  display: flex;
+  flex-wrap: wrap;
+  width: fit-content;
+  max-width: 100%;
+  gap: 2px;
+  padding: 3px;
+  background: var(--vemi-field);
+  border: 1px solid var(--vemi-line);
+  border-radius: var(--r-seg);
+}
+:root .seg > .chip, :root .seg > button {
+  min-height: var(--target-fine);
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: var(--r-seg-pill);
+  background: transparent;
+  color: var(--vemi-mid);
+  font-weight: 500;
+  justify-content: center;
+}
+:root .seg > .chip:hover:not(:disabled):not(.on), :root .seg > button:hover:not(:disabled):not(.on) {
+  background: var(--vemi-hover);
+  border-color: transparent;
+  color: var(--vemi-ink);
+}
+/* Pressed: raised on the ground, in the accent's text with its edge, and heavier, so the
+   state is not carried by colour alone. */
+:root .seg > .chip.on, :root .seg > [aria-pressed="true"], :root .seg > [aria-checked="true"] {
+  background: var(--vemi-white);
+  border-color: var(--vemi-live);
+  color: var(--vemi-live-text);
+  font-weight: 600;
+  box-shadow: var(--sh-lift);
+}
+/* A choice row that holds a segment and a field (a time) keeps them on one line. */
+:root .choices { align-items: center; }
+:root .choices.seg { justify-content: flex-start; }
+:root .app-lock-choices.seg { justify-content: flex-start; }
+:root .app-lock-choice[aria-pressed="true"] { color: var(--vemi-live-text); font-weight: 600; }
+/* A view's tabs share the pill's corners. */
+:root .venture-tabs { border-color: var(--vemi-line); border-radius: var(--r-seg); }
+:root .venture-tab { border-radius: var(--r-seg-pill); }
+
+/* ---------- the switch: a real on/off control ---------- */
+
+:root .switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--target-fine);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--vemi-ink);
+  font-size: var(--t-chip);
+  font-weight: 600;
+  text-align: left;
+}
+:root .switch:disabled { color: var(--vemi-faint); cursor: default; }
+.switch-track {
+  position: relative;
+  flex: none;
+  width: var(--switch-w);
+  height: var(--switch-h);
+  border: 1px solid var(--vemi-line);
+  border-radius: var(--r-chip);
+  background: var(--vemi-field);
+  transition: background var(--m-quick) ease, border-color var(--m-quick) ease;
+}
+.switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--vemi-line);
+  transition: transform var(--m-quick) ease, background var(--m-quick) ease;
+}
+:root .switch.on .switch-track { background: var(--vemi-live-tint); border-color: var(--vemi-live); }
+:root .switch.on .switch-knob { background: var(--vemi-live); transform: translateX(calc(var(--switch-w) - var(--switch-h))); }
+/* The word is as wide for On as for Off, so the track does not move when the state does. */
+.switch-word { min-width: 2.2em; }
+:root .switch:hover:not(:disabled) .switch-track { border-color: var(--vemi-live); }
+
+/* ---------- status as a dot and its word ---------- */
+
+.led { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--vemi-edge); vertical-align: middle; }
+.led-on, .led-done { background: var(--vemi-live); }
+.led-working { background: transparent; border: 2px solid var(--vemi-live); }
+.led-waiting { background: transparent; border: 2px solid var(--vemi-line); }
+.led-stopped { background: var(--vemi-ink); border-radius: 1px; }
+.led-off { background: var(--vemi-line); }
+.status-word { display: inline-flex; align-items: center; gap: 8px; }
+
+/* A project that is on today: the dot, and the word, where there was a dot alone. */
+:root .plate-today-dot, :root .canvas-today-dot {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  height: auto;
+  padding: 1px 7px;
+  border-radius: var(--r-chip);
+  background: var(--vemi-live-tint);
+  color: var(--vemi-live-text);
+  font-size: var(--t-micro);
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1.4;
+}
+:root .plate-today-dot::after, :root .canvas-today-dot::after { content: "Today"; }
+
+/* ---------- user-typed text aligns to its own direction ---------- */
+
+/* `dir="auto"` flips the direction; an explicit `text-align: left` would still pin the text
+   left, so a title or note typed right to left aligns to its own start instead. */
+:root [dir="auto"] { text-align: start; }
+
+/* ---------- Today: the offer card sits in the column, not indented from it ---------- */
+
+/* `.first-run-card` carries a 16px side margin for the bar it was drawn for; inside Today's
+   column that held it 16px in from the heading and the list above and below it. */
+:root .today-col > .first-run-card { margin: 0 0 var(--s7); max-width: none; border-radius: var(--r-row); }
+
+/* ---------- targets: 32px with a mouse, 44px under a thumb ---------- */
+
+@media (pointer: fine) {
+  :root :is(.quiet-button, .word-button, .today-add-sheet, .square-button, .cal-step, .primary-button) { min-height: var(--target-fine); }
+  :root :is(.square-button, .cal-step) { min-width: var(--target-fine); }
+  :root .icon-button.small { min-width: var(--target-fine); min-height: var(--target-fine); }
+  :root :is(.row-action, .close-button) { display: inline-flex; align-items: center; min-height: var(--target-fine); }
+  :root .canvas-tools button { min-height: var(--target-fine); min-width: var(--target-fine); }
+}
+
+@media (pointer: coarse) {
+  :root :is(.chip, .word-button, .quiet-button, .primary-button, .venture-tab, .pick-button, .square-button, .field,
+    .control-field, .editing, .add-line input, .month-day, .today-toggle, .horizon-item, .archive-pick, .switch,
+    .today-add-sheet, .cal-step, .icon-button, .review-go, .options-time, .seg > .chip, .seg > button,
+    .canvas-tools button, .today-add .primary-button, .search-save-name, .deletion-bar button) { min-height: var(--touch); }
+  :root :is(.square-button, .cal-step, .icon-button, .canvas-tools button) { min-width: var(--touch); }
+  :root .cal-day { min-height: var(--touch); }
+  /* A fixed 16px: below it a phone's browser zooms into the field when it takes focus. */
+  :root :is(.field, .editing, .control-field, .add-line input, .search-save-name, .today-add input) { font-size: 16px; }
+  /* A word that is a control keeps its look and gains the reach round it, as on a phone. */
+  :root :is(.row-action, .close-button, .icon-button.small) { position: relative; }
+  :root :is(.row-action, .close-button, .icon-button.small)::after {
+    content: "";
+    position: absolute;
+    inset: -14px -10px;
+  }
+}
+
+/* ---------- the notch and the home indicator, for bars fixed to an edge ---------- */
+
+:root .deletion-bar {
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+:root .reminder-banner { width: min(440px, calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right))); }
+:root .selection-bar { max-width: calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)); }

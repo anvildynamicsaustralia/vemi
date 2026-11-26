@@ -1,0 +1,224 @@
+/* Today: progress, the Add box, Next up and Also today. Tokens come from app.css. */
+.today-head { flex-wrap: wrap; }
+.today-prog {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  font-size: var(--t-caption);
+  font-weight: 600;
+  color: var(--vemi-mid);
+  font-variant-numeric: tabular-nums;
+}
+.today-prog b { color: var(--vemi-ink); }
+.today-add-sheet {
+  align-self: center;
+  border: 1px solid var(--vemi-hair);
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  border-radius: var(--r-button);
+  padding: 8px 14px;
+  min-height: 36px;
+  font-size: var(--t-chip);
+  font-weight: 600;
+}
+.today-prog + .today-add-sheet { margin-left: 0; }
+.today-head > .today-stamp + .today-add-sheet { margin-left: auto; }
+.today-add-sheet:hover { border-color: var(--vemi-live); }
+
+.today-add {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 20px;
+  padding: 4px 6px 4px 14px;
+  background: var(--vemi-white);
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-plate);
+}
+.today-add:focus-within { border-color: var(--vemi-ink); }
+.today-add input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--vemi-ink);
+  font: inherit;
+  font-size: 16px;
+  padding: 10px 0;
+}
+.today-add input::placeholder { color: var(--vemi-dim); }
+.today-add .primary-button { padding: 9px 16px; min-height: 38px; }
+
+.next-up {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  margin-bottom: 20px;
+  background: var(--vemi-white);
+  border: 1.5px solid var(--vemi-ink);
+  border-radius: var(--r-plate);
+  box-shadow: var(--sh-rest);
+}
+.next-up-kicker {
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+}
+.next-up-title { margin: 0; font-size: var(--t-head); font-weight: 700; line-height: 1.2; }
+.next-up-title button {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  color: var(--vemi-ink);
+  overflow-wrap: anywhere;
+}
+.next-up-actions { display: flex; gap: 10px; }
+.next-up-actions .primary-button,
+.next-up-actions .quiet-button { min-height: 44px; }
+
+.today-also-head {
+  margin: 0 0 10px;
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+}
+.today-list {
+  display: grid;
+  background: var(--vemi-white);
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-plate);
+  overflow: hidden;
+  margin-bottom: 34px;
+}
+.trow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px 0 8px;
+  border-top: 1px solid var(--vemi-hair-light);
+}
+.trow:first-child { border-top: 0; }
+.trow:hover { background: var(--vemi-field); }
+.trow-box {
+  width: 40px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+.trow-box i {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-mono);
+  border: 1.5px solid var(--vemi-edge);
+  background: var(--vemi-white);
+  color: var(--vemi-white);
+  font-style: normal;
+  font-size: var(--t-caption);
+  transition: background var(--m-hover) ease, border-color var(--m-hover) ease;
+}
+.trow-box:hover i { border-color: var(--vemi-live); }
+.trow.isdone .trow-box i { background: var(--vemi-ink); border-color: var(--vemi-ink); }
+.trow.pop .trow-box i { animation: today-pop 0.35s cubic-bezier(0.3, 1.6, 0.5, 1); }
+@keyframes today-pop {
+  0% { transform: scale(0.7); }
+  60% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+.trow-title {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 11px 4px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  color: var(--vemi-ink);
+}
+.trow-title b { font-size: var(--t-row-sm); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.trow.isdone .trow-title b { color: var(--vemi-dim); text-decoration: line-through; }
+.trow-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: var(--t-caption); color: var(--vemi-dim); }
+.next-up .trow-meta { font-size: var(--t-chip); }
+.trow-overdue { color: var(--vemi-live-text); font-weight: 600; }
+.trow-more {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: var(--r-button);
+  background: transparent;
+  color: var(--vemi-dim);
+  font-size: var(--t-row);
+  font-weight: 700;
+}
+.trow-more:hover { background: var(--vemi-hair-light); color: var(--vemi-ink); }
+.today-fold {
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  border-top: 1px solid var(--vemi-hair-light);
+  background: transparent;
+  text-align: left;
+  font-size: var(--t-chip);
+  font-weight: 600;
+  color: var(--vemi-dim);
+}
+.today-fold:first-child { border-top: 0; }
+.today-fold:hover { color: var(--vemi-ink); }
+
+.today-coming { margin-top: 20px; }
+.coming-row > span { width: 8px; }
+.pull {
+  border: 1px solid var(--vemi-edge);
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  border-radius: var(--r-button);
+  padding: 6px 10px;
+  min-height: 32px;
+  font-size: var(--t-chip);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.pull:hover { border-color: var(--vemi-ink); }
+
+.clear { display: grid; justify-items: center; text-align: center; gap: 12px; padding: 28px 16px 18px; }
+.clear-ring { position: relative; width: 96px; height: 96px; }
+.clear-ring .ring { width: 96px; height: 96px; }
+.clear-ring .ring-arc { transition: stroke-dasharray 0.5s ease; }
+.clear-title { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+.clear-text { margin: 0; color: var(--vemi-mid); font-size: var(--t-body); }
+.clear-burst { position: absolute; inset: -10px; pointer-events: none; }
+.clear-burst b {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--vemi-ink);
+  opacity: 0;
+  animation: today-burst 0.9s ease-out forwards;
+}
+@keyframes today-burst {
+  0% { opacity: 1; transform: translate(-50%, -50%) rotate(0) translate(0); }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--r)) translate(70px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clear-burst b { animation: none; opacity: 0; }
+  .clear-ring .ring-arc { transition: none; }
+  .trow.pop .trow-box i { animation: none; }
+  .trow-box i { transition: none; }
+}

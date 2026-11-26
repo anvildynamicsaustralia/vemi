@@ -1,0 +1,23 @@
+/* A project's page: the two columns and the bar under the head. Tokens come from app.css. */
+.pj-page { max-width: var(--w-board); display: grid; gap: var(--s6); }
+.pj-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--s4); min-height: 40px; }
+.pj-bar .item-said { margin: 0; }
+.pj { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: var(--s7); align-items: start; }
+.pjmain, .pjside { display: grid; gap: var(--s7); min-width: 0; align-content: start; }
+.pjmain > *, .pjside > * { min-width: 0; }
+.pj-h {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s3);
+  margin: 0 2px var(--s3);
+  font-size: var(--t-chip);
+  font-weight: 600;
+  color: var(--vemi-mid);
+}
+.pj-h em { font-style: normal; font-variant-numeric: tabular-nums; }
+.pj-below { max-width: 720px; display: flex; flex-direction: column; gap: var(--s7); }
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  .pj { grid-template-columns: minmax(0, 1fr); gap: var(--s6); }
+  .pjmain, .pjside { gap: var(--s6); }
+}

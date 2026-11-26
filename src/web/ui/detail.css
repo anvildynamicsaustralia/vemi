@@ -1,0 +1,99 @@
+/* Detail screens: the task, the project and the space settings, and the account's sections.
+   Related fields sit in a card under a small heading, label on one side and value on the
+   other. Tokens come from app.css. */
+.group {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s5);
+  min-width: 0;
+  padding: var(--s6);
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-plate);
+  background: var(--vemi-white);
+}
+.group > * { min-width: 0; }
+.group-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s4); min-height: 24px; }
+.group-title {
+  margin: 0;
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--vemi-mid);
+}
+.group-head .column-count { margin-left: auto; }
+.kv { display: grid; grid-template-columns: minmax(0, 7rem) minmax(0, 1fr); gap: var(--s3) var(--s6); align-items: start; }
+.kv-k { padding-top: 0.6em; }
+.kv-v { display: flex; flex-direction: column; gap: var(--s3); min-width: 0; align-items: flex-start; }
+.kv-v > * { max-width: 100%; }
+.kv-wide { grid-template-columns: minmax(0, 1fr); }
+.kv-wide .kv-k { padding-top: 0; }
+.kv-wide .kv-v { align-items: stretch; }
+.kv + .kv, .kv + .detail-row-head, .kv + .about-block { padding-top: var(--s5); border-top: 1px solid var(--vemi-hair-light); }
+.detail-groups { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s6); }
+.detail .detail-title, .task-page .detail-title { margin: 0 0 var(--s6); }
+.detail-title { font-size: var(--t-head); }
+.detail-groups .today-toggle { width: auto; min-width: 180px; }
+
+/* An editable title or field says so before it is pressed: a dashed outline and a tint on
+   hover, and the accent ring with a tint when it has the keyboard. The outline takes no room,
+   so nothing moves when it appears. */
+.detail .editable, .task-page .editable, .pj-page .editable, .space-settings .editable, .account-panel .editable, .group .editable, .md-read {
+  border-radius: var(--r-small);
+  outline: 1px dashed transparent;
+  outline-offset: 2px;
+  transition: outline-color var(--m-hover) ease, background-color var(--m-hover) ease;
+}
+.detail .editable:hover, .task-page .editable:hover, .pj-page .editable:hover, .space-settings .editable:hover,
+.account-panel .editable:hover, .group .editable:hover, .md-read:hover {
+  outline-color: var(--vemi-edge);
+  background: var(--vemi-hover);
+}
+.detail .editable:focus-visible, .task-page .editable:focus-visible, .pj-page .editable:focus-visible,
+.space-settings .editable:focus-visible, .account-panel .editable:focus-visible, .group .editable:focus-visible,
+.md-read:focus-visible {
+  outline: 2px solid var(--vemi-live);
+  background: var(--vemi-live-tint);
+}
+.detail .editing:focus, .task-page .editing:focus, .pj-page .editing:focus, .space-settings .editing:focus, .group .editing:focus {
+  border-color: var(--vemi-live);
+  box-shadow: 0 0 0 3px var(--vemi-live-tint);
+}
+
+/* A status is a dot and a word, never the dot alone. */
+
+/* The account: a section is one card, its rows divided by hairlines inside it. */
+.account-panel > .group { padding: var(--s2) var(--s7); gap: var(--s2); }
+.account-panel .group .account-rows, .account-panel .group .privacy-rows, .account-panel .group .encryption-panel { gap: 0; }
+.account-panel .group .account-row,
+.account-panel .group .account-form,
+.account-panel .group .account-link {
+  padding-inline: 0;
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid var(--vemi-hair-light);
+}
+.account-panel .group :is(.account-row, .account-form, .account-link):first-child { border-top: 0; }
+
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  .kv { grid-template-columns: minmax(0, 1fr); }
+  .kv-k { padding-top: 0; }
+  .group { padding: var(--s5); }
+}
+
+/* The space settings sheet: each part is a card, the sheet's own title is an h2 over them. */
+.sheet-title { margin: 0; flex: 1; min-width: 0; font-size: var(--t-label); }
+.space-settings { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s6); }
+.space-settings .about-block {
+  gap: var(--s4);
+  padding: var(--s6);
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-plate);
+  background: var(--vemi-white);
+}
+.space-settings .about-block > .more-kicker { margin: 0; font-weight: 700; color: var(--vemi-mid); }
+.space-settings .space-views { justify-content: flex-start; }
+
+/* A project's head: the stage is a card of its own under the name row. */
+.phead-group .phead-stages { width: 100%; }
+h1.account-name { margin: 0; }

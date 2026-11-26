@@ -1,0 +1,2248 @@
+/*
+ * The handoff in `.works/efforts/VEMI-006_rebuild/design/HANDOFF.md`, as a stylesheet.
+ * Every colour is a `--vemi-*` token written by theme.ts; nothing here names a hex that
+ * carries state, and no component names one at all.
+ *
+ * The scales below are the handoff's, whole: type sizes with a role each, and apart from
+ * them the figures and glyphs that are not a line of type; a spacing set on a 4px base, five
+ * radii, seven shadows and named durations. Every font size and every duration reads one of
+ * these tokens, bar the 16px a phone's fields need (tests/stylesheet.test.ts). VEMI-005's
+ * five-size scale is superseded (VEMI-006 decisions, "what this supersedes") and is not to
+ * be normalised back toward.
+ */
+
+:root {
+  --vemi-ui: "Archivo Variable", Archivo, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --vemi-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Type. The role is the name: a 10px kicker and a 10px caption are different jobs. */
+  --t-venture: 26px;   /* a venture's name on a plate, and a surface title */
+  --t-field: 24px;     /* the search field */
+  --t-head: 22px;      /* a venture's name in a header, and the sheet title */
+  --t-owned: 19px;     /* an owned plate's name */
+  --t-row: 16px;       /* a row title */
+  --t-row-sm: 15px;    /* a row title in a list that carries more per row */
+  --t-task: 14.5px;    /* a task card's title */
+  --t-body: 14px;      /* body and lede */
+  --t-chip: 13px;      /* a chip's label, and a card title at zoom 1 */
+  --t-tab: 12.5px;     /* a tab's label */
+  --t-caption: 12px;   /* a caption, a day stamp, a summary */
+  --t-count: 11.5px;   /* a column's count */
+  --t-meta: 11px;      /* a quiet meta line, a rail label */
+  --t-kicker: 10.5px;  /* a column's state name */
+  --t-label: 10px;     /* a kicker, a label, an action word */
+  --t-cap-sm: 9.5px;   /* a caption under a figure */
+  --t-micro: 9px;      /* a frame's name, a card's meta, a tag */
+
+  /* Figures and glyphs: sizes the handoff draws that are not a line of type. A figure is a
+     number read at a glance; a glyph is a mark that is a button's whole face. */
+  --t-figure: 18px;       /* a plate's figure */
+  --t-ring-plate: 14px;   /* the value inside a plate's ring */
+  --t-ring-owned: 11px;   /* the value inside an owned plate's ring */
+  --t-ring-card: 9px;     /* the value inside a card's ring */
+  --t-account: 20px;      /* the account's name beside its monogram */
+  --t-mono-account: 15px; /* the account's monogram */
+  --t-glyph: 15px;        /* a small button's mark: a notice's ×, a square button's sign */
+  --t-glyph-lg: 17px;     /* a sheet's close ×, and the grip on a phone */
+  --t-glyph-add: 20px;    /* the phone bar's + */
+
+  --lh-task: 1.42;
+  --lh-name: 1.1;
+  --track-name: -0.02em;
+  --track-owned: -0.01em;
+  --track-label: 0.14em;
+  --track-kicker: 0.16em;
+  --track-tag: 0.12em;
+  --track-tight: 0.1em;
+
+  /* Space, on a 4px base. */
+  --s1: 4px; --s2: 8px; --s3: 10px; --s4: 12px; --s5: 14px; --s6: 16px;
+  --s7: 18px; --s8: 20px; --s9: 22px; --s10: 26px; --s11: 30px; --s12: 34px; --s13: 44px;
+
+  /* The page clears the rail on the left and breathes at the bottom. The rail is a column
+     84px wide, as the mock draws it, and the page starts 32px past it. Only `.page` reads
+     it; a phone sets its own padding. */
+  --rail-w: 84px;
+  --page-top: 40px;
+  --page-right: 44px;
+  --page-left: 116px;
+  --page-bottom: 96px;
+
+  /* How far a surface may grow (VEMI-009, decision 8). Three kinds of surface, three answers,
+     and never "all of it": an unbounded board on an ultrawide is worse than a capped one.
+     - Prose stops where prose should stop. A note, a body, a form keep the handoff's
+       520–720px, because a line of text past ~70 characters is harder to read, not easier.
+     - A list of rows grows to --w-rows. A row is a title with where it sits pushed to the
+       right; at 960 a long title and its place both fit on one line of 15px type, and the
+       two are still one glance apart. Wider, and the eye loses the row between them.
+     - A board grows to --w-board: six columns of 258px and their five 18px gaps. A board
+       grouped by project, priority or tag easily has six columns, and six lie on one line
+       on a 1920 desk instead of wrapping at four. Each column has its own maximum besides
+       (`.columns`), so a board of three states does not stretch three cards across it.
+     The map canvas is sized by `groundSize` in `map/canvasLayout.ts`. */
+  --w-rows: 960px;
+  --w-board: 1640px;
+
+  /* Radius. */
+  --r-plate: 12px;   /* plates, containers, canvases */
+  --r-row: 10px;     /* rows and inner cards */
+  --r-button: 9px;   /* buttons and inputs */
+  --r-small: 8px;    /* small controls and tabs */
+  --r-mono: 6px;     /* monograms and tick boxes */
+  --r-mono-lg: 7px;  /* a monogram at plate size */
+  --r-chip: 999px;
+  --r-hair: 2px;     /* a focus ring, a drop line, a grip */
+  --r-xs: 4px;       /* an editable, a tag, a read block */
+  --r-tile: 14px;    /* the phone bar add button */
+
+  /* Shadow. Each is the handoff's offset, blur and strength in a colour from the table: ink,
+     and the accent for a selected card's glow. Every token is editable at runtime (theme.ts),
+     so a shadow mixes the token rather than repeating the hex it happens to hold today. */
+  --sh-rest: 0 1px 2px color-mix(in srgb, var(--vemi-ink) 5%, transparent);
+  --sh-lift: 0 1px 2px color-mix(in srgb, var(--vemi-ink) 8%, transparent);
+  --sh-plate: 0 10px 28px color-mix(in srgb, var(--vemi-ink) 10%, transparent);
+  --sh-owned: 0 8px 22px color-mix(in srgb, var(--vemi-ink) 8%, transparent);
+  --sh-select: 0 6px 18px color-mix(in srgb, var(--vemi-live) 14%, transparent);
+  --sh-drag: 0 18px 40px color-mix(in srgb, var(--vemi-ink) 18%, transparent);
+  --sh-ghost: 0 14px 34px color-mix(in srgb, var(--vemi-ink) 26%, transparent);
+  --sh-bar: 0 18px 44px color-mix(in srgb, var(--vemi-ink) 26%, transparent);
+  --sh-sheet: -18px 0 44px color-mix(in srgb, var(--vemi-ink) 8%, transparent);
+
+  /* Motion. Every one of these goes to zero under prefers-reduced-motion. */
+  --m-quick: 160ms;
+  --m-hover: 180ms;
+  --m-label: 200ms;
+  --m-state: 220ms;
+  --m-notice: 240ms;
+  --m-sheet: 260ms;
+  --m-rise: 340ms;
+  --m-grow: 380ms;
+  --m-slide: 140ms;  /* a row sliding out of the way of a held one */
+  --m-hold: 450ms;   /* a card giving under a held finger: HOLD_MS in hold.ts, to the millisecond */
+  --ease-sheet: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --ease-grow: cubic-bezier(0.3, 0.8, 0.2, 1);
+  --drift-1: 26s;
+  --drift-2: 31s;
+  --drift-3: 29s;
+
+  /* Not rows of the table but mixed from them: a scrim and a hover wash from ink. */
+  --vemi-scrim: color-mix(in srgb, var(--vemi-ink) 28%, transparent);
+  --vemi-hover: color-mix(in srgb, var(--vemi-ink) 3.5%, transparent);
+
+  --phone-bar: 78px;
+  --touch: 44px;
+}
+
+/*
+ * One switch for the whole stylesheet. The handoff asks for the idle drift to stop and
+ * every transition to go to zero; naming the durations means saying it once here rather
+ * than in every rule that uses one.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --m-quick: 0ms;
+    --m-hover: 0ms;
+    --m-label: 0ms;
+    --m-state: 0ms;
+    --m-notice: 0ms;
+    --m-sheet: 0ms;
+    --m-rise: 0ms;
+    --m-grow: 0ms;
+    --m-slide: 0ms;
+    --m-hold: 0ms;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+/* A touch browser's own marks stay out of the handoff's: no grey box flashed over whatever is
+   tapped, since every control draws its own state, and no text grown on its own when a phone
+   turns sideways, since the type scale is the type scale. Inherited, so said once here. */
+html { -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  background: var(--vemi-page);
+  color: var(--vemi-ink);
+  font: 400 var(--t-body)/normal var(--vemi-ui);
+  font-variant-numeric: tabular-nums lining-nums;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+code, kbd, samp, .mono { font-family: var(--vemi-mono); }
+a { color: var(--vemi-live-text); text-decoration: none; }
+a:hover { color: var(--vemi-live-hover); }
+::selection { background: var(--vemi-live-tint); }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: var(--vemi-hair); border-radius: var(--r-chip); }
+::-webkit-scrollbar-track { background: transparent; }
+:focus-visible { outline: 2px solid var(--vemi-live); outline-offset: 2px; border-radius: var(--r-hair); }
+/* A sheet takes the focus itself when nothing in it asks for it (`Sheet`). It is not a
+   control, so it draws no ring; Tab goes from it to its first one. */
+.sheet:focus-visible { outline: 0; }
+/* Said to a screen reader and drawn nowhere (`Spoken`). */
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* A card's name is the button that opens it, and its ⋯ sits beside that, not inside: a
+   button inside a button is flattened out of what a screen reader can reach. The name is
+   drawn as it was, and the ring goes round the whole card, as it did when the card was the
+   button. */
+.card-open { display: block; min-width: 0; margin: 0; padding: 0; border: 0; background: transparent; text-align: left; letter-spacing: inherit; cursor: inherit; }
+.card-open:focus-visible { outline: 0; }
+[data-hold]:has(.card-open:focus-visible) { outline: 2px solid var(--vemi-live); outline-offset: 2px; }
+
+/* ---------- type ---------- */
+
+/*
+ * A kicker and a label are the same shape at two sizes: uppercase, 600, tracked wide, dim.
+ * They name the thing beside them and are never the thing itself.
+ */
+.label {
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+}
+.kicker {
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+}
+.dim { color: var(--vemi-dim); }
+.mid { color: var(--vemi-mid); }
+.hand { color: var(--vemi-live); }
+.placeholder { color: var(--vemi-dim); }
+
+.surface-title {
+  font-size: var(--t-venture);
+  font-weight: 600;
+  letter-spacing: var(--track-name);
+  line-height: var(--lh-name);
+  margin: 0;
+}
+
+
+/* ---------- controls ---------- */
+
+/* The venture's own states, by kind: not started, underway, finished; and blocked, which is a
+   task's, not a state's. Colour carries state and nothing else. */
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--vemi-edge); }
+.dot-underway { background: var(--vemi-live); }
+.dot-finished { background: var(--vemi-dim); }
+.dot-blocked { background: var(--vemi-ink); }
+
+.quiet-button, .link-button, .chip, .close-button, .editable {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+}
+
+/* The shared chip: a pill that is chosen or not. Chosen is the accent on its tint. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 17px;
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-chip);
+  background: var(--vemi-white);
+  font-size: var(--t-chip);
+  color: var(--vemi-ink);
+  transition: all var(--m-hover) ease;
+}
+.chip:hover:not(:disabled) { border-color: var(--vemi-live); color: var(--vemi-live); }
+.chip.on { border-color: var(--vemi-live); background: var(--vemi-live-tint); color: var(--vemi-live); }
+.chip:disabled { color: var(--vemi-faint); cursor: default; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* A tag where it is read rather than chosen: the micro size `--t-micro` already names as a
+   tag's, in ink and neutrals. Monochrome, and there is nothing here that could carry a
+   colour — two tags are told apart by their words. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-chip);
+  background: var(--vemi-field);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: var(--track-tag);
+  text-transform: uppercase;
+  color: var(--vemi-mid);
+  white-space: nowrap;
+}
+.pills { gap: 6px; }
+
+/* The primary action: the accent, filled. Pressed and hovered it deepens; unable, it goes quiet. */
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: var(--r-button);
+  padding: 13px 22px;
+  background: var(--vemi-live-pressed);
+  color: var(--vemi-on-live);
+  font-size: var(--t-chip);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: background var(--m-hover) ease;
+}
+.primary-button:hover:not(:disabled) { background: var(--vemi-live-hover); }
+.primary-button:disabled { background: var(--vemi-hair-light); color: var(--vemi-faint); cursor: default; }
+
+.quiet-button {
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-small);
+  padding: 8px 12px;
+  font-size: var(--t-chip);
+  color: var(--vemi-mid);
+  white-space: nowrap;
+  transition: border-color var(--m-hover) ease, color var(--m-hover) ease;
+}
+.quiet-button:hover:not(:disabled) { color: var(--vemi-ink); border-color: var(--vemi-live); }
+.quiet-button:disabled { color: var(--vemi-faint); cursor: default; }
+.link-button { color: var(--vemi-live); font-size: inherit; }
+.link-button:hover { color: var(--vemi-live-pressed); }
+.close-button { color: var(--vemi-dim); font-size: var(--t-glyph-lg); line-height: 1; padding: 2px 4px; transition: color var(--m-hover) ease; }
+.close-button:hover { color: var(--vemi-live); }
+
+.editable { color: inherit; width: 100%; min-height: 1.4em; text-wrap: pretty; border-radius: var(--r-xs); }
+.editable:hover { background: var(--vemi-hover); }
+.editing, .field, .add-line input {
+  background: var(--vemi-white);
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-small);
+  outline: none;
+  color: var(--vemi-ink);
+  padding: 8px 11px;
+  width: 100%;
+  font-size: var(--t-body);
+  transition: border-color var(--m-hover) ease;
+}
+.editing:focus, .field:focus, .add-line input:focus { border-color: var(--vemi-live); }
+.field::placeholder, .add-line input::placeholder, .editing::placeholder { color: var(--vemi-faint); }
+textarea.editing { resize: vertical; line-height: 1.5; }
+
+.add-line { display: flex; gap: 8px; margin-top: 8px; }
+
+
+.pending { padding: 24px 0; display: flex; gap: 12px; align-items: baseline; color: var(--vemi-mid); font-size: var(--t-body); }
+
+
+@keyframes notice-in { from { opacity: 0; transform: translate(-50%, 14px); } to { opacity: 1; transform: translate(-50%, 0); } }
+/* Clear of a phone's home indicator wherever it is drawn: the first venture's screen has no
+   `.page` beside it to lift it. The inset is 0 on a desk. */
+.notice {
+  position: fixed;
+  left: 50%;
+  bottom: calc(28px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: calc(100vw - 32px);
+  background: var(--vemi-ink);
+  color: var(--vemi-white);
+  padding: 13px 18px;
+  border-radius: var(--r-plate);
+  box-shadow: var(--sh-bar);
+  z-index: 80;
+  animation: notice-in var(--m-notice) ease both;
+}
+.notice-text { font-size: var(--t-tab); }
+.notice-action {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: var(--track-tag);
+  text-transform: uppercase;
+  color: var(--vemi-live);
+}
+.notice-action:hover { color: var(--vemi-white); }
+.notice-close { background: transparent; border: 0; padding: 0 0 0 2px; color: var(--vemi-dim); font-size: var(--t-glyph); line-height: 1; }
+.notice-close:hover { color: var(--vemi-white); }
+.page.phone ~ .notice { bottom: calc(var(--phone-bar) + 14px + env(safe-area-inset-bottom)); }
+/* While a selection bar is up the notice stands on top of it, not over its actions. The bar
+   says its own drawn height (`SelectionBar`); 48px is one line of it, until it has. */
+body:has(.selection-bar) .notice { bottom: calc(28px + env(safe-area-inset-bottom) + var(--selection-bar-h, 48px) + 10px); }
+body:has(.selection-bar) .page.phone ~ .notice {
+  bottom: calc(var(--phone-bar) + 14px + env(safe-area-inset-bottom) + var(--selection-bar-h, 48px) + 10px);
+}
+
+
+/* ---------- shell ---------- */
+
+.boot { position: fixed; inset: 0; background: var(--vemi-white); }
+
+/* The page scrolls. The rail, the status line and anything laid over the page do not.
+   Every page keeps its scrollbar's room whether or not it scrolls (VEMI-009; until then only
+   the map's page did, for Recent). Two reasons. The map and Space are sized from their
+   wrapper's width, so a scrollbar that comes and goes — Recent under the map, one more
+   venture, a frame row on Space — changed their width and scale, and could flip back and
+   forth, since neither is re-measured when a scrollbar appears. And the page's right edge
+   no longer moves by a scrollbar's width between a surface that scrolls and one that does
+   not. The cost, a scrollbar's width held on a page that does not scroll, is the same on
+   every surface, which is the point. A phone's scrollbars take no room, so it pays nothing. */
+.page {
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  padding: var(--page-top) var(--page-right) var(--page-bottom) var(--page-left);
+}
+.page-body { position: relative; min-width: 0; }
+
+/* A surface rises in from +10px over 340ms when it arrives. Moving between a venture's
+   tabs is not arriving, so the venture surface is keyed by venture and its tabs are not.
+   `backwards`, not `both`: a transform kept after the rise makes the surface the containing
+   block for everything fixed inside it, and the selection bar rode the page instead of the
+   window. */
+@keyframes rise-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.page-body > * { animation: rise-in var(--m-rise) var(--ease-sheet) backwards; }
+
+/* The rail: the V mark over four places, each an icon and its word, on a ground with one
+   hairline against the page. Lit is the ink and the accent on the icon over a field. */
+.rail {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--rail-w);
+  padding: var(--s7) 0 var(--s7) env(safe-area-inset-left);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--vemi-page);
+  border-right: 1px solid var(--vemi-hair);
+  z-index: 60;
+}
+.rail-mark {
+  width: 40px;
+  height: 40px;
+  margin-bottom: var(--s5);
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-tile);
+  background: var(--vemi-ink);
+  color: var(--vemi-page);
+  font-weight: 800;
+  font-size: var(--t-row);
+  letter-spacing: -0.02em;
+}
+.place-icon {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.rail-item {
+  width: 68px;
+  min-height: var(--touch);
+  padding: var(--s3) 0 var(--s2);
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  border: 0;
+  border-radius: var(--r-tile);
+  background: transparent;
+  color: var(--vemi-dim);
+  cursor: pointer;
+}
+.rail-item:hover { background: var(--vemi-field); color: var(--vemi-ink); }
+.rail-item.on { background: var(--vemi-field); color: var(--vemi-ink); }
+.rail-item.on .place-icon { color: var(--vemi-live-text); }
+.rail-label {
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* The kicker over a surface that is not a venture's: MAP, ADD, SEARCH, ARCHIVE, ACCOUNT. */
+.surface-kicker {
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+  margin-bottom: 10px;
+}
+
+/* A venture's header: back to the map, its letters and name, the pill of its four surfaces. */
+.venture-head { display: flex; align-items: center; gap: 20px; margin-bottom: 26px; flex-wrap: wrap; }
+.back-link {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+  transition: color var(--m-hover) ease;
+}
+.back-link:hover { color: var(--vemi-live); }
+.venture-id { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.venture-name { margin: 0; font-size: var(--t-head); font-weight: 600; letter-spacing: var(--track-name); line-height: 1.2; }
+.monogram {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--vemi-ink);
+  color: var(--vemi-white);
+  font-weight: 700;
+  line-height: 1;
+}
+.monogram-chip { width: 22px; height: 22px; border-radius: var(--r-mono); font-size: var(--t-label); }
+.monogram-sign { width: 26px; height: 26px; border-radius: var(--r-mono-lg); font-size: var(--t-label); }
+.monogram-account { width: 48px; height: 48px; border-radius: var(--r-plate); font-size: var(--t-mono-account); }
+.venture-tabs {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+  background: var(--vemi-field);
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-row);
+  padding: 3px;
+}
+.venture-tab {
+  padding: 9px 17px;
+  border: 0;
+  border-radius: var(--r-small);
+  background: transparent;
+  color: var(--vemi-dim);
+  font-size: var(--t-tab);
+  font-weight: 600;
+  transition: all var(--m-hover) ease;
+}
+.venture-tab:hover:not(.on) { color: var(--vemi-ink); }
+.venture-tab.on { background: var(--vemi-white); color: var(--vemi-ink); box-shadow: var(--sh-lift); }
+
+/* Under the header: what the surface is for, and its controls on the right. */
+.venture-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+.controls { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.control-label {
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+  margin-right: 4px;
+}
+.word-button {
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: var(--track-tag);
+  text-transform: uppercase;
+  padding: 9px 11px;
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-small);
+  background: transparent;
+  color: var(--vemi-ink);
+  transition: border-color var(--m-hover) ease, color var(--m-hover) ease;
+}
+/* Hover takes the accent edge, as every other bordered control does. */
+.word-button:hover:not(:disabled) { border-color: var(--vemi-live); }
+.word-button:disabled { color: var(--vemi-edge); cursor: default; }
+/* On a link (the help links) it sits in a line of text and keeps the button's ink. */
+a.word-button { display: inline-flex; align-items: center; margin-left: var(--s2); }
+a.word-button:hover { color: var(--vemi-ink); }
+.square-button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-small);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--t-glyph);
+  color: var(--vemi-ink);
+  background: transparent;
+  transition: border-color var(--m-hover) ease;
+}
+.square-button:hover:not(:disabled) { border-color: var(--vemi-live); }
+.square-button:disabled { color: var(--vemi-edge); cursor: default; }
+
+/* What the telemetry bar said, now said only when it is news. On the page's own ground, so
+   the rows and cards that scroll under it never run through its words. */
+.status-line {
+  position: fixed;
+  right: var(--page-right);
+  bottom: 28px;
+  display: flex;
+  gap: 14px;
+  padding: 6px 10px;
+  background: var(--vemi-white);
+  border-radius: var(--r-small);
+  box-shadow: var(--sh-rest);
+  font-size: var(--t-meta);
+  color: var(--vemi-live);
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* The phone's places: four with their words and the add button in the middle, each a 44px
+   reach or more. */
+.phone-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--phone-bar) + env(safe-area-inset-bottom));
+  padding: 0 env(safe-area-inset-right) calc(14px + env(safe-area-inset-bottom)) env(safe-area-inset-left);
+  background: var(--vemi-page);
+  border-top: 1px solid var(--vemi-hair);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  z-index: 60;
+}
+.phone-dot, .phone-add {
+  min-height: var(--touch);
+  padding: 0;
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  background: transparent;
+  border: 0;
+  color: var(--vemi-dim);
+}
+.phone-dot.on { color: var(--vemi-ink); }
+.phone-dot.on .place-icon { color: var(--vemi-live-text); }
+.phone-label { font-size: var(--t-meta); font-weight: 600; }
+.phone-add {
+  justify-self: center;
+  align-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-tile);
+  background: var(--vemi-live-pressed);
+  color: var(--vemi-on-live);
+}
+.phone-add:hover { background: var(--vemi-live-hover); }
+.phone-add .phone-label { display: none; }
+.phone-add .place-icon { width: 24px; height: 24px; }
+/* Each side clears the notch and the rounded corners, which sit left and right once the
+   phone is on its side. */
+.page.phone {
+  padding: calc(14px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
+    calc(var(--phone-bar) + 24px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+}
+
+.today-row { display: flex; gap: 34px; align-items: flex-start; }
+.today-row > :first-child { flex: 1; min-width: 0; }
+.today-col { flex: 1; min-width: 0; }
+
+
+
+/* ---------- the map: home ---------- */
+
+.map-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 30px; flex-wrap: wrap; }
+.map-kicker {
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+}
+.map-foot { display: flex; align-items: center; gap: 8px; margin-top: 30px; flex-wrap: wrap; }
+.map-add { width: min(420px, 100%); }
+
+/* Recent: what was touched last, a row under the field and never a column beside it, so
+   `.map-wrap` keeps the width the map is scaled to. Six rows, hairline-ruled, no box. */
+.recent { margin-top: 30px; }
+.recent-kicker { margin-bottom: 8px; }
+/* A list of rows, so it grows as every list does. */
+.recent-rows { display: flex; flex-direction: column; max-width: var(--w-rows); border-top: 1px solid var(--vemi-hair-light); }
+.recent-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  padding: 9px 2px;
+  border: 0;
+  border-bottom: 1px solid var(--vemi-hair-light);
+  background: transparent;
+  color: var(--vemi-ink);
+}
+.recent-row:hover .recent-title { color: var(--vemi-live); }
+/* The transition sits where the colour changes: the hover recolours the title, not the row. */
+.recent-title { flex: 1; min-width: 0; font-size: var(--t-row-sm); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: color var(--m-hover) ease; }
+.recent-kind {
+  flex: none;
+  font-size: var(--t-cap-sm);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+}
+.recent-age { flex: none; width: 88px; text-align: right; font-size: var(--t-meta); color: var(--vemi-dim); }
+
+/* The canvas: spaces as boxes, projects as dashed boxes, dashed wires, a dotted ground.
+   The ground is scaled by the zoom; its wrapper takes the scaled size so the page scrolls
+   to match. Colour is only ink, hairline and the live accent, which marks "on today". */
+.canvas-wrap { position: relative; border: 1px solid var(--vemi-hair); border-radius: var(--r-plate); background: var(--vemi-white); height: 560px; overflow: auto; }
+.page.phone .canvas-wrap { height: 520px; }
+.canvas-tools {
+  position: sticky; left: 12px; top: 12px; z-index: 6;
+  display: inline-flex; gap: 4px; margin: 12px 0 0 12px; padding: 3px;
+  background: var(--vemi-white); border: 1px solid var(--vemi-edge); border-radius: 12px;
+}
+.canvas-tools button { min-width: 34px; height: 32px; padding: 0 8px; border: 0; border-radius: 9px; background: transparent; color: var(--vemi-mid); font-size: var(--t-caption); font-weight: 700; }
+.canvas-tools button:hover { background: var(--vemi-field); color: var(--vemi-ink); }
+.canvas-scroll { position: relative; margin-top: -44px; }
+.canvas-ground {
+  position: absolute; left: 0; top: 0; transform-origin: 0 0;
+  background-image: radial-gradient(var(--vemi-edge) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+}
+.canvas-wires { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
+.canvas-wires path { fill: none; stroke: var(--vemi-edge); stroke-width: 1.6; stroke-dasharray: 5 4; }
+.canvas-box {
+  position: absolute; box-sizing: border-box; display: flex; align-items: center; gap: 10px;
+  background: var(--vemi-white); color: var(--vemi-ink);
+  border: 1.5px solid var(--vemi-ink); border-radius: 12px; box-shadow: var(--sh-rest);
+  cursor: grab; touch-action: none; user-select: none;
+}
+.canvas-box:active { cursor: grabbing; }
+.canvas-box.lifted { box-shadow: var(--sh-drag); z-index: 5; }
+.canvas-box.space { padding: 0 14px 0 10px; border-width: 2px; }
+.canvas-name { display: grid; min-width: 0; }
+.canvas-name b { font-size: var(--t-row-sm); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.canvas-name small { font-size: var(--t-caption); color: var(--vemi-dim); font-weight: 600; white-space: nowrap; }
+.canvas-box.project { padding: 0 10px; border-style: dashed; border-color: var(--vemi-edge); }
+.canvas-box.project:hover { border-style: solid; border-color: var(--vemi-ink); }
+.canvas-project-name { flex: 1; min-width: 0; font-size: var(--t-caption); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.canvas-today-dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--vemi-live); }
+
+/* The two figures. */
+.ring { flex: none; display: block; }
+.ring circle { fill: none; }
+.ring-track { stroke: var(--vemi-hair-light); }
+.ring-owned .ring-track { stroke: var(--vemi-hair); }
+.ring-arc { stroke: var(--vemi-ink); stroke-linecap: round; }
+.ring-value { fill: var(--vemi-ink); font-family: var(--vemi-ui); font-weight: 700; }
+.ring-plate .ring-value { font-size: var(--t-ring-plate); }
+.ring-owned .ring-value { font-size: var(--t-ring-owned); }
+.ring-card .ring-value { font-size: var(--t-ring-card); }
+
+/* ---------- overlays ---------- */
+
+.backdrop { position: fixed; inset: 0; background: var(--vemi-scrim); z-index: 85; display: flex; justify-content: center; padding: 16px; }
+.backdrop-top { align-items: flex-start; padding-top: 13vh; }
+.backdrop-centre { align-items: center; }
+@keyframes sheet-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.sheet {
+  width: min(560px, 92vw);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--vemi-white);
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-plate);
+  box-shadow: var(--sh-plate);
+  overflow: hidden;
+  animation: sheet-rise var(--m-rise) var(--ease-sheet) backwards;
+}
+.sheet-head { display: flex; align-items: center; gap: 11px; padding: 18px 22px 14px; }
+.sheet-head input { flex: 1; background: transparent; border: 0; outline: none; color: var(--vemi-ink); font-size: var(--t-row); }
+.sheet-body { flex: 1; min-height: 0; overflow: auto; }
+.sheet-section { padding: 14px 22px; border-top: 1px solid var(--vemi-hairline); }
+
+
+/* The icon sheet: its own name, because the picker panel below is `.picker` and a sheet that
+   shared it was pinned in place like a panel. */
+.icon-sheet { width: min(520px, 94vw); }
+.icon-for-label { flex: none; }
+.icon-for { flex: none; max-width: 40%; font-size: var(--t-caption); color: var(--vemi-mid); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.icon-empty { padding: 0 22px 12px; }
+.icon-foot { min-width: 0; text-align: right; font-size: var(--t-caption); color: var(--vemi-dim); }
+/* The sheet's foot: its own row under a hairline, inset as the head and the sections are. */
+.sheet-foot { flex: none; display: flex; align-items: center; gap: 10px; padding: 14px 22px 18px; border-top: 1px solid var(--vemi-hairline); }
+.sheet-head .fill, .sheet-foot .fill { flex: 1; }
+/* Rules drawn by each cell, so a part-filled last row ends in ground rather than a grey block. */
+.picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 4px; padding: 0 18px 12px; }
+.picker-cell { height: 48px; display: flex; align-items: center; justify-content: center; background: var(--vemi-white); border: 1px solid transparent; border-radius: var(--r-small); color: var(--vemi-mid); }
+.picker-cell:hover { background: var(--vemi-field); color: var(--vemi-ink); }
+.picker-cell.on { color: var(--vemi-live); border-color: var(--vemi-live); background: var(--vemi-live-tint); }
+.picker-section { padding: 12px 22px 8px; }
+
+/* ---------- the task sheet ---------- */
+
+@keyframes sheet-in { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: none; } }
+.detail {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 430px;
+  max-width: 92vw;
+  z-index: 75;
+  overflow-y: auto;
+  background: var(--vemi-white);
+  border-left: 1px solid var(--vemi-hair);
+  box-shadow: var(--sh-sheet);
+  padding: 38px 34px;
+  animation: sheet-in var(--m-sheet) var(--ease-sheet) backwards;
+}
+.detail-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 26px; }
+.detail-trail {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+}
+.detail-title { margin-bottom: 24px; font-size: var(--t-head); font-weight: 600; letter-spacing: var(--track-name); line-height: 1.2; text-wrap: pretty; }
+.detail-title .editable, .detail-title .editing { font-size: var(--t-head); font-weight: 600; letter-spacing: var(--track-name); }
+.detail-kicker { margin-bottom: 10px; }
+.detail-block { margin-bottom: 26px; }
+.detail-row-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.blocked-by { font-size: var(--t-body); color: var(--vemi-ink); padding: 13px 15px; background: var(--vemi-field); border-radius: var(--r-row); }
+.blocked-meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: var(--t-caption); color: var(--vemi-dim); }
+.blocked-meta .editable { flex: 1; }
+.detail-due { font-size: var(--t-body); }
+/* Today, as one wide toggle: an invitation in the accent, or ink once it is on today. */
+.today-toggle {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--r-button);
+  border: 1px solid var(--vemi-live);
+  background: var(--vemi-white);
+  color: var(--vemi-live);
+  font-size: var(--t-chip);
+  font-weight: 600;
+  text-align: center;
+  transition: all var(--m-hover) ease;
+}
+/* Its border is already the accent, so hover deepens text and edge as an accent word does. */
+.today-toggle:hover:not(:disabled):not(.on) { border-color: var(--vemi-live-pressed); color: var(--vemi-live-pressed); }
+.today-toggle.on { background: var(--vemi-ink); border-color: var(--vemi-ink); color: var(--vemi-white); }
+.today-toggle:disabled { border-color: var(--vemi-hair-light); color: var(--vemi-faint); cursor: default; }
+.detail-body { margin-top: 26px; }
+.detail-more { margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--vemi-hairline); display: flex; flex-direction: column; gap: 22px; }
+.detail-section { display: flex; flex-direction: column; }
+
+/* The body: markdown, read as blocks in the sheet's own type. Three constructs and no more,
+   so there are three rules here and no fourth. */
+.md-field { display: flex; flex-direction: column; gap: 8px; }
+.md-head { display: flex; justify-content: flex-end; margin-bottom: -4px; }
+.md-read {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: var(--r-xs);
+  font-size: var(--t-body);
+  color: var(--vemi-ink);
+}
+.md-read:hover { background: var(--vemi-hover); }
+.md-blank { min-height: 1.4em; }
+.md-heading { margin: 0; font-size: var(--t-row); font-weight: 600; letter-spacing: var(--track-owned); }
+/* The line break the author typed is the line break they see: the reader keeps the newline
+   and this is the half of that decision the stylesheet owns. */
+.md-para { margin: 0; line-height: 1.5; white-space: pre-line; }
+.md-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.md-list li { position: relative; padding-left: 15px; line-height: 1.5; }
+.md-list li::before { content: "-"; position: absolute; left: 0; color: var(--vemi-edge); }
+.md-link { color: var(--vemi-live); text-decoration: underline; }
+/* 24px apart, so on a phone the three controls' 44px reaches meet and never overlap. */
+.md-tools { display: flex; gap: 24px; }
+.md-tool { padding: 2px 0; }
+textarea.md-write { min-height: 150px; }
+.detail-picks { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
+.check { display: flex; align-items: center; gap: 12px; padding: 6px 0; transition: transform var(--m-slide) ease; }
+.check.held { transition: none; background: var(--vemi-live-wash); box-shadow: var(--sh-drag); }
+.check .text { flex: 1; font-size: var(--t-body); }
+.check .text.done { color: var(--vemi-dim); text-decoration: line-through; }
+.row-action:disabled { color: var(--vemi-faint); cursor: default; }
+.row-action.quiet { color: var(--vemi-dim); }
+.row-action.quiet:hover { color: var(--vemi-live); }
+
+/* ---------- archive and account: rows with one action each ---------- */
+
+/* The archive is a list of rows to scan, so it grows as the other lists do; the account is a
+   form, and keeps the handoff's prose width. */
+.archive { max-width: var(--w-rows); }
+.account { max-width: 560px; }
+.archive-said { font-size: var(--t-row-sm); color: var(--vemi-mid); max-width: 520px; margin: 0 0 28px; }
+.archive-rows, .account-rows { display: flex; flex-direction: column; gap: 8px; }
+.account-rows { gap: 10px; }
+.archive-row, .account-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 19px 22px;
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-row);
+}
+.archive-row { background: var(--vemi-canvas); }
+.archive-row.selected { border-color: var(--vemi-live); background: var(--vemi-live-tint); }
+.archive-title { min-width: 0; font-size: var(--t-row-sm); font-weight: 500; color: var(--vemi-mid); overflow-wrap: anywhere; }
+/* In the mode, the title is what chooses the row: a button the width of what is left. */
+.archive-pick { flex: 1; padding: 0; border: 0; background: transparent; text-align: left; }
+/* The kinds, then the switch for choosing several, which sits at the far end. */
+.archive-tools { display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+.archive-tools .word-button { margin-left: auto; }
+.chip-count { color: var(--vemi-dim); font-variant-numeric: tabular-nums; }
+.chip.on .chip-count, .chip:hover:not(:disabled) .chip-count { color: inherit; }
+.archive-where {
+  margin-left: auto;
+  flex: none;
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+}
+.account-row { justify-content: space-between; }
+/* Two acts on one row sit together at its end, spaced as the row spaces its own parts: the
+   export pair, and the two answers of a row that is asking before it acts. */
+.account-row-actions { display: flex; flex-wrap: wrap; gap: 8px 16px; flex: 0 1 auto; min-width: 0; }
+.account-row-title { font-size: var(--t-task); }
+.account-row-title.failed { color: var(--vemi-live); }
+.account-row-note { display: block; margin-top: 4px; font-size: var(--t-chip); font-weight: 400; color: var(--vemi-dim); }
+.account-id { display: flex; align-items: center; gap: 16px; margin-bottom: 34px; }
+.account-name { font-size: var(--t-account); font-weight: 600; letter-spacing: var(--track-owned); }
+.account-sub { font-size: var(--t-chip); color: var(--vemi-dim); }
+/* A form the account opens under its row: the sign-in card's stack of fields, boxed and inset
+   as the rows around it are, so its fields line up with their titles. */
+.account-form { display: flex; flex-direction: column; gap: 8px; padding: 19px 22px; border: 1px solid var(--vemi-hair-light); border-radius: var(--r-row); }
+.account-form .primary-button { align-self: flex-start; }
+.account-form .account-row-note { margin-top: 0; }
+.account-licence { padding: 12px 0; }
+.account-licence summary { cursor: pointer; font-weight: 600; }
+.account-licence-text { margin: 12px 0 0; max-height: 320px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--t-chip); line-height: 1.5; color: var(--vemi-dim); }
+.account-link { display: flex; gap: 22px; align-items: flex-start; flex-wrap: wrap; padding: 22px; border: 1px solid var(--vemi-hair-light); border-radius: var(--r-row); }
+.link-qr { flex: none; width: 184px; height: 184px; image-rendering: pixelated; background: var(--vemi-white); padding: 8px; border-radius: var(--r-row); border: 1px solid var(--vemi-hair-light); }
+.link-words { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 10px; font-size: var(--t-body); color: var(--vemi-mid); }
+.link-words p { margin: 0; }
+.link-code { font-size: var(--t-field); font-weight: 600; letter-spacing: 0.14em; color: var(--vemi-ink); user-select: all; }
+
+/* A refusal, said where the form that met it is: the sign-in card's, the account's. */
+.error { color: var(--vemi-live); font-size: var(--t-chip); }
+
+/* ---------- the pages before the app ---------- */
+
+/* Their own sheet, `ui/gate.css`, draws the sign-in, consent and link pages. Two rules stay here,
+   where the stylesheet test holds them: a button there is a row of the page with its words
+   centred, and the help link lines up with those rows. */
+.gate .quiet-button { display: flex; align-items: center; justify-content: center; min-height: var(--touch); }
+.gate a.word-button { margin-left: 0; justify-content: center; }
+
+/* ---------- manual order ---------- */
+
+/* Rows slide out of the way under the hand; the held row is lifted clear of them. The flow
+   is never touched, so a list of uneven rows needs no special case. */
+.held { cursor: grabbing; }
+.held .grip { cursor: grabbing; }
+.while-held { user-select: none; }
+
+/* Long words and pasted links wrap instead of pushing the row off the screen. */
+.detail-title, .check .text, .note-line .fill, .md-read, .task-title, .plate-name, .venture-name,
+.item-title .editable, .item-title .editing { min-width: 0; overflow-wrap: anywhere; }
+
+/* ---------- choosing several at once ---------- */
+
+/* The handoff's dark bar: fixed at the foot, centred, rising in. What is selected, a rule,
+   then what can be done to it. Shared by Space and the board. */
+@keyframes bar-in { from { opacity: 0; transform: translate(-50%, 14px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.selection-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  z-index: 70;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+  max-width: calc(100vw - 32px);
+  /* A board's bar carries a picker for every state and every project, and wraps; past half a
+     screen it scrolls inside itself rather than climbing over the board. */
+  max-height: min(50vh, 420px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 13px 20px;
+  background: var(--vemi-ink);
+  color: var(--vemi-white);
+  border-radius: var(--r-plate);
+  box-shadow: var(--sh-bar);
+  animation: bar-in var(--m-state) ease both;
+}
+.selection-count { font-size: var(--t-caption); font-weight: 600; white-space: nowrap; }
+.selection-rule { width: 1px; height: 16px; background: var(--vemi-bar-rule); flex: none; }
+.bar-action {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: var(--track-tag);
+  text-transform: uppercase;
+  color: var(--vemi-bar-ink);
+  transition: color var(--m-hover) ease;
+}
+.bar-action:hover:not(:disabled), .bar-action.on { color: var(--vemi-live); }
+.bar-action:disabled { color: var(--vemi-dim); cursor: default; }
+.bar-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.bar-label { font-size: var(--t-meta); color: var(--vemi-dim); }
+.page.phone ~ .selection-bar, .page.phone .selection-bar { bottom: calc(var(--phone-bar) + 14px + env(safe-area-inset-bottom)); }
+
+/* The handoff's ghost: the thing in the hand, a step off the pointer, never under it. */
+.drag-ghost {
+  position: absolute;
+  z-index: 90;
+  max-width: 280px;
+  padding: 10px 13px;
+  border-radius: var(--r-button);
+  background: var(--vemi-ink);
+  color: var(--vemi-white);
+  font-size: var(--t-tab);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  box-shadow: var(--sh-ghost);
+}
+
+.word-button.on { border-color: var(--vemi-live); color: var(--vemi-live); }
+
+/* ---------- pickers and the calendar ---------- */
+
+/* The button a picker hangs from. It looks like a field, because it is one, and carries a
+   mark at its right edge, because a control that reads as a label is the fault: a select
+   styled to match the page had no arrow, and nothing said it could be pressed. */
+.pick-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 11px;
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-small);
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  font-size: var(--t-chip);
+  text-align: left;
+  transition: border-color var(--m-hover) ease;
+}
+.pick-button:hover, .pick-button.open { border-color: var(--vemi-live); }
+.pick-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pick-empty { color: var(--vemi-dim); }
+.pick-mark { flex: none; display: inline-flex; color: var(--vemi-dim); }
+.pick-button.open .pick-mark { color: var(--vemi-ink); }
+/* Small and inline rather than a full-width field: a state's kind, a milestone's owner. */
+.pick-button.pick-inline { width: auto; min-width: 0; min-height: 32px; padding: 6px 10px; }
+/* A date picked from the selection bar: one more of the bar's actions (`.bar-action` gives the
+   type and a phone's reach), not a light field on the dark. */
+.pick-button.bar-date { width: auto; min-height: 0; padding: 0; gap: 6px; border: 0; background: transparent; color: var(--vemi-bar-ink); font-size: var(--t-meta); }
+.pick-button.bar-date .pick-mark { color: inherit; }
+.pick-button.bar-date:hover, .pick-button.bar-date.open { color: var(--vemi-live); }
+
+.picker {
+  position: fixed;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-plate);
+  background: var(--vemi-white);
+  box-shadow: var(--sh-plate);
+  overflow: hidden;
+}
+.picker-find { flex: none; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--vemi-hair); color: var(--vemi-dim); }
+.picker-find:focus-within { border-bottom-color: var(--vemi-live); }
+.picker-find input { flex: 1; min-width: 0; background: transparent; border: 0; outline: 0; color: var(--vemi-ink); font: inherit; font-size: var(--t-chip); }
+.picker-list { flex: 1; min-height: 0; overflow: auto; padding: 4px; }
+.picker-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--r-small);
+  background: transparent;
+  color: var(--vemi-mid);
+  font-size: var(--t-chip);
+  text-align: left;
+}
+.picker-item:hover, .picker-item:focus-visible { background: var(--vemi-field); color: var(--vemi-ink); }
+/* The wash alone is too faint to find the focus by, so a keyboard gets the ring too, drawn
+   inside the row so the panel's edge never clips it. */
+.picker-item:focus-visible { outline-offset: -2px; }
+.picker-item.on { color: var(--vemi-ink); }
+.picker-item.nested { padding-left: 24px; }
+.picker-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.picker-sub { flex: none; font-size: var(--t-caption); color: var(--vemi-dim); }
+.picker-tick { flex: none; display: inline-flex; color: var(--vemi-live); }
+.picker-none { padding: 10px 8px; font-size: var(--t-chip); color: var(--vemi-dim); }
+
+/* The tag picker: what is already there, then the field, then what it matches — and the
+   offer to make a new one last, under a hairline, so it is never what the eye reaches
+   first. Built on the same `Sheet` and the same picker rows as everything else. */
+.pill-sheet { width: min(420px, 94vw); }
+.pill-chosen { margin-top: 10px; }
+.pill-list { max-height: 240px; margin-top: 10px; padding: 0; }
+.pill-new { margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--vemi-hairline); border-radius: 0; color: var(--vemi-dim); }
+.pill-new:disabled { color: var(--vemi-faint); cursor: default; }
+.pill-said { margin-top: 10px; font-size: var(--t-caption); color: var(--vemi-live); }
+
+/* Decision 14. Seven columns of squares a finger can land on. */
+.cal { padding: 16px; overflow: auto; }
+.cal-top { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.cal-title { flex: 1; text-align: center; font-size: var(--t-label); font-weight: 600; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--vemi-dim); }
+.cal-step { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 1px solid var(--vemi-hair); background: transparent; color: var(--vemi-mid); }
+.cal-step { border-radius: var(--r-small); }
+.cal-step:hover { color: var(--vemi-ink); border-color: var(--vemi-live); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-dow { text-align: center; font-size: var(--t-caption); color: var(--vemi-dim); padding: 2px 0 4px; }
+.cal-day { aspect-ratio: 1; min-height: 34px; border: 1px solid transparent; background: transparent; color: var(--vemi-ink); font-size: var(--t-chip); font-variant-numeric: tabular-nums lining-nums; }
+.cal-day { border-radius: var(--r-mono-lg); }
+.cal-day:hover, .cal-day:focus-visible { background: var(--vemi-field); }
+/* The ring sits in the gap between days. On the chosen day, which is already orange, it is ink. */
+.cal-day.on:focus-visible { outline-color: var(--vemi-ink); }
+.cal-day.out { color: var(--vemi-edge); }
+.cal-day.today { border-color: var(--vemi-edge); }
+.cal-day.on { background: var(--vemi-live); border-color: var(--vemi-live); color: var(--vemi-on-live); }
+.cal-quick { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.cal-note { margin-top: 10px; font-size: var(--t-caption); line-height: 1.45; color: var(--vemi-dim); }
+
+/* On a phone a panel under a button is a panel under a thumb. It comes up from the bottom
+   edge instead, full width, where every row of it can be reached — and from the top of the
+   keyboard while one is up (`--kb`, see `keyboardInset.ts`). `dvh` where the browser has it,
+   because `vh` on a phone is the screen with its toolbars hidden. */
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  .picker {
+    left: 0 !important;
+    right: 0;
+    top: auto !important;
+    bottom: var(--kb, 0px);
+    width: auto !important;
+    max-height: calc(72vh - var(--kb, 0px)) !important;
+    max-height: calc(72dvh - var(--kb, 0px)) !important;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    box-shadow: var(--sh-bar);
+  }
+  .pick-button { min-height: var(--touch); font-size: var(--t-body); }
+  .pick-button.pick-inline { min-height: var(--touch); padding: 0 10px; }
+  .picker-item { min-height: var(--touch); font-size: var(--t-body); }
+  /* 16px is not a type role: below it iOS zooms the page into a field when it is focused. */
+  .picker-find input { font-size: 16px; }
+  .cal-day { min-height: 42px; font-size: var(--t-body); }
+  .cal-step { width: var(--touch); height: var(--touch); }
+}
+
+/* ---------- deleting for good, decision 33 ---------- */
+
+.delete-title { font-size: var(--t-row-sm); line-height: 1.4; color: var(--vemi-ink); margin-bottom: 10px; text-wrap: pretty; }
+.delete-lede { font-size: var(--t-chip); color: var(--vemi-mid); }
+.delete-list { margin: 6px 0 0; padding-left: 18px; font-size: var(--t-chip); line-height: 1.6; color: var(--vemi-ink); }
+.delete-refusal, .delete-warning, .delete-failed { font-size: var(--t-chip); line-height: 1.5; text-wrap: pretty; }
+.delete-refusal { color: var(--vemi-ink); border-left: 2px solid var(--vemi-live); padding-left: 10px; }
+.delete-warning { margin-top: 12px; color: var(--vemi-live); }
+.delete-failed { margin-top: 10px; color: var(--vemi-live); }
+.delete-confirm { display: block; margin-top: 14px; }
+.delete-confirm .label { display: block; margin-bottom: 5px; }
+.delete-confirm .field { width: 100%; }
+.sheet-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+
+
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  /* 16px, so iOS does not zoom into the field (see the picker's search). */
+  .delete-confirm .field { min-height: var(--touch); font-size: 16px; }
+  .sheet-actions .primary-button, .sheet-actions .quiet-button { min-height: var(--touch); }
+  .archive-row { flex-wrap: wrap; }
+}
+
+/* ---------- Board: a venture's tasks, grouped ---------- */
+
+/* Group by: in the surface, beside the board, and never in the rail — it belongs to this
+   board rather than to the tool. */
+.board-group { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+
+/* The board as a whole takes the board's maximum, not only its columns, so the filter and
+   the controls at the right of its bar end where the columns end. It was 1180, which held
+   `auto-fit` to four columns on any desk. */
+.board { max-width: var(--w-board); }
+/* Auto-fit, on purpose: the columns wrap rather than squeeze. A column also stops at 400px,
+   its own maximum, rather than at a share of the board: three states on a 1920 desk were
+   535px each, a card's title ran seventy characters on one line and its date sat a long
+   way from it. The room a short board leaves is left, not spread.
+   The stop is on the grid, from the count of columns the board sets as `--columns`, and
+   not on the track (`minmax(236px, 400px)`): auto-fit counts its tracks at their maximum
+   when that is definite, so a 400px track wrapped a third state under the first two at
+   1280. The tracks stay `1fr` and the grid stops where that many 400px columns would. */
+.columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(236px, 1fr));
+  gap: 18px;
+  max-width: calc(var(--columns, 6) * 400px + (var(--columns, 6) - 1) * 18px);
+  align-items: start;
+}
+.column {
+  background: var(--vemi-canvas);
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-plate);
+  padding: 22px 20px 24px;
+  min-height: 260px;
+  transition: all var(--m-quick) ease;
+}
+.column.drop-on { border-color: var(--vemi-live); background: var(--vemi-live-wash); }
+.column-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.column-name {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: var(--t-kicker);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-mid);
+}
+.column-count { font-size: var(--t-count); font-weight: 600; color: var(--vemi-dim); }
+/* The count, then the column's own ⋯: choose all of it, or clear a finished column. An empty
+   column has no ⋯, so the tools hold the ⋯'s height (28 less its margins) either way: every
+   head stands as tall as its neighbours and every column's cards start on one line. */
+.column-tools { display: flex; align-items: center; gap: 6px; height: 20px; }
+.column-tools .more-button { margin: -4px -6px -4px 0; }
+/* Tall enough when empty that an empty column is still somewhere to drop. */
+.column-body { display: flex; flex-direction: column; gap: 12px; min-height: 140px; }
+.column-empty { font-size: var(--t-caption); color: var(--vemi-dim); }
+
+.task-card {
+  background: var(--vemi-white);
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-row);
+  padding: 17px 18px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: border-color var(--m-quick) ease;
+}
+.task-card:hover { border-color: var(--vemi-edge); }
+.task-card.carried { opacity: 0.35; border-color: var(--vemi-live); }
+.task-card.selected { border-color: var(--vemi-live); background: var(--vemi-live-tint); }
+.task-card.drop-before { box-shadow: 0 -7px 0 -5px var(--vemi-live); }
+.drop-end { height: 2px; border-radius: var(--r-hair); background: var(--vemi-live); }
+.task-title { font-size: var(--t-task); font-weight: 500; line-height: var(--lh-task); text-wrap: pretty; }
+
+/* Layout B: line one is the marks, tight, with the date pushed right; line two is the
+   words. Two lines whose height does not change with the column's width, so a column of
+   cards scans — which is the whole reason Layout B was chosen over one wrapping line.
+   Line two never wraps: its one variable-width part, the project name, gives way with an
+   ellipsis instead.
+   Line one still may, and on purpose until the design settles it. Measured at the 236px
+   column (156px of meta): a blocked task with a priority, a checklist count and a due
+   date wants 173px at its narrowest ("3 of 7", "24 Sep") and 212px at its widest, so a
+   line that refused to wrap would clip the Blocked pill off the card. A taller card is
+   the lesser harm than a blocked task that does not say so. */
+.task-meta { display: flex; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.task-marks { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.task-count {
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: var(--track-tight);
+  color: var(--vemi-dim);
+  white-space: nowrap;
+}
+.task-words { display: flex; align-items: center; gap: 8px; margin-top: 7px; flex-wrap: nowrap; min-width: 0; }
+.task-words .pill { flex: none; }
+/* The tag pill has a maximum of its own (VEMI-009, carried from the board phase). A long tag
+   such as "deep work" with a `+3` took ~133px of the 156px floor and left the project name
+   ~19px: two letters and an ellipsis. Now a tag stops at 112px, which "deep work" (~90px)
+   fits whole on any column wider than the floor, and at 38% of the line where the line is
+   narrow: 59px at the floor, room for "admin" whole, leaving the project name ~46px beside a
+   `+N`. Below its maximum a tag never gives way, so a short one is never cut to make room;
+   the project name is what gives way, as before. The `+N` count never shrinks: it must be
+   read whole. Measured in headless Chrome at 236, 355 and 400px columns. Letting both shrink
+   together was tried first, and cut "admin" by a pixel on a 400px column. */
+.task-words .task-tag { flex: none; min-width: 0; max-width: min(112px, 38%); }
+.task-tag-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* Priority: three rising bars filled from the left, one per step. Never a colour — round
+   means state, bars mean priority, and the two can never be read as each other. */
+.mark-priority { display: inline-flex; align-items: flex-end; gap: 2px; height: 9px; flex: none; }
+.mark-priority .bar { width: 2px; border-radius: var(--r-hair); background: var(--vemi-edge); }
+.mark-priority .bar:nth-child(1) { height: 5px; }
+.mark-priority .bar:nth-child(2) { height: 7px; }
+.mark-priority .bar:nth-child(3) { height: 9px; }
+.mark-priority .bar.on { background: var(--vemi-ink); }
+
+
+/* The one part of line two whose width is anybody's guess. It gives way with an ellipsis
+   rather than wrapping the line, so the tag pill beside it keeps its place and the card
+   keeps its height. The `.pick-value` idiom. */
+.task-project {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: var(--track-tag);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+}
+.task-due {
+  margin-left: auto;
+  flex: none;
+  white-space: nowrap;
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: var(--track-tight);
+  text-transform: uppercase;
+  color: var(--vemi-live);
+}
+.tag-blocked {
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: var(--track-tight);
+  text-transform: uppercase;
+  background: var(--vemi-ink);
+  color: var(--vemi-white);
+  padding: 2px 6px;
+  border-radius: var(--r-xs);
+  white-space: nowrap;
+}
+/* Blocked's lesser sibling: the same geometry, outlined so it takes no new colour. */
+.tag-at-risk {
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: var(--track-tight);
+  text-transform: uppercase;
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  box-shadow: inset 0 0 0 1px var(--vemi-ink);
+  padding: 2px 6px;
+  border-radius: var(--r-xs);
+  white-space: nowrap;
+}
+.drag-ghost.fixed { position: fixed; }
+/* On a phone the tag is over the finger, not beside it: drawn centred on where it is placed. */
+.drag-ghost.over-finger { transform: translateX(-50%); }
+
+/* A task straight into its column: a word until it is wanted. */
+.column-add {
+  margin-top: 14px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+  transition: color var(--m-hover) ease;
+}
+.column-add:hover { color: var(--vemi-live); }
+.column-add-form { margin-top: 14px; }
+.column-add-form .control-field { width: 100%; }
+/* More: the same line taken to Add, pre-fill and all. Its reach is .row-action's. */
+.column-add-more { display: flex; justify-content: flex-end; margin-top: 8px; }
+/* On a phone that reach runs 17px above the word, so More sits 17px below the field: a
+   thumb low on the field lands in the field, not on More. After the rule above, so it wins. */
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  .column-add-more { margin-top: 17px; }
+}
+
+/* A small field in a controls row: the board's filter, a column's new task. */
+.control-field {
+  font-size: var(--t-chip);
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-small);
+  padding: 8px 11px;
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  outline: none;
+  width: 160px;
+  transition: border-color var(--m-hover) ease;
+}
+.control-field:focus { border-color: var(--vemi-live); }
+.control-field::placeholder { color: var(--vemi-faint); }
+
+/* ---------- Projects: a venture's own order ---------- */
+
+/* Rows, so a list's maximum: the handoff's 720 cut a long project name short on any desk. */
+.projects { max-width: var(--w-rows); }
+.projects .venture-bar { margin-bottom: 18px; }
+.proj-rows { display: flex; flex-direction: column; gap: 8px; }
+.proj-row {
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-row);
+  background: var(--vemi-white);
+  transition: border-color var(--m-quick) ease, background var(--m-quick) ease, transform var(--m-slide) ease;
+}
+.proj-row.held { border-color: var(--vemi-live); background: var(--vemi-live-wash); transition: none; box-shadow: var(--sh-drag); }
+.more-row { transition: transform var(--m-slide) ease; }
+.more-row.held { transition: none; }
+.proj-line { display: flex; align-items: center; gap: 16px; padding: 19px 20px; }
+.proj-title {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  color: var(--vemi-ink);
+  font-size: var(--t-row);
+  font-weight: 500;
+  letter-spacing: var(--track-owned);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.proj-title:hover { color: var(--vemi-live); }
+.proj-figures { margin-left: auto; display: flex; align-items: center; gap: 18px; flex: none; }
+.proj-left {
+  width: 58px;
+  text-align: right;
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-live);
+}
+.grip-space { width: 23px; flex: none; }
+.rows-add { margin: 14px 0 34px; max-width: 420px; }
+
+/* Projects inside a project: the same line, one indent in, under the parent's own. */
+.proj-children { padding-left: 24px; }
+.proj-child { transition: transform var(--m-slide) ease; }
+.proj-child.held { transition: none; background: var(--vemi-live-wash); box-shadow: var(--sh-drag); }
+.item-sections .proj-children { padding-left: 0; }
+.item-sections .proj-child { border: 1px solid var(--vemi-hair-light); border-radius: var(--r-row); background: var(--vemi-white); margin-bottom: 8px; }
+
+/* A project opened in place, and the venture's own details: quiet, one level down. */
+.proj-more { padding: 0 20px 18px 59px; display: flex; flex-direction: column; gap: 8px; }
+/* A project row's own add: as wide as the add under the rows, and no wider. */
+.proj-more .add-line { max-width: 420px; margin-top: 0; }
+.more-line { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.more-line .editable { flex: 1; min-width: 0; font-size: var(--t-body); }
+.more-kicker { margin-top: 8px; }
+/* A section that heads with a row rather than a bare kicker still starts where the
+   kickers above and below it do: Tags, beside Milestones and Notes on a project. */
+.about-block .detail-row-head { margin-top: 8px; }
+.more-note { font-size: var(--t-caption); color: var(--vemi-dim); white-space: nowrap; }
+.more-empty { font-size: var(--t-caption); color: var(--vemi-dim); }
+.more-foot { margin-top: 8px; }
+.more-row { padding: 4px 0; }
+.row-action {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-live);
+}
+.row-action:hover { color: var(--vemi-live-pressed); }
+.row-action { white-space: nowrap; flex: none; }
+.detail-row-head .pick-button { width: auto; min-width: 0; }
+
+.about-row { margin-top: 8px; }
+.about-toggle {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 19px 20px;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  color: var(--vemi-ink);
+}
+.about-title { font-size: var(--t-row); font-weight: 500; letter-spacing: var(--track-owned); }
+.about-what { font-size: var(--t-caption); color: var(--vemi-dim); }
+.about-toggle .row-action { margin-left: auto; }
+.about { padding: 8px 20px 0; display: flex; flex-direction: column; gap: 22px; }
+.about-block { display: flex; flex-direction: column; gap: 8px; }
+.about-goal { font-size: var(--t-row-sm); color: var(--vemi-mid); }
+.about-said { margin: 0; font-size: var(--t-body); color: var(--vemi-mid); }
+.note-line { font-size: var(--t-body); line-height: 1.45; color: var(--vemi-mid); }
+/* Decisions then risks, spaced as the sections around them. */
+.ledger { display: flex; flex-direction: column; gap: inherit; }
+.note-line .fill { flex: 1; }
+
+/* The one grab point in a manual-order list: the character ⠿, a real button. */
+.grip {
+  flex: none;
+  background: transparent;
+  border: 0;
+  padding: 0 4px;
+  font-size: var(--t-row-sm);
+  line-height: 1;
+  color: var(--vemi-edge);
+  cursor: grab;
+  touch-action: none;
+  transition: color var(--m-hover) ease;
+}
+.grip:hover { color: var(--vemi-ink); }
+.grip:active { cursor: grabbing; }
+
+.icon-button {
+  background: transparent;
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-small);
+  padding: 7px;
+  color: var(--vemi-mid);
+  display: flex;
+  min-width: 38px;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+}
+.icon-button:hover { color: var(--vemi-live); border-color: var(--vemi-live); }
+.icon-button.small { padding: 3px; min-width: 28px; min-height: 28px; }
+
+/* ---------- Today ---------- */
+
+/* Rows, so a list's maximum. Needs-you keeps its 280px beside it. */
+.today { max-width: var(--w-rows); }
+.today-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }
+.today-head .controls { align-self: center; }
+.today-stamp { font-size: var(--t-caption); color: var(--vemi-dim); }
+.today-empty { font-size: var(--t-body); color: var(--vemi-dim); padding: 20px 0; }
+.today-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 34px; }
+.today-row-item {
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-row);
+  background: var(--vemi-white);
+  transition: border-color var(--m-hover) ease, transform var(--m-slide) ease;
+}
+.today-row-item:hover { border-color: var(--vemi-edge); }
+.today-row-item.held { border-color: var(--vemi-live); background: var(--vemi-live-wash); transition: none; box-shadow: var(--sh-drag); }
+.today-line { display: flex; align-items: center; gap: 16px; padding: 18px 20px; min-width: 0; }
+/* The tick box: open is a quiet edge; finished is ink with a white tick. */
+.tick {
+  position: relative;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-mono);
+  border: 1.5px solid var(--vemi-edge);
+  background: var(--vemi-white);
+  color: var(--vemi-white);
+  font-size: var(--t-caption);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all var(--m-hover) ease;
+}
+.tick:hover { border-color: var(--vemi-live); }
+.tick.done { background: var(--vemi-ink); border-color: var(--vemi-ink); }
+.today-title {
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  font-size: var(--t-row-sm);
+  font-weight: 500;
+  color: var(--vemi-ink);
+  overflow-wrap: anywhere;
+}
+.today-title.done { color: var(--vemi-dim); text-decoration: line-through; }
+.today-where {
+  margin-left: auto;
+  flex: none;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+}
+.today-due {
+  flex: none;
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: var(--track-tight);
+  text-transform: uppercase;
+  color: var(--vemi-live);
+}
+.unpick {
+  flex: none;
+  background: transparent;
+  border: 0;
+  padding: 0 2px;
+  font-size: var(--t-row-sm);
+  line-height: 1;
+  color: var(--vemi-edge);
+  transition: color var(--m-hover) ease;
+}
+.unpick:hover { color: var(--vemi-live); }
+.today-section { margin-bottom: 34px; }
+.today-kicker { margin-bottom: 14px; }
+.pick-group { margin-top: 16px; }
+.pick-group:first-of-type { margin-top: 0; }
+.pick-venture { font-size: var(--t-meta); color: var(--vemi-dim); margin-bottom: 10px; }
+
+/* Needs you, beside Today on a desk. */
+.needs { flex: none; width: 280px; display: flex; flex-direction: column; gap: 8px; padding-top: 6px; }
+.needs-said { margin: 0 0 8px; font-size: var(--t-caption); color: var(--vemi-dim); line-height: 1.45; }
+.needs-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-row);
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  transition: border-color var(--m-hover) ease;
+}
+.needs-row:hover { border-color: var(--vemi-live); }
+.needs-top { display: flex; align-items: center; gap: 8px; }
+.needs-overdue {
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: var(--track-tight);
+  text-transform: uppercase;
+  color: var(--vemi-live);
+}
+.needs-where { margin-left: auto; font-size: var(--t-micro); font-weight: 600; letter-spacing: var(--track-tag); text-transform: uppercase; color: var(--vemi-dim); }
+.needs-title { font-size: var(--t-body); font-weight: 500; line-height: 1.35; overflow-wrap: anywhere; }
+.needs-reason { font-size: var(--t-caption); color: var(--vemi-mid); line-height: 1.4; }
+
+/* ---------- Add and Search: one column, one big field ---------- */
+
+/* Add is a form and keeps a form's width. Search is a field over a list of results, and the
+   results are rows: it takes a list's maximum, and the field goes with them. */
+.add { max-width: 620px; }
+.search { max-width: var(--w-rows); }
+.big-field {
+  display: block;
+  width: 100%;
+  font-size: var(--t-venture);
+  font-weight: 500;
+  letter-spacing: var(--track-name);
+  border: 0;
+  border-bottom: 1.5px solid var(--vemi-ink);
+  border-radius: 0;
+  padding: 0 0 14px;
+  margin-bottom: 30px;
+  outline: none;
+  background: transparent;
+  color: var(--vemi-ink);
+}
+.big-field::placeholder { color: var(--vemi-faint); }
+.big-field:focus-visible { outline: none; border-bottom-color: var(--vemi-live); }
+.search-field { font-size: var(--t-field); margin-bottom: 8px; }
+.add-groups { display: flex; flex-direction: column; gap: 22px; }
+.add-label { margin-bottom: 10px; }
+.add-submit { display: flex; align-items: center; gap: 16px; margin-top: 6px; flex-wrap: wrap; }
+.add-submit .fill { flex: 1; }
+.add-summary { font-size: var(--t-caption); color: var(--vemi-dim); }
+
+.search-said { font-size: var(--t-meta); color: var(--vemi-dim); margin-bottom: 28px; }
+.results { display: flex; flex-direction: column; gap: 8px; }
+/* An empty field lists two groups, Recent and Go to; each is a list of results under its kicker. */
+.results-group { display: flex; flex-direction: column; gap: 8px; }
+.results-group + .results-group .results-kicker { margin-top: 20px; }
+.result {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  text-align: left;
+  padding: 17px 20px;
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-row);
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  transition: border-color var(--m-hover) ease;
+}
+.result:hover, .result.on { border-color: var(--vemi-live); }
+.result-kind {
+  flex: none;
+  width: 70px;
+  font-size: var(--t-cap-sm);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+}
+.result-title { min-width: 0; font-size: var(--t-row-sm); font-weight: 500; overflow-wrap: anywhere; }
+.result-where { margin-left: auto; flex: none; max-width: 40%; font-size: var(--t-meta); color: var(--vemi-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.search-foot { margin-top: 28px; }
+
+/* A month in the page: Add's Pick a date. */
+.month {
+  margin-top: 16px;
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-plate);
+  padding: 16px;
+  max-width: 300px;
+}
+.month-top { display: flex; align-items: center; gap: 4px; margin-bottom: 12px; }
+.month-title {
+  flex: 1;
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+}
+.month-step {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-mono);
+  background: transparent;
+  color: var(--vemi-dim);
+}
+.month-step:hover { color: var(--vemi-live); }
+.month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+/* The day names, as the panel's calendar has them, so a column says which day it is. */
+.month-dow { text-align: center; font-size: var(--t-caption); color: var(--vemi-dim); padding: 2px 0 4px; }
+.month-day {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--t-caption);
+  border: 0;
+  border-radius: var(--r-mono-lg);
+  background: transparent;
+  color: var(--vemi-ink);
+  padding: 0;
+}
+.month-day.past { color: var(--vemi-edge); }
+.month-day:hover, .month-day:focus-visible { background: var(--vemi-field); }
+/* Today, ringed in the quiet edge as the panel's calendar rings it. Inset, because the cell
+   has no border to colour and keeps the handoff's 32px. A chosen today is the fill alone. */
+.month-day.today { box-shadow: inset 0 0 0 1px var(--vemi-edge); }
+.month-day.on { background: var(--vemi-live); color: var(--vemi-on-live); box-shadow: none; }
+/* The ring in ink on the chosen day, as the panel's calendar has it: orange beside an orange
+   fill is hard to see. */
+.month-day.on:focus-visible { outline-color: var(--vemi-ink); }
+.month-day.out { pointer-events: none; }
+
+/* A list with nothing in it says so in one style, wherever the list is. Placed empties keep
+   their own: a frame's on the canvas, Today's page-level line, a phone band's, and the 12px
+   inline ones under a project and in a column. */
+.empty, .rows-empty { color: var(--vemi-dim); font-size: var(--t-body); padding: 10px 0; }
+
+/* ---------- a project's or a task's own page (VEMI-007) ---------- */
+
+/* A project's page carries its board, so it takes the board's maximum. Its sections below
+   are prose and stay at 720 (`.item-sections`). A task's page is a text column and stays. */
+.item-page { max-width: var(--w-board); }
+.task-page { max-width: 720px; }
+.crumbs { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; min-width: 0; flex-wrap: wrap; row-gap: 6px; }
+.crumbs .fill { flex: 1; }
+.crumbs .back-link { max-width: 100%; text-align: left; overflow-wrap: anywhere; }
+.crumb-sep { color: var(--vemi-edge); font-size: var(--t-meta); }
+.crumb-here {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--t-meta);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-ink);
+}
+.item-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 22px; flex-wrap: wrap; }
+.item-title { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.item-title .editable, .item-title .editing { font-size: var(--t-venture); font-weight: 600; letter-spacing: var(--track-name); }
+.item-figures { display: flex; align-items: flex-end; gap: 22px; }
+.item-caption { margin-top: 10px; }
+.item-said { display: flex; align-items: center; gap: 10px; margin: -8px 0 18px; font-size: var(--t-body); color: var(--vemi-mid); }
+.item-sections { max-width: 720px; margin-top: 34px; display: flex; flex-direction: column; gap: 26px; }
+.task-page > .kicker { margin-bottom: 8px; }
+.detail-head .open-page { margin-left: auto; }
+
+/* ---------- the ⋯ menu (VEMI-007) ---------- */
+
+/* Quiet until wanted: a dim mark in a corner, the accent under the pointer or while open. */
+.more-button {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--r-small);
+  background: transparent;
+  color: var(--vemi-dim);
+  font-size: var(--t-row);
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--m-hover) ease, border-color var(--m-hover) ease;
+}
+.more-button:hover, .more-button.open { color: var(--vemi-live); border-color: var(--vemi-hair); }
+.card-more { margin: -4px -6px -4px auto; }
+.plate-mark .card-more, .owned-mark .card-more { margin-left: auto; }
+.owned-mark { margin-bottom: 6px; }
+.task-top { display: flex; align-items: flex-start; gap: 8px; }
+.task-top .task-title { flex: 1; min-width: 0; }
+.venture-head > .more-button { margin-left: -8px; }
+.map-more { margin-left: 8px; }
+.map-head > .more-button:only-of-type { margin-left: auto; }
+.surface-kicker { display: flex; align-items: center; gap: 10px; }
+.surface-kicker > .more-button { margin-left: auto; }
+.proj-figures .more-button { margin-right: -6px; }
+.ph-project .card-more, .ph-task .card-more { margin: 0 4px 0 0; }
+
+.menu-list { display: flex; flex-direction: column; padding: 6px; }
+.menu-item { width: 100%; }
+.menu-item.remove { color: var(--vemi-live); }
+.menu-item:disabled { color: var(--vemi-faint); cursor: default; }
+.menu-note { padding: 8px 10px; font-size: var(--t-caption); color: var(--vemi-dim); line-height: 1.4; border-top: 1px solid var(--vemi-hairline); border-bottom: 1px solid var(--vemi-hairline); margin: 4px 0; }
+
+/*
+ * Horizon (VEMI-009): what is coming, in bands. A band exists only while it holds
+ * something — `bandsOf` never returns an empty one — so nothing here draws an empty band,
+ * and there is no rule for one to fall back on.
+ *
+ * On a desk the bands run left to right in time order and carry on onto a second line when
+ * the desk runs out. A band is `data-across` plates wide: one while it holds six or fewer,
+ * one more for every six after, five at most. So "later" holding forty is a block five
+ * plates across and eight down, read in date order along each line, and never a list forty
+ * rows long. A band alone on a line narrower than it wants gives up plates across rather
+ * than scrolling sideways.
+ *
+ * An item is a plate in the task card's geometry — 10px radius, 1px hair, 17/18 padding —
+ * not the map's inked venture plate, which is venture-scale and would compete.
+ *
+ * Overdue is a band's name and nothing more: no red, no weight, no mark. A task's date is
+ * the due-date colour it always is; a milestone is "aiming at" its day, in the quiet colour.
+ */
+/* Horizon is a board of bands: the board's maximum, so on an ultrawide the later bands do
+   not run off beyond the reach of the eye that started at the overdue one. */
+.horizon { max-width: var(--w-board); }
+.horizon-bands { margin-top: 30px; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 22px 18px; }
+.horizon-band {
+  --plate-w: 200px;
+  --plate-gap: 10px;
+  --across: 1;
+  /* The plates across, their gaps, the band's padding and border, and a pixel of slack so
+     rounding never costs a plate. */
+  flex: 0 1 calc(var(--across) * var(--plate-w) + (var(--across) - 1) * var(--plate-gap) + 38px + 1px);
+  min-width: 0;
+  background: var(--vemi-canvas);
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-plate);
+  padding: 20px 18px;
+}
+.horizon-band[data-across="2"] { --across: 2; }
+.horizon-band[data-across="3"] { --across: 3; }
+.horizon-band[data-across="4"] { --across: 4; }
+.horizon-band[data-across="5"] { --across: 5; }
+.horizon-band-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 16px; font-size: inherit; }
+.horizon-band-name {
+  font-size: var(--t-kicker);
+  font-weight: 600;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--vemi-mid);
+}
+.horizon-plates { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--plate-w), 1fr)); gap: var(--plate-gap); }
+.horizon-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  text-align: left;
+  background: var(--vemi-white);
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-row);
+  padding: 17px 18px;
+  transition: border-color var(--m-quick) ease;
+}
+.horizon-item:hover { border-color: var(--vemi-edge); }
+.horizon-item-top { display: flex; align-items: flex-start; gap: 10px; min-width: 0; }
+/* Two lines at most, so a line of plates keeps one height and the band scans. The whole
+   title is the plate's tooltip and its sheet's heading. */
+.horizon-item-title {
+  min-width: 0;
+  font-size: var(--t-task);
+  font-weight: 500;
+  line-height: var(--lh-task);
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+.horizon-item-meta { display: flex; align-items: center; gap: 8px; min-width: 0; margin-top: auto; }
+.horizon-aim {
+  margin-left: auto;
+  flex: none;
+  white-space: nowrap;
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: var(--track-tight);
+  text-transform: uppercase;
+  color: var(--vemi-dim);
+}
+
+/* On a phone the bands stack, soonest first, and lose their ground: 388px has no width to
+   spend on a box around a box. A plate becomes one line of reach — letters, title, day —
+   and a band is a column of them, so the days line up down the right edge and time runs
+   down the screen the way it runs across a desk. The project name gives way; the letters
+   still say the venture. */
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  .horizon-bands { flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 26px; }
+  .horizon-band { flex: none; background: transparent; border: 0; border-radius: 0; padding: 0; }
+  .horizon-band-head { margin-bottom: 10px; }
+  .horizon-plates { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .horizon-item { flex-direction: row; align-items: center; gap: 12px; padding: 12px 14px; }
+  .horizon-item-top { flex: 1; align-items: center; }
+  .horizon-item-meta { flex: none; margin-top: 0; }
+  .horizon-item-meta .task-project { display: none; }
+}
+
+/* The needs-you list, when a phone opens it in a sheet. */
+.sheet .needs { display: flex; width: auto; padding: 0 22px 20px; }
+.sheet .needs > .kicker { display: none; }
+
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  .more-button { width: var(--touch); height: var(--touch); }
+  .card-more { margin: -8px -10px -8px auto; }
+  .menu-item { min-height: var(--touch); }
+  /* The venture's ⋯ sits beside its name; the tab pill takes the next line whole. */
+  .venture-head > .more-button { order: 1; margin-left: auto; }
+  .venture-head .venture-tabs { order: 2; }
+}
+
+/*
+ * Touch and hold (VEMI-008). A card that can be held gives up the phone's own callout and
+ * text selection, so a held finger reaches the card's ⋯ rather than "Copy". The card gives
+ * a little under the finger while it is held, and springs back as the menu opens.
+ */
+[data-hold] { -webkit-touch-callout: none; }
+@media (hover: none) {
+  [data-hold] { -webkit-user-select: none; user-select: none; }
+}
+[data-holding="press"] { animation: hold-press var(--m-hold) ease-out forwards; }
+[data-holding="pop"] { animation: hold-pop var(--m-label) var(--ease-sheet); }
+@keyframes hold-press { from { scale: 1; } to { scale: 0.97; } }
+@keyframes hold-pop { 0% { scale: 0.97; } 55% { scale: 1.015; } 100% { scale: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  [data-holding] { animation: none; }
+}
+
+/* ---------- the phone ---------- */
+
+/* Below the breakpoint the page is the phone's own: no drawn bezel and no status bar
+   (VEMI-006 decision 6), and every target a thumb can land on is 44px, however small the
+   mark it draws. The marks keep their look and gain a reach.
+
+   **Last in the file, on purpose (VEMI-009).** A rule here has the same weight as the rule
+   it overrides, so it wins only by coming after it. It used to sit in the middle, and every
+   surface laid out below it quietly beat it: fourteen phone rules never applied, among them
+   the board's filter going full width, the 44px reach on a picker's button, and the card's
+   `touch-action: auto`, so a thumb that landed on a card could not scroll the board. A
+   phone rule added to this block works; a phone rule for a surface that must win over a
+   later one still goes in a block after that surface's rules, as the rest of the file does. */
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  .chip, .word-button, .quiet-button, .primary-button, .venture-tab, .pick-button, .square-button, .field, .control-field,
+  .editing, .add-line input, .month-day, .today-toggle, .md-blank, .horizon-item, .archive-pick { min-height: var(--touch); }
+  .month-step { width: var(--touch); height: var(--touch); }
+  /* A phone's browser zooms the page in on a field under 16px the moment it takes the focus,
+     and leaves it zoomed. `.gate .field` is named because its own rule outweighs `.field`;
+     the title editors keep their larger sizes, which outweigh `.editing` the same way. */
+  .field, .gate .field, .editing, .control-field, .add-line input { font-size: 16px; }
+  .row-action, .back-link, .close-button, .unpick, .tick, .notice-action, .notice-close, .bar-action, .column-add,
+  .icon-button.small, .proj-title, .today-title { position: relative; }
+  .row-action::after, .back-link::after, .close-button::after, .unpick::after, .tick::after, .notice-action::after,
+  .notice-close::after, .bar-action::after, .column-add::after, .icon-button.small::after {
+    content: "";
+    position: absolute;
+    /* 17px above and below takes an 11px word of text to a 45px reach. */
+    inset: -17px -12px;
+  }
+  /* The selection bar scrolls inside itself past half a screen, so an action's reach that ran
+     past its 13px of padding was scrollable overflow: a one-line bar took a vertical swipe as
+     a few pixels of its own scroll and clipped the reach at its edge. 18 holds the 17. */
+  .selection-bar { padding-block: 18px; }
+  .grip { min-width: var(--touch); min-height: var(--touch); font-size: var(--t-glyph-lg); }
+  /* The grip's place, as wide as the grip is on a phone, so rows with and without one line up. */
+  .grip-space { width: var(--touch); }
+  /* A thumb scrolls a board; a card is opened, and its state is changed on the sheet. */
+  .task-card { touch-action: auto; cursor: pointer; }
+  .control-field { width: 100%; }
+  .venture-bar .controls { margin-left: 0; flex-wrap: wrap; width: 100%; }
+  .venture-head { gap: 12px; margin-bottom: 18px; }
+  .venture-tabs { margin-left: 0; width: 100%; overflow-x: auto; }
+  .venture-tab { flex: 1; padding: 9px 10px; }
+  .surface-title { font-size: var(--t-head); }
+  .today-line, .proj-line { padding: 12px 14px; gap: 12px; flex-wrap: wrap; }
+  .today-where { max-width: 100%; }
+  .proj-more { padding-left: 20px; }
+  .about { padding: 8px 0 0; }
+  .add-submit .fill { display: none; }
+  .result { padding: 14px 16px; flex-wrap: wrap; }
+  .result-where { max-width: 100%; }
+  .archive-row, .account-row { padding: 14px 16px; flex-wrap: wrap; }
+  .account-form { padding: 14px 16px; }
+  .account-form .primary-button { align-self: stretch; }
+  .archive-where { margin-left: 0; width: 100%; }
+  .needs { display: none; }
+  .today-row { display: block; }
+  .detail {
+    width: 100vw;
+    max-width: 100vw;
+    padding: calc(24px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
+      calc(40px + env(safe-area-inset-bottom) + var(--kb, 0px)) max(20px, env(safe-area-inset-left));
+  }
+  /* A sheet rides on the keyboard while one is up, as a picker does (above). Bottom-anchored,
+     so its last row and its actions clear the home indicator, as the picker's do. */
+  .sheet {
+    width: 100vw;
+    max-height: calc(88vh - var(--kb, 0px));
+    max-height: calc(88dvh - var(--kb, 0px));
+    border-radius: var(--r-plate) var(--r-plate) 0 0;
+    padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  .backdrop { padding: 0 0 var(--kb, 0px); }
+  .backdrop-top, .backdrop-centre { align-items: flex-end; padding-top: env(safe-area-inset-top); }
+  .map-head { gap: 10px; }
+  .big-field { font-size: var(--t-head); }
+  /* The status line rides along the top of the phone bar, one line, still said only when it
+     is news. The notice and the selection bar rise by its height while it is there. */
+  .status-line {
+    left: 0;
+    right: 0;
+    bottom: calc(var(--phone-bar) + env(safe-area-inset-bottom));
+    height: 22px;
+    padding: 0 max(20px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left));
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    background: var(--vemi-white);
+  }
+  /* Too long for the width, the later pieces give way with an ellipsis and the first, the
+     connection when it is down, stays whole: the line never runs off either side. */
+  .status-line > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .status-line > span:first-child { flex-shrink: 0; }
+  .page.phone:has(> .status-line) ~ .notice, .page.phone:has(> .status-line) ~ .selection-bar,
+  .page.phone:has(> .status-line) .selection-bar { bottom: calc(var(--phone-bar) + 22px + 14px + env(safe-area-inset-bottom)); }
+  /* With a selection bar up as well, the notice stands on the raised bar, as it does on the
+     bar alone. The selection-bar notice rule outranks the status line's, and alone would sit
+     the notice 12px into the bar's actions. */
+  body:has(.selection-bar) .page.phone:has(> .status-line) ~ .notice {
+    bottom: calc(var(--phone-bar) + 22px + 14px + env(safe-area-inset-bottom) + var(--selection-bar-h, 48px) + 10px);
+  }
+}
+
+/* ---------- print ---------- */
+
+/* Printing Today, a project's page or a task: the page itself, on paper. Everything that
+   floats over it or only steers it (the rail, the phone bar, the status line, the selection
+   bar, the notice, a ⋯, a grip, the add lines and the board's own controls) is left off, the
+   fixed and scrolling frames give way so every page of it prints and not one screenful, and
+   a card or a row is never cut across two sheets. A task's sheet that is open prints alone,
+   since that is what is being looked at. Nothing is restyled: the palette is already ink on
+   white. */
+@media print {
+  html, body, #root { height: auto; }
+  body { overflow: visible; }
+  .page { position: static; overflow: visible; padding: 0; }
+  .page-body > * { animation: none; }
+  .rail, .phone-bar, .status-line, .selection-bar, .notice, .backdrop, .drag-ghost,
+  .more-button, .grip, .grip-space, .add-line, .column-add, .column-add-form, .rows-add, .venture-tabs,
+  .venture-bar .controls, .today-head .controls, .board-group, .search-foot, .open-page, .close-button { display: none !important; }
+  body:has(.detail) .page { display: none; }
+  .detail { position: static; width: auto; max-width: none; overflow: visible; border: 0; box-shadow: none; padding: 0; animation: none; }
+  .columns { display: block; }
+  .column { break-inside: auto; margin-bottom: 24px; }
+  .task-card, .today-row-item, .check, .note-line, .more-row, .result { break-inside: avoid; }
+  a { color: inherit; }
+}
+
+/* Appearance (VEMI-013 design). The account's accent is laid over the tokens by theme.ts; the
+   swatch and the choices below are the only rules that belong to the settings themselves. */
+.swatches { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.swatch {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 2px solid var(--vemi-white);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--vemi-edge);
+  transition: box-shadow var(--m-quick) ease;
+}
+.swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--vemi-ink); }
+.choices { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* Compact trims the vertical room of rows, cards and heads, and nothing else: type, touch
+   targets and horizontal padding stay. Comfortable is the rules above, untouched. */
+:root[data-spacing="compact"] .proj-line { padding-block: 12px; }
+:root[data-spacing="compact"] .proj-rows { gap: 6px; }
+:root[data-spacing="compact"] .result { padding-block: 10px; }
+:root[data-spacing="compact"] .archive-row,
+:root[data-spacing="compact"] .account-row { padding-block: 12px; }
+:root[data-spacing="compact"] .task-card { padding-block: 11px; }
+:root[data-spacing="compact"] .map-head { margin-bottom: 18px; }
+:root[data-spacing="compact"] .map-foot { margin-top: 18px; }
+:root[data-spacing="compact"] .rows-add { margin-top: 10px; }
+
+/* ---------- the map: header and plates ---------- */
+
+.map-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 28px; }
+.map-greeting { margin: 0; font-size: var(--t-venture); font-weight: 600; letter-spacing: var(--track-name); line-height: var(--lh-name); }
+.map-date { margin: 4px 0 0; font-size: var(--t-body); color: var(--vemi-mid); }
+.map-header-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.map-overdue { font-size: var(--t-body); color: var(--vemi-live); }
+
+.map-section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.map-section-title { margin: 0; font-size: var(--t-row); font-weight: 600; }
+.map-section-head .chips { margin-left: auto; }
+.map-section-head .chip { padding: 6px 13px; }
+
+.plate-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.plate-card {
+  display: grid;
+  background: var(--vemi-white);
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-plate);
+  box-shadow: var(--sh-rest);
+  transition: border-color var(--m-hover) ease;
+}
+.plate-card:hover { border-color: var(--vemi-edge); }
+.plate-card.open { border-color: var(--vemi-ink); }
+.plate-card-head { display: flex; align-items: center; gap: 4px; padding-right: 10px; }
+.plate-card-toggle {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 16px 6px 12px 16px;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  color: var(--vemi-ink);
+  cursor: pointer;
+}
+.plate-card-name { display: grid; gap: 4px; min-width: 0; }
+.plate-card-name b { font-size: var(--t-row); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.plate-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.plate-chip {
+  font-size: var(--t-caption);
+  font-weight: 600;
+  line-height: 1.5;
+  padding: 1px 8px;
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-chip);
+  color: var(--vemi-mid);
+  white-space: nowrap;
+}
+.plate-chip.flag { background: var(--vemi-live-tint); border-color: var(--vemi-live); color: var(--vemi-live); }
+.plate-chip.risk { border-style: dashed; background: transparent; }
+
+.plate-projects { display: grid; padding: 0 8px 8px; }
+.plate-project {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--vemi-hair-light);
+  border-radius: 10px;
+  text-align: left;
+  color: var(--vemi-ink);
+  cursor: pointer;
+}
+.plate-project:hover { background: var(--vemi-field); }
+.plate-project-name { font-size: var(--t-body); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.plate-project-state { font-size: var(--t-caption); color: var(--vemi-dim); white-space: nowrap; }
+.plate-today-dot { display: inline-block; width: 7px; height: 7px; margin-left: 6px; border-radius: 50%; background: var(--vemi-live); vertical-align: middle; }
+.plate-more {
+  padding: 8px;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--vemi-hair-light);
+  text-align: left;
+  font-size: var(--t-chip);
+  font-weight: 600;
+  color: var(--vemi-dim);
+  cursor: pointer;
+}
+.plate-more:hover { color: var(--vemi-ink); }
+.plate-card.inner {
+  margin: 4px 12px 12px;
+  border: 1px dashed var(--vemi-edge);
+  background: var(--vemi-canvas);
+  box-shadow: none;
+}
+.plate-card.inner .plate-card-toggle { padding: 10px 4px 6px 12px; }
+.plate-card.inner .plate-projects { padding: 0 4px 4px; }
+.plate-new {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 6px;
+  min-height: 120px;
+  padding: 18px;
+  background: transparent;
+  border: 1.5px dashed var(--vemi-edge);
+  border-radius: var(--r-plate);
+  font-size: var(--t-row-sm);
+  font-weight: 600;
+  color: var(--vemi-dim);
+  cursor: pointer;
+}
+.plate-new:hover { color: var(--vemi-ink); border-color: var(--vemi-ink); }
+.new-space-sheet .sheet-body { padding: 0 22px 22px; }
+
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  .plate-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+}

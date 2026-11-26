@@ -1,0 +1,56 @@
+/* The Search screen: scope pills, filter cards, recent searches and quick actions. */
+.search-scopes { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.search-count { margin-left: 6px; font-variant-numeric: tabular-nums; color: var(--vemi-dim); }
+.search-mark { background: transparent; color: var(--vemi-live); font-weight: 700; }
+
+.search-card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+
+.search-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.search-card {
+  position: relative;
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-row);
+  background: var(--vemi-white);
+  transition: border-color var(--m-hover) ease;
+}
+.search-card:hover, .search-card.on, .search-card:focus-within { border-color: var(--vemi-live); }
+.search-card-open {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  min-height: 72px;
+  padding: 14px 16px;
+  text-align: left;
+  color: var(--vemi-ink);
+}
+.search-card-open b { font-size: var(--t-venture); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+.search-card-open span { font-size: var(--t-meta); font-weight: 600; color: var(--vemi-dim); }
+.search-card-more { position: absolute; top: 6px; right: 6px; }
+.search-card-name {
+  width: 100%;
+  min-height: 72px;
+  padding: 14px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--vemi-ink);
+  font-size: var(--t-meta);
+  font-weight: 600;
+  outline: none;
+}
+
+.search-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.search-pills .on { border-color: var(--vemi-live); }
+
+.search-save { align-self: flex-start; margin-top: 12px; }
+.search-save-name {
+  align-self: flex-start;
+  margin-top: 12px;
+  min-width: 220px;
+  padding: 8px 12px;
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-row);
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  font-size: var(--t-meta);
+}
+.search-save-name:focus-visible { outline: none; border-color: var(--vemi-live); }

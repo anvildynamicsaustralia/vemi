@@ -1,0 +1,27 @@
+name: Bug
+description: Something did not work
+body:
+  - type: textarea
+    id: did
+    attributes:
+      label: What you did
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: happened
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Browser and device
+    validations:
+      required: true

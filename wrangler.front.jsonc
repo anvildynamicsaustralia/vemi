@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vemi-front",
+  "main": "src/front/index.ts",
+  "compatibility_date": "2026-09-11",
+  "workers_dev": true,
+  "preview_urls": false,
+  // The front door: /get/ and /release/ are plain files, served free from assets. Only the relay
+  // routes run the Worker, so only they count against the day's requests.
+  "assets": {
+    "directory": "dist/front",
+    "run_worker_first": ["/get/relay", "/get/relay/*"]
+  },
+  // The one counter: tickets issued per UTC day, nothing else. No D1, no Durable Object, no cron.
+  // No id here; Andy's id is merged in from andy.local.json.
+  "kv_namespaces": [{ "binding": "RELAY_DAY" }],
+  // The one secret is FRONT_SIGNING_KEY, set with `wrangler secret put`.
+  "observability": { "enabled": false }
+}

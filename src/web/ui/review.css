@@ -1,0 +1,31 @@
+/* Weekly review: three steps and the end. Tokens come from app.css. */
+.review { display: flex; flex-direction: column; gap: 16px; max-width: 640px; }
+.review-steps { display: flex; gap: 6px; font-size: var(--t-caption); color: var(--vemi-dim); }
+.review-steps b { color: var(--vemi-ink); }
+.review-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.review-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 10px 14px;
+  background: var(--vemi-white);
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-row);
+}
+.review-title { flex: 1 1 180px; font-size: var(--t-row-sm); color: var(--vemi-ink); overflow-wrap: anywhere; }
+.review-where, .review-when { font-size: var(--t-meta); color: var(--vemi-dim); }
+.review-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.review-go {
+  border: 1px solid var(--vemi-hair);
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  border-radius: var(--r-button);
+  padding: 8px 14px;
+  min-height: 36px;
+  font-size: var(--t-chip);
+  font-weight: 600;
+}
+.review-go:hover { border-color: var(--vemi-live); }
+.review-nav { display: flex; gap: 8px; }
+.review-nothing { font-size: var(--t-body); color: var(--vemi-mid); margin: 0; }

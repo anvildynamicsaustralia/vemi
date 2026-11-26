@@ -1,0 +1,293 @@
+/*
+ * The setup page, in the app's own tokens: every colour is a `--vemi-*` property written by
+ * theme.ts, every size reads a type or space token. It is the look of the approved redesign
+ * (mocks/redesign, "Setup" tabs): a split page with a dark side panel and the form beside it,
+ * stacked on a phone. The app's stylesheet comes first and sets `body` to a fixed screen; this
+ * page scrolls, so it says so here.
+ *
+ * The side panel is dark in both themes. Its colours arrive as `--side-*` properties from
+ * GetFlow.tsx, which reads them from the theme tables, so this file names no colour of its own.
+ */
+
+body { overflow: auto; }
+#root { height: auto; min-height: 100%; }
+
+.get-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--vemi-page);
+  color: var(--vemi-ink);
+}
+
+/* The dark side. */
+.get-side {
+  background: var(--side-bg);
+  color: var(--side-ink);
+  padding: 48px max(48px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--s11);
+}
+.get-mark {
+  display: block;
+  height: 28px;
+  aspect-ratio: 1190 / 496;
+  background: url("../../../brand/vemi-wordmark-white.svg") no-repeat left center / contain;
+}
+.get-headline {
+  margin: 0;
+  max-width: 11ch;
+  font-weight: 800;
+  font-size: clamp(34px, 4.4vw, 60px);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.get-headline em { font-style: normal; color: var(--vemi-live); }
+.get-sub { margin: var(--s7) 0 0; max-width: 36ch; color: var(--side-mid); font-size: var(--t-row); line-height: 1.5; }
+.get-side-note { color: var(--side-dim); font-size: var(--t-chip); }
+
+/* The form side. */
+.get-main { display: grid; place-items: center; padding: 40px max(24px, env(safe-area-inset-left)); }
+.get-panel { width: 100%; max-width: 420px; display: grid; gap: var(--s11); }
+
+.get-dots { display: flex; gap: 6px; }
+.get-dots i { flex: 1; height: 4px; border-radius: var(--r-chip); background: var(--vemi-hair); }
+.get-dots i.on { background: var(--vemi-live); }
+
+.get-step { display: grid; gap: var(--s8); align-content: start; }
+.get-step h1 {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+.get-lede { margin: calc(var(--s4) * -1) 0 0; color: var(--vemi-mid); font-size: var(--t-row); line-height: 1.5; }
+.get-badge {
+  justify-self: start;
+  display: inline-flex;
+  gap: var(--s2);
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: var(--r-chip);
+  background: var(--vemi-field);
+  border: 1px solid var(--vemi-hair);
+  color: var(--vemi-ink);
+  font-weight: 700;
+  font-size: var(--t-chip);
+}
+.get-subhead { margin: 0; font-weight: 700; font-size: var(--t-row-sm); }
+
+/* Buttons and links. A link and a button that look alike are drawn from one rule. The fill is the accent's
+   resting colour for text on it (live-pressed), which is the one that passes 4.5:1 with white. */
+.get-primary, .get-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s3);
+  min-height: 48px;
+  padding: var(--s5) var(--s9);
+  border-radius: var(--r-row);
+  font: inherit;
+  font-size: var(--t-row-sm);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.get-primary { border: 1.5px solid var(--vemi-live-pressed); background: var(--vemi-live-pressed); color: var(--vemi-on-live); }
+.get-primary:hover:not(:disabled) { background: var(--vemi-live-hover); border-color: var(--vemi-live-hover); color: var(--vemi-on-live); }
+.get-primary:disabled { background: var(--vemi-hair-light); border-color: var(--vemi-hair-light); color: var(--vemi-faint); cursor: default; }
+.get-secondary { border: 1.5px solid var(--vemi-ink); background: transparent; color: var(--vemi-ink); }
+.get-secondary:hover { background: var(--vemi-field); color: var(--vemi-ink); }
+.get-link {
+  border: 0;
+  background: transparent;
+  color: var(--vemi-live-text);
+  font: inherit;
+  font-size: var(--t-row-sm);
+  font-weight: 600;
+  min-height: var(--touch);
+  padding: var(--s2) var(--s1);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.get-acts { display: grid; gap: var(--s4); }
+.get-acts .get-primary, .get-acts .get-secondary { width: 100%; }
+
+/* A field: a label with its small i, then the control. */
+.get-field { display: grid; gap: 7px; }
+.get-label { display: flex; align-items: center; gap: var(--s3); }
+.get-field label { font-size: var(--t-row-sm); font-weight: 700; }
+.get-field input[type="text"], .get-field input[type="email"], .get-field input[type="password"], .get-paste {
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  width: 100%;
+  min-height: 50px;
+  padding: var(--s5);
+  border: 1.5px solid var(--vemi-edge);
+  border-radius: var(--r-row);
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+}
+.get-field input[type="file"] { font: inherit; font-size: var(--t-body); color: var(--vemi-ink); }
+.get-field input:focus { outline: none; border-color: var(--vemi-ink); box-shadow: 0 0 0 4px var(--vemi-live-tint); }
+.get-field input[aria-invalid="true"] { border-color: var(--vemi-live); }
+.get-field input:focus-visible { outline: 2px solid var(--vemi-live); outline-offset: 2px; }
+
+/* The paste box: the field and its Paste button share one border. */
+.get-paste { display: flex; gap: var(--s2); align-items: center; padding: var(--s2) var(--s2) var(--s2) var(--s5); }
+.get-paste:focus-within { border-color: var(--vemi-ink); box-shadow: 0 0 0 4px var(--vemi-live-tint); outline: 2px solid var(--vemi-live); outline-offset: 2px; }
+.get-field .get-paste input {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  min-height: 0;
+  border: 0;
+  padding: var(--s3) 0;
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--vemi-mono);
+  font-size: 16px;
+}
+.get-field .get-paste input:focus, .get-field .get-paste input:focus-visible { outline: none; box-shadow: none; }
+.get-paste input::placeholder { font-family: var(--vemi-ui); color: var(--vemi-dim); }
+.get-paste .get-secondary { min-height: 38px; padding: var(--s2) var(--s6); }
+
+/* What a check found. Ink for a good answer, the accent for a problem: a colour means a state. */
+.get-status { display: grid; gap: var(--s2); }
+.get-status:empty { display: none; }
+.get-quiet { margin: 0; color: var(--vemi-dim); font-size: var(--t-body); }
+.get-ok { margin: 0; display: flex; gap: var(--s3); align-items: center; color: var(--vemi-ink); font-size: var(--t-body); font-weight: 700; }
+.get-problem {
+  display: grid;
+  gap: var(--s2);
+  background: var(--vemi-live-tint);
+  border: 1px solid var(--vemi-live);
+  border-radius: var(--r-row);
+  padding: var(--s6);
+  font-size: var(--t-body);
+}
+.get-problem b { color: var(--vemi-live-text); }
+.get-problem .get-acts { margin-top: var(--s3); }
+.get-fault { margin: 0; color: var(--vemi-live-text); font-size: var(--t-body); font-weight: 600; }
+/* A short helper line under a control. */
+.get-hint { margin: 0; display: flex; gap: var(--s3); align-items: flex-start; flex-wrap: wrap; font-size: var(--t-body); line-height: 1.45; color: var(--vemi-mid); }
+.get-hint svg { flex: 0 0 auto; margin-top: 2px; }
+.get-hint > span:not(.info-tip) { flex: 0 1 auto; min-width: 0; }
+
+/* The small i's note opens under the row that holds it, as wide as that row (up to 320px), so on a phone it can
+   never run off an edge. The i itself keeps its own look from infotip.css; only where its note sits is set here. */
+.get-label, .get-hint, .get-toggle { position: relative; }
+.get-page .info-tip { position: static; }
+.get-page .info-tip-note { left: 0; right: 0; transform: none; width: auto; max-width: 320px; }
+
+/* The name and its address. */
+.get-address {
+  margin: 0;
+  font-family: var(--vemi-mono);
+  font-size: var(--t-chip);
+  color: var(--vemi-mid);
+  background: var(--vemi-field);
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-row);
+  padding: var(--s3) var(--s5);
+  word-break: break-all;
+}
+.get-address b { color: var(--vemi-ink); font-weight: 500; }
+
+/* The build's list. */
+.get-meter { height: 6px; border-radius: var(--r-chip); background: var(--vemi-hair-light); overflow: hidden; }
+.get-meter i { display: block; height: 100%; background: var(--vemi-live); border-radius: var(--r-chip); transition: width var(--m-grow) var(--ease-grow); }
+.get-build { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--s3); }
+.get-row {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: var(--s4);
+  align-items: center;
+  padding: var(--s4) var(--s5);
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-row);
+  background: var(--vemi-white);
+}
+.get-tick {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--vemi-edge);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: var(--t-caption);
+}
+.get-row.run { border-color: var(--vemi-ink); }
+.get-row.run .get-tick { border-color: var(--vemi-live); border-top-color: transparent; }
+.get-row.ok .get-tick { background: var(--vemi-ink); border-color: var(--vemi-ink); color: var(--vemi-page); }
+.get-row.bad { border-color: var(--vemi-live); }
+.get-row.bad .get-tick { border-color: var(--vemi-live); color: var(--vemi-live-text); }
+.get-row b { font-size: var(--t-row-sm); font-weight: 600; }
+.get-row small { display: block; font-size: var(--t-caption); color: var(--vemi-dim); }
+.get-row.wait b { color: var(--vemi-dim); font-weight: 500; }
+.get-state { font-size: var(--t-caption); color: var(--vemi-dim); font-family: var(--vemi-mono); }
+
+/* The switch. */
+.get-toggle {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s6);
+  align-items: center;
+  background: var(--vemi-white);
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-row);
+  padding: var(--s5) var(--s6);
+}
+.get-toggle-label { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
+.get-toggle b { font-size: var(--t-row-sm); }
+.get-switch { width: 50px; height: 30px; border-radius: var(--r-chip); border: 0; background: var(--vemi-edge); position: relative; flex: 0 0 auto; cursor: pointer; }
+.get-switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--vemi-on-live);
+  box-shadow: var(--sh-lift);
+  transition: transform var(--m-state) var(--ease-grow);
+}
+.get-switch[aria-checked="true"] { background: var(--vemi-live-pressed); }
+.get-switch[aria-checked="true"]::after { transform: translateX(20px); }
+
+/* The last screen, and the move's pieces. */
+.get-key-left { display: grid; gap: var(--s4); }
+.get-counts { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.get-counts span { border: 1px solid var(--vemi-hair); border-radius: var(--r-chip); padding: 5px 12px; font-size: var(--t-chip); font-weight: 600; }
+.get-missing { display: grid; gap: var(--s6); }
+.get-recovery { margin: 0; font-size: var(--t-chip); color: var(--vemi-mid); overflow-wrap: anywhere; }
+.get-recovery code { font-family: var(--vemi-mono); color: var(--vemi-ink); }
+
+/* Movement only where the person has not asked for less. */
+@media (prefers-reduced-motion: no-preference) {
+  .get-row.run .get-tick { animation: get-spin 1s linear infinite; }
+}
+@keyframes get-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .get-meter i, .get-switch::after { transition: none; }
+}
+
+/* A phone, and anything narrower than the two halves need: the side stacks above the form. */
+@media (max-width: 820px) {
+  .get-page { grid-template-columns: 1fr; }
+  .get-side { padding: 28px max(20px, env(safe-area-inset-left)); gap: var(--s9); }
+  .get-headline { max-width: 14ch; font-size: clamp(30px, 9vw, 40px); }
+  .get-sub { margin-top: var(--s4); }
+  .get-main { place-items: start center; padding: 28px max(20px, env(safe-area-inset-left)) 40px; }
+  .get-step h1 { font-size: 28px; }
+}

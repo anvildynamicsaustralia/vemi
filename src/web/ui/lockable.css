@@ -1,0 +1,31 @@
+/* Locking a field: the lock beside an editor, the locked block, the panel that opens in place. Tokens come from app.css. */
+.lockable { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s3); align-items: start; }
+.lockable > .lockable-main { min-width: 0; }
+.lockable > .lockable-side { display: flex; flex-direction: column; align-items: flex-end; gap: var(--s2); }
+.lockable > .lockable-panel { grid-column: 1 / -1; min-width: 0; }
+.lock-btn, .lock-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-row);
+  background: transparent;
+  color: var(--vemi-mid);
+}
+.lock-btn { cursor: pointer; }
+.lock-btn:hover:not(:disabled) { background: var(--vemi-hair-light); color: var(--vemi-ink); }
+.lock-btn:disabled { opacity: 0.5; cursor: default; }
+.locked-block {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-row);
+  color: var(--vemi-mid);
+}
+.locked-word { font-weight: 600; font-size: var(--t-chip); }
+.locked-block > .lockable-panel { flex-basis: 100%; min-width: 0; }

@@ -1,0 +1,34 @@
+/* Account in sections: a side list and a panel on a desk, a list that opens a section on a phone. */
+.account.account-sections { max-width: 900px; }
+.account-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 24px; align-items: start; }
+.account-layout.account-phone { grid-template-columns: minmax(0, 1fr); }
+.account-nav { display: grid; gap: 2px; position: sticky; top: 16px; }
+.account-nav button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--r-row);
+  background: transparent;
+  text-align: left;
+  font-size: var(--t-row-sm);
+  font-weight: 600;
+  color: var(--vemi-mid);
+  cursor: pointer;
+}
+.account-nav button:hover { color: var(--vemi-ink); }
+.account-nav button[aria-current="true"] { border-color: var(--vemi-hair-light); color: var(--vemi-ink); }
+.account-phone .account-nav { position: static; gap: 0; border: 1px solid var(--vemi-hair-light); border-radius: var(--r-row); overflow: hidden; }
+.account-phone .account-nav button { border-radius: 0; border-width: 1px 0 0; padding: 14px 16px; }
+.account-phone .account-nav button:first-child { border-top-width: 0; }
+.account-phone .account-nav button::after { content: "\203A"; color: var(--vemi-dim); }
+.account-panel { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; min-width: 0; }
+.account-panel-title { margin: 0; font-size: var(--t-account); font-weight: 600; letter-spacing: var(--track-owned); }
+/* The AI and Reminders blocks carry their own spacing and heading; inside a panel the panel supplies both. */
+.account-panel .ai { margin-top: 0; }
+.account-panel .ai-group { display: none; }
+
+/* About: the release notes are plain text and keep their line breaks. */
+.update-notes { white-space: pre-wrap; overflow-wrap: anywhere; }
+a.row-action { text-decoration: none; }

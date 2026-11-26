@@ -1,0 +1,44 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vemi",
+  "main": "src/api/index.ts",
+  // workerd 1.20260911 ships with wrangler 4.131.1; the date cannot be newer than it.
+  "compatibility_date": "2026-09-11",
+  // A copy gets its own *.workers.dev address, so it needs no domain, no zone and no account ID
+  // here. The account is whichever one the deploy runs in.
+  "workers_dev": true,
+  "preview_urls": false,
+  // The client, built from the root (dist/web), served from this Worker's own origin so the session
+  // cookie, the Google redirect and the WebSocket need nothing between them. These paths run the
+  // Worker; every other path is the client, and one it does not know is its index.
+  "assets": {
+    "directory": "dist/web",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/auth/*", "/mcp", "/oauth/*", "/.well-known/*", "/setup/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "vemi",
+      // No database_id: the deploy provisions the database and a local run makes its own.
+      "migrations_dir": "migrations"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [{ "name": "LIVE", "class_name": "Live" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Live"] }],
+  // The one tick. Every scheduled job shares it (see src/api/tick.ts); never add a second trigger.
+  "triggers": {
+    "crons": ["* * * * *"]
+  },
+  "vars": {
+    // The owner account id, and the name of the one Live room. No ORIGIN here: the copy's own
+    // address is not known before the first deploy.
+    "OWNER": "owner",
+    "TIME_ZONE": "UTC"
+  },
+  // Secrets, set with `wrangler secret put`: SESSION_SECRET, OPERATOR_EMAIL,
+  // GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET.
+  "observability": { "enabled": true }
+}

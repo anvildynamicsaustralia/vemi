@@ -1,0 +1,15 @@
+/* The task options sheet (mock 2-today :429-433): a title, then one labelled row of chips per
+   setting, then Delete and Done. Chosen is the chip's own state colour, nothing added. */
+.task-options { width: min(460px, 94vw); }
+.options-title { font-size: 18px; overflow-wrap: anywhere; }
+.options-row { display: flex; flex-direction: column; gap: 8px; }
+.options-label { font-size: var(--t-caption); color: var(--vemi-dim); }
+.options-time {
+  align-self: flex-start;
+  padding: 6px 10px;
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-chip);
+  background: var(--vemi-field);
+  color: var(--vemi-ink);
+  font: inherit;
+}

@@ -1,0 +1,57 @@
+/* A project's header: breadcrumb, monogram, name, ring, pin and stage pills. Tokens come from app.css. */
+.phead-wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s5); min-width: 0; }
+.pcrumb { font-size: var(--t-chip); font-weight: 600; color: var(--vemi-mid); }
+.phead { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--s5); align-items: center; }
+.phead-mono {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-tile);
+  border: 1px solid var(--vemi-hair);
+  background: var(--vemi-field);
+  color: var(--vemi-ink);
+  font-weight: 800;
+  font-size: var(--t-account);
+}
+.phead-title { margin: 0; min-width: 0; font-size: var(--t-venture); font-weight: 800; letter-spacing: var(--track-name); line-height: var(--lh-name); }
+.phead-title .editable, .phead-title .editing { font-size: inherit; font-weight: inherit; letter-spacing: inherit; text-align: left; }
+.phead-end { display: flex; align-items: center; gap: var(--s3); }
+.phead-pin {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--vemi-edge);
+  background: var(--vemi-white);
+  color: var(--vemi-mid);
+  border-radius: var(--r-row);
+}
+.phead-pin[aria-pressed="true"] { color: var(--vemi-live-text); border-color: var(--vemi-live); background: var(--vemi-live-tint); }
+.phead-stages {
+  display: flex;
+  width: max-content;
+  max-width: 100%;
+  padding: 3px;
+  overflow-x: auto;
+  border: 1px solid var(--vemi-edge);
+  border-radius: var(--r-chip);
+}
+.phead-stage {
+  border: 0;
+  background: transparent;
+  border-radius: var(--r-chip);
+  padding: 7px 14px;
+  min-height: 36px;
+  font-size: var(--t-chip);
+  font-weight: 600;
+  color: var(--vemi-mid);
+  white-space: nowrap;
+}
+.phead-stage:hover { color: var(--vemi-ink); }
+.phead-stage[aria-pressed="true"] { background: var(--vemi-ink); color: var(--vemi-page); }
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  .phead-mono { width: 44px; height: 44px; }
+  .phead-title { font-size: var(--t-head); }
+}
+.crumb-settings { margin-left: auto; }

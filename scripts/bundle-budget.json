@@ -1,0 +1,5 @@
+{
+  "gzipBytes": 162644,
+  "recordedOn": "2026-11-22",
+  "reason": "ViewBoundary resets and reloads only for a failed import"
+}

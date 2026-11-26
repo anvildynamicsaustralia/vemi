@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "types": ["vite/client", "node"],
+    "paths": {
+      "@vemi/shared": ["./src/shared/index.ts"],
+      "@vemi/icons": ["./src/icons/index.ts"]
+    }
+  },
+  "include": ["src/web", "vite.config.ts"]
+}

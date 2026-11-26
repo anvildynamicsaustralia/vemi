@@ -1,0 +1,24 @@
+/* Account > Privacy and security: the key rows, the setup and the recovery key shown once. */
+.privacy-section { display: grid; gap: 12px; min-width: 0; }
+.privacy-home { margin: 0; line-height: 1.5; }
+.privacy-rows { display: grid; gap: 12px; min-width: 0; }
+.privacy-device-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-width: 0; }
+.privacy-tag { font-size: var(--t-caption); color: var(--vemi-live); margin-left: 8px; }
+.privacy-ways { display: grid; gap: 10px; }
+.key-pair, .pair-approve, .key-offer, .key-unlock { min-width: 0; }
+.pair-link { font-size: var(--t-caption); line-height: 1.5; overflow-wrap: anywhere; }
+.recovery-key { min-width: 0; }
+.recovery-key-text { font-size: var(--t-row); line-height: 1.5; }
+.move-code-text { font-size: var(--t-row); line-height: 1.5; letter-spacing: 0.04em; }
+.recovery-key-actions { display: flex; flex-wrap: wrap; gap: 16px; }
+.recovery-print { display: none; }
+/* Full account encryption: the row, the five lines, the bar. Wraps at phone width. */
+.encryption-panel { display: grid; gap: 12px; min-width: 0; }
+.encryption-lines { margin: 0; padding: 0 0 0 20px; display: grid; gap: 6px; line-height: 1.5; min-width: 0; overflow-wrap: anywhere; }
+.encryption-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.encryption-bar { width: 100%; height: 8px; accent-color: var(--vemi-live); }
+@media print {
+  body * { visibility: hidden; }
+  .recovery-print, .recovery-print * { visibility: visible; }
+  .recovery-print { display: block; position: absolute; left: 0; top: 0; font-family: var(--vemi-mono); font-size: 18px; color: black; background: white; }
+}

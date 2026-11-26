@@ -1,0 +1,66 @@
+/* Account > Names: three blocks in the section's card (level names, how it reads, starting
+   stages), each under a small heading, divided by hairlines. Tokens come from app.css. */
+.names { display: flex; flex-direction: column; }
+.names-block { display: flex; flex-direction: column; gap: var(--s4); padding-block: var(--s5); border-top: 1px solid var(--vemi-hair-light); }
+.names-block:first-child { border-top: 0; padding-top: var(--s3); }
+.names-block-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s4); min-height: 32px; }
+.names-heading {
+  margin: 0;
+  font-size: var(--t-label);
+  font-weight: 700;
+  letter-spacing: var(--track-kicker);
+  text-transform: uppercase;
+  color: var(--vemi-mid);
+}
+.names-reset {
+  min-height: 32px;
+  padding: 0 var(--s4);
+  border: 1px solid var(--vemi-edge);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--vemi-ink);
+  font: inherit;
+  font-size: var(--t-chip);
+  cursor: pointer;
+}
+.names-reset:hover:not(:disabled) { background: var(--vemi-hover); }
+.names-reset:disabled { opacity: 0.45; cursor: default; }
+.names-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--s4); }
+.names-field {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "step label" "input input" "was was";
+  gap: var(--s2) var(--s3);
+  align-items: center;
+}
+.names-step {
+  grid-area: step;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--vemi-live-tint);
+  color: var(--vemi-live-text, var(--vemi-ink));
+  font-size: var(--t-chip);
+  font-weight: 700;
+}
+.names-label { grid-area: label; font-weight: 600; }
+.names-field input { grid-area: input; min-width: 0; }
+.names-was { grid-area: was; color: var(--vemi-dim); font-size: var(--t-chip); }
+.names-path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--s3);
+  margin: 0;
+  padding: var(--s4);
+  list-style: none;
+  border-radius: var(--r-plate);
+  background: var(--vemi-hover);
+}
+.names-path li > i { display: none; }
+.names-path li + li::before { content: "›"; align-self: center; margin-right: var(--s3); color: var(--vemi-dim); }
+.names-path li { display: flex; align-items: center; }
+.names-path li > small, .names-path li > b { display: block; }
+.names-path li > small { color: var(--vemi-dim); margin-right: var(--s2); }

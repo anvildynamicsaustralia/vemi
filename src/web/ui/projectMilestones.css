@@ -1,0 +1,48 @@
+.pm { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.pm-cards { display: flex; flex-wrap: wrap; gap: 8px; }
+.pm-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "ring name" "ring left";
+  column-gap: 10px;
+  align-items: center;
+  min-width: 160px;
+  padding: 10px 12px;
+  text-align: left;
+  border: 1px solid var(--vemi-hair);
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+}
+.pm-card .ring { grid-area: ring; }
+.pm-card:hover { border-color: var(--vemi-live); }
+.pm-card.on { border-color: var(--vemi-ink); }
+.pm-name { grid-area: name; font-size: var(--t-body); }
+.pm-left { grid-area: left; font-size: var(--t-caption); color: var(--vemi-mid); }
+.pm-tasks { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; }
+.pm-task > :not(.pm-box) { min-width: 0; overflow-wrap: anywhere; }
+.pm-task { display: flex; align-items: center; gap: 4px; min-height: 44px; }
+.pm-box {
+  width: 40px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+.pm-box i {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-mono);
+  border: 1.5px solid var(--vemi-edge);
+  background: var(--vemi-white);
+  color: var(--vemi-white);
+  font-style: normal;
+  font-size: var(--t-caption);
+}
+.pm-box:hover i { border-color: var(--vemi-live); }
+.pm-task.isdone .pm-box i { background: var(--vemi-ink); border-color: var(--vemi-ink); }
+.pm-task.isdone { color: var(--vemi-mid); }
+.pm-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-height: 44px; }

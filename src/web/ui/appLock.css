@@ -1,0 +1,27 @@
+/* App lock: the blurred cover and the row's choices. Tokens come from app.css. */
+.app-lock-scope { display: contents; }
+.app-lock-cover {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s4);
+  background: var(--vemi-scrim);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+.app-lock-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+  width: min(100%, 340px);
+  padding: var(--s5) var(--s4);
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-row);
+  background: var(--vemi-white);
+}
+.app-lock-title { font-weight: 600; }
+.app-lock-choices { display: flex; flex-wrap: wrap; gap: var(--s2); justify-content: flex-end; }
+.app-lock-choice[aria-pressed="true"] { font-weight: 600; color: var(--vemi-ink); }

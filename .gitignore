@@ -1,0 +1,22 @@
+node_modules/
+.env
+.env.*
+*.log
+.idea/
+*.iml
+dist/
+# The release bundle and its manifest are made by `pnpm run release`
+dist/release/
+/data/
+*.local
+vemi-design/
+.wrangler/
+.dev.vars
+# Andy's own environments: real IDs and domains stay local
+/andy.local.json
+/wrangler.andy*.jsonc
+.claude/
+# Playwright: screenshots and run output are looked at, not kept
+/e2e/screenshots/
+/e2e/results/
+/test-results/

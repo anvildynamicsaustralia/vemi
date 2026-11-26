@@ -1,0 +1,10 @@
+/* The small "i" and the note it opens, for the pages before the app. */
+.info-tip { position: relative; display: inline-flex; align-items: center; vertical-align: middle; }
+.info-tip-button { width: 24px; height: 24px; min-width: 24px; border-radius: 50%; border: 1.5px solid var(--vemi-edge); background: var(--vemi-white); color: var(--vemi-ink); font: 700 12px/1 var(--vemi-ui); cursor: pointer; display: inline-grid; place-items: center; padding: 0; }
+.info-tip-button:hover, .info-tip-button[aria-expanded="true"] { border-color: var(--vemi-ink); }
+.info-tip-button:focus-visible { outline: 2px solid var(--vemi-live); outline-offset: 2px; }
+.info-tip-note { position: absolute; z-index: 20; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); width: min(260px, 78vw); padding: 12px 14px; border-radius: 10px; background: var(--vemi-ink); color: var(--vemi-white); font: 500 13.5px/1.45 var(--vemi-ui); text-align: left; letter-spacing: 0; }
+.info-tip-note[hidden] { display: none; }
+.info-tip.on-dark .info-tip-button { background: transparent; color: #f2efea; border-color: #6f6a63; }
+.info-tip.on-dark .info-tip-note { background: #f2efea; color: #0b0b0b; }
+@media (max-width: 480px) { .info-tip-note { left: auto; right: 0; transform: none; } }

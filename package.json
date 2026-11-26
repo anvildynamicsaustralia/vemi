@@ -1,0 +1,71 @@
+{
+  "name": "vemi",
+  "version": "0.1.0",
+  "description": "One place for everything you are building: spaces, projects, milestones and tasks, on your own free Cloudflare account.",
+  "author": "Anvil Dynamics",
+  "homepage": "https://github.com/anvildynamicsaustralia/vemi#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anvildynamicsaustralia/vemi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/anvildynamicsaustralia/vemi/issues"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "d1",
+    "pwa",
+    "self-hosted",
+    "projects",
+    "tasks",
+    "planner",
+    "open-source"
+  ],
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@12.3.4",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "build": "vite build && wrangler deploy --dry-run --outdir dist/worker",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.web.json && tsc --noEmit -p src/api/tsconfig.json && tsc --noEmit -p src/api/tsconfig.test.json && tsc --noEmit -p src/front/tsconfig.json",
+    "lint": "oxlint .",
+    "test": "vitest run",
+    "e2e": "pnpm run build && playwright test",
+    "verify": "pnpm run build && pnpm run typecheck && pnpm run lint && pnpm run test",
+    "release": "pnpm run build && node scripts/build-release.mjs",
+    "dev": "wrangler d1 migrations apply DB --local && wrangler dev",
+    "dev:web": "vite",
+    "deploy": "wrangler d1 migrations apply DB --remote && wrangler deploy",
+    "deploy:production": "pnpm run verify && node scripts/proven-on-staging.mjs && node scripts/andy-config.mjs production && wrangler d1 migrations apply DB --remote --config wrangler.andy.jsonc && wrangler deploy --config wrangler.andy.jsonc",
+    "deploy:staging": "pnpm run verify && node scripts/andy-config.mjs staging && wrangler d1 migrations apply DB --remote --config wrangler.andy.jsonc && wrangler deploy --config wrangler.andy.jsonc",
+    "build:front": "pnpm run release && node scripts/build-front.mjs",
+    "deploy:front": "pnpm run verify && pnpm run build:front && node scripts/andy-config.mjs front && wrangler deploy --config wrangler.andy.jsonc",
+    "seed:staging": "node scripts/seed-staging.mjs",
+    "move-in": "node scripts/move-in.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@sqlite.org/sqlite-wasm": "3.54.1-build1",
+    "lucide-static": "1.45.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "simple-icons": "^16.31.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260911.1",
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.5.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "oxlint": "^1.82.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.0.0",
+    "wrangler": "4.131.1"
+  }
+}

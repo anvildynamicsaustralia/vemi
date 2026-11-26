@@ -1,0 +1,16 @@
+/* One tip per screen: a quiet line that goes on a tap. Tokens come from app.css. */
+.tip {
+  display: block;
+  margin: 8px 16px;
+  padding: 6px 12px;
+  border: 1px solid var(--vemi-hair);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--vemi-mid);
+  font: inherit;
+  font-size: var(--t-caption);
+  text-align: left;
+  cursor: pointer;
+}
+.tip:hover,
+.tip:focus-visible { color: var(--vemi-ink); }

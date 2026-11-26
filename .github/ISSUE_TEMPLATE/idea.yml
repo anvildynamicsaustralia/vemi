@@ -1,0 +1,13 @@
+name: Idea
+description: Something VEMI could do
+body:
+  - type: textarea
+    id: want
+    attributes:
+      label: What you want to do
+    validations:
+      required: true
+  - type: textarea
+    id: today
+    attributes:
+      label: What gets in the way today

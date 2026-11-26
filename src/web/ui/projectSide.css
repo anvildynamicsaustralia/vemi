@@ -1,0 +1,57 @@
+/* A project's side column: Next step, figures, links. Tokens come from app.css. */
+.side { display: grid; gap: var(--s6); min-width: 0; align-content: start; }
+.side > * { min-width: 0; }
+.side-k { font-size: var(--t-caption); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--vemi-live-text); }
+.side-h { margin: 0 2px var(--s3); font-size: var(--t-chip); font-weight: 600; color: var(--vemi-mid); }
+.side-next, .side-stats, .side-links .links {
+  background: var(--vemi-white);
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-plate);
+  box-shadow: var(--sh-rest);
+}
+.side-next { display: grid; gap: var(--s3); padding: var(--s6); justify-items: start; }
+.side-next-title { font-size: var(--t-body); line-height: 1.35; overflow-wrap: anywhere; }
+.side-next-note { font-size: var(--t-caption); color: var(--vemi-mid); }
+.side-done, .side-go {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s3);
+  min-height: 40px;
+  padding: 0 var(--s6);
+  border-radius: var(--r-row);
+  border: 1px solid var(--vemi-ink);
+  background: var(--vemi-ink);
+  color: var(--vemi-page);
+  font-weight: 600;
+}
+.side-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); text-align: center; padding: var(--s5) var(--s3); }
+.side-stats b { display: block; font-size: var(--t-account); font-variant-numeric: tabular-nums; }
+.side-stats small { font-size: var(--t-caption); color: var(--vemi-mid); }
+.side-links .links { display: grid; }
+.lk-row { display: flex; align-items: center; min-width: 0; border-top: 1px solid var(--vemi-hair-light); }
+.lk-row:first-child, .links > :first-child { border-top: 0; }
+.lk {
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+  flex: 1;
+  min-width: 0;
+  min-height: 52px;
+  padding: var(--s4) var(--s6);
+  text-align: left;
+  color: var(--vemi-ink);
+  background: transparent;
+  border: 0;
+}
+.lk span { display: grid; min-width: 0; }
+.lk b { font-size: var(--t-body); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lk small { font-size: var(--t-caption); color: var(--vemi-mid); }
+.lk:hover { color: var(--vemi-live-text); }
+.lk-edit input { flex: 1; min-width: 0; border: 1px solid var(--vemi-live); background: var(--vemi-white); color: var(--vemi-ink); border-radius: var(--r-xs); padding: 6px 8px; }
+.lk-change { margin-right: var(--s4); border: 0; background: transparent; color: var(--vemi-mid); font-size: var(--t-caption); }
+.lk-change:hover { color: var(--vemi-ink); }
+.links-phone { display: none; }
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  .side-stats, .side .side-links { display: none; }
+  .links-phone { display: block; }
+}

@@ -1,0 +1,43 @@
+/* The reminder banner: drops from the top, over the page and under a sheet's scrim. */
+.reminder-banner {
+  position: fixed;
+  left: 50%;
+  top: calc(14px + env(safe-area-inset-top));
+  transform: translate(-50%, -160%);
+  visibility: hidden;
+  width: min(440px, calc(100vw - 24px));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-plate);
+  box-shadow: var(--sh-plate);
+  z-index: 84;
+  transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.2, 1), visibility 0s linear 0.35s;
+}
+.reminder-banner.on {
+  transform: translate(-50%, 0);
+  visibility: visible;
+  transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+.reminder-when { display: block; font-size: var(--t-caption); color: var(--vemi-dim); font-weight: 600; }
+.reminder-title { display: block; font-size: var(--t-row-sm); font-weight: 700; overflow-wrap: anywhere; }
+.reminder-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.reminder-actions button {
+  min-height: 36px;
+  padding: 7px 12px;
+  border: 1px solid var(--vemi-hair-light);
+  border-radius: var(--r-row);
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  font-size: var(--t-body);
+  font-weight: 600;
+  cursor: pointer;
+}
+.reminder-actions .reminder-done { background: var(--vemi-ink); border-color: var(--vemi-ink); color: var(--vemi-white); }
+@media (prefers-reduced-motion: reduce) {
+  .reminder-banner, .reminder-banner.on { transition: none; }
+}

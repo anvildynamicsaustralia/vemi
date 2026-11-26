@@ -1,0 +1,11 @@
+# Copy to .dev.vars for a local run. A copy needs none of these to start.
+# The Google sign-in client id, from the Google Cloud console. Leave both Google lines empty for passwords only.
+GOOGLE_CLIENT_ID=
+# The Google sign-in client secret, from the same place.
+GOOGLE_CLIENT_SECRET=
+# Optional. Replaces the key the copy makes for itself on first start, if you want your own.
+SESSION_SECRET=
+# Optional. Replaces the generated push public key, with VAPID_PRIVATE.
+VAPID_PUBLIC=
+# Optional. Replaces the generated push private key, with VAPID_PUBLIC.
+VAPID_PRIVATE=

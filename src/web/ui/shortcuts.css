@@ -1,0 +1,7 @@
+/* Shortcuts sheet: a list of keys beside what they do. Tokens come from app.css. */
+.shortcuts { width: min(460px, 100%); }
+.shortcuts-list { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.shortcuts-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 36px; padding: 4px 4px; }
+.shortcuts-row dt { margin: 0; flex: none; }
+.shortcuts-row dd { margin: 0; min-width: 0; text-align: right; font-size: var(--t-row-sm); color: var(--vemi-ink); overflow-wrap: anywhere; }
+.shortcuts-keys { font: inherit; font-size: var(--t-meta); color: var(--vemi-dim); border: 1px solid var(--vemi-hair); border-radius: var(--r-button); padding: 1px 6px; white-space: pre; }

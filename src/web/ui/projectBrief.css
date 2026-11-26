@@ -1,0 +1,33 @@
+/* A project's Brief: four steps in a card. Tokens come from app.css. */
+.brief-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s3);
+  margin: 0 2px var(--s3);
+  font-size: var(--t-chip);
+  font-weight: 600;
+  color: var(--vemi-mid);
+}
+.brief-head em { font-style: normal; font-variant-numeric: tabular-nums; }
+.brief-card { background: var(--vemi-white); border: 1px solid var(--vemi-hair); border-radius: var(--r-plate); box-shadow: var(--sh-rest); }
+.bstep { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: var(--s4); padding: var(--s5) var(--s6); border-top: 1px solid var(--vemi-hair-light); align-items: start; }
+.bstep:first-child { border-top: 0; }
+.bstep-n {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1.5px solid var(--vemi-edge);
+  font-size: var(--t-caption);
+  font-weight: 700;
+  color: var(--vemi-mid);
+  font-variant-numeric: tabular-nums;
+}
+.bstep.filled .bstep-n { background: var(--vemi-ink); border-color: var(--vemi-ink); color: var(--vemi-page); }
+.bstep.cue .bstep-n { border-color: var(--vemi-live); color: var(--vemi-live-text); background: var(--vemi-live-tint); }
+.bstep-k { font-size: var(--t-caption); font-weight: 700; color: var(--vemi-mid); }
+.bstep.cue .bstep-k { color: var(--vemi-live-text); }
+.bstep-v { text-align: left; font-size: var(--t-row); line-height: 1.45; white-space: pre-wrap; }
+.bstep-v .placeholder { color: var(--vemi-dim); }

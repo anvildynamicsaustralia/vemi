@@ -1,0 +1,10 @@
+# Addresses and domains the release scan lets through, one per line: "address | reason".
+# "*@domain" allows every address at that domain. Only reserved test domains and generic
+# protocol users belong here. A real person's address does not.
+*@example.com | reserved by RFC 2606, test fixtures only
+*@example.test | reserved by RFC 2606, test fixtures only
+*@b.example | reserved TLD, test fixtures only
+*@d.example | reserved TLD, test fixtures only
+*@x.test | reserved TLD, test fixtures only
+git@github.com | the standard SSH user in a git remote URL, not a person
+local@local.invalid | reserved TLD (RFC 2606): the fixed key name a copy kept in the page binds its locked-note and app-lock keys to, never shown or sent

@@ -1,0 +1,15 @@
+/* The space settings sheet: the views row. States and stages reuse the About rows. */
+.space-views { display: flex; gap: 6px; flex-wrap: wrap; }
+.space-view {
+  border: 0;
+  background: var(--vemi-hover);
+  border-radius: var(--r-chip);
+  padding: 7px 14px;
+  min-height: 36px;
+  font-size: var(--t-chip);
+  font-weight: 600;
+  color: var(--vemi-mid);
+}
+.space-view:hover { color: var(--vemi-ink); }
+.space-view[aria-pressed="true"] { background: var(--vemi-ink); color: var(--vemi-page); }
+.space-settings-sheet .sheet-body { max-height: 70vh; overflow-y: auto; }

@@ -1,0 +1,100 @@
+/* First run: the slim step bar and step 1. Tokens come from app.css. */
+.first-run-bar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 36px;
+  padding: 4px 16px;
+  border-bottom: 1px solid var(--vemi-hair);
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  font-size: var(--t-caption);
+}
+.first-run-count { font-weight: 600; color: var(--vemi-mid); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.first-run-name,
+.first-run-title {
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.first-run-title { border: 0; background: transparent; color: var(--vemi-ink); padding: 4px 0; text-decoration: underline; cursor: pointer; }
+.first-run-bar .fill { flex: 1; }
+.first-run-skip,
+.first-run-skip-now {
+  border: 0;
+  background: transparent;
+  color: var(--vemi-mid);
+  font-weight: 600;
+  padding: 8px 12px;
+  min-height: 36px;
+  border-radius: var(--r-button);
+  cursor: pointer;
+}
+.first-run-skip:hover,
+.first-run-skip-now:hover { color: var(--vemi-ink); }
+
+.first-run-use { display: grid; justify-items: center; text-align: center; gap: 22px; padding: 40px 32px 48px; }
+.first-run-use h2 { margin: 0; text-wrap: balance; }
+.first-run-presets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; width: 100%; max-width: 820px; }
+.first-run-preset {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  padding: 18px 14px;
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-plate);
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  cursor: pointer;
+}
+.first-run-preset:hover { border-color: var(--vemi-ink); }
+.first-run-preset b { font-size: 16px; }
+.first-run-preset small { color: var(--vemi-dim); line-height: 1.35; }
+.first-run-bar.phone { padding: 4px 12px; }
+
+/* Step 2: the first space's one field, in the map's place. */
+.first-run-space { display: grid; justify-items: center; padding: 64px 24px; }
+.first-run-space form { display: flex; gap: 10px; width: 100%; max-width: 480px; }
+.first-run-space .field { flex: 1; min-width: 0; }
+.phone .first-run-space { padding: 32px 16px; }
+
+/* Steps 2 to 4: the accent ring on the one thing to act on. No overlay, no dimming. */
+.first-run-cue { box-shadow: 0 0 0 2px var(--vemi-live); border-radius: var(--r-button); }
+.first-run-cue.field { border-color: var(--vemi-live); }
+
+/* Step 5: the bar's one button. */
+.first-run-action {
+  border: 1px solid var(--vemi-live);
+  background: var(--vemi-live-tint);
+  color: var(--vemi-live-text);
+  font-weight: 600;
+  padding: 6px 14px;
+  min-height: 32px;
+  border-radius: var(--r-button);
+  cursor: pointer;
+}
+.phone .first-run-use { padding: 28px 16px; }
+.phone .first-run-presets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* Steps 6 and 7: a card above Today's list. */
+.first-run-card {
+  display: grid;
+  gap: 12px;
+  margin: 12px 16px;
+  padding: 16px;
+  border: 1px solid var(--vemi-hair);
+  border-radius: var(--r-card, 8px);
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  max-width: 640px;
+}
+.first-run-card h4 { margin: 0; font-size: 16px; }
+.first-run-card-icon { color: var(--vemi-live); display: inline-flex; }
+.first-run-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.first-run-row .choices { display: flex; flex-wrap: wrap; gap: 6px; }
+.first-run-note { margin: 0; color: var(--vemi-dim); font-size: var(--t-caption); }
+.first-run-note.failed { color: var(--vemi-ink); }
+.first-run-buttons { display: flex; gap: 8px; align-items: center; }

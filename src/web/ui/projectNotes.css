@@ -1,0 +1,20 @@
+/* Project notes log. Tokens come from app.css. */
+.notes-log { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.notes-add { display: flex; flex-direction: column; gap: 6px; }
+.notes-add textarea {
+  width: 100%;
+  border: 1px solid var(--vemi-hair);
+  background: var(--vemi-white);
+  color: var(--vemi-ink);
+  border-radius: var(--r-xs);
+  padding: 8px 10px;
+  line-height: 1.5;
+  resize: vertical;
+}
+.notes-add textarea:focus { border-color: var(--vemi-live); }
+.notes-add-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.notes-hint { font-size: var(--t-caption); color: var(--vemi-dim); }
+.notes-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.notes-entry { display: flex; align-items: flex-start; gap: 10px; min-width: 0; }
+.notes-date { font-size: var(--t-caption); color: var(--vemi-dim); white-space: nowrap; font-variant-numeric: tabular-nums; padding-top: 2px; }
+.notes-text { flex: 1; min-width: 0; overflow-wrap: anywhere; white-space: pre-wrap; text-align: left; font-size: var(--t-body); line-height: 1.45; color: var(--vemi-mid); }

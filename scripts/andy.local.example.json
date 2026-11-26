@@ -1,0 +1,18 @@
+{
+  "account_id": "your 32-character Cloudflare account ID",
+  "owner": "andy",
+  "production": {
+    "database_id": "production D1 database ID (a UUID)",
+    "domain": "vemi.example.test",
+    "origin": "https://vemi.example.test"
+  },
+  "staging": {
+    "database_id": "staging D1 database ID (a UUID)",
+    "domain": "staging.vemi.example.test",
+    "origin": "https://staging.vemi.example.test"
+  },
+  "front": {
+    "kv_namespace_id": "the relay counter's KV namespace ID (32 hex characters)",
+    "domain": "get.vemi.example.test"
+  }
+}

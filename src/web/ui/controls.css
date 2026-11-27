@@ -242,3 +242,9 @@ html :is(.field, .editing, .control-field, .add-line input, .pick-button):focus-
    text, so it reads as the field taking the typing and not as a box drawn round the words. */
 html .big-field { border-radius: 8px; padding-inline: 6px; }
 html .big-field:focus-visible { outline-offset: 4px; }
+@media (max-width: 719px) {
+  /* A switch in a section's header (Grid / Canvas) stays its own size beside the heading and
+     the ⋯, rather than taking the width and pushing the ⋯ to a line of its own. */
+  :root .map-section-head .seg { width: fit-content; flex: none; }
+  :root .map-section-head .seg > .chip { flex: none; padding: 6px 14px; }
+}

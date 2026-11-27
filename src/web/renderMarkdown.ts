@@ -117,7 +117,7 @@ function spansOfLines(lines: readonly string[]): readonly Inline[] {
  * The blocks a body reads as. Null and a body of nothing but blank lines are both no
  * blocks at all, which is what an empty sheet shows a placeholder for.
  *
- * A heading is a line beginning with exactly two hashes and a space: one level, because
+ * A heading is a line beginning with one to three hashes and a space: one level, because
  * the sheet has one heading size and an outline of levels is a document model, which is
  * refused. A run of lines each beginning with a dash and a space is one list. Everything
  * else is a paragraph, and a blank line is what separates one from the next.
@@ -147,10 +147,12 @@ export function renderMarkdown(body: string | null): readonly Block[] {
     if (line === "") {
       endParagraph();
       endList();
-    } else if (line.startsWith("## ")) {
+    } else if (/^#{1,3} /.test(line)) {
+      // One heading size, reached by one, two or three hashes: "# Heading" is what most
+      // people type, and it showed its hash as text.
       endParagraph();
       endList();
-      blocks.push({ kind: "heading", spans: spansOf(line.slice(3)) });
+      blocks.push({ kind: "heading", spans: spansOf(line.replace(/^#{1,3} /, "")) });
     } else if (line.startsWith("- ")) {
       endParagraph();
       items.push(spansOf(line.slice(2)));

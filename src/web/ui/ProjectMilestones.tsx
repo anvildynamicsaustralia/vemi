@@ -10,6 +10,7 @@ import { tickTask } from "../tickTask.js";
 import { nextPosition } from "../treeIndex.js";
 import { useApp } from "./appContext.js";
 import { AddLine, EditableText } from "./controls.js";
+import { navigate, projectPage } from "../router.js";
 import { DatePick } from "./Picker.js";
 import { Ring } from "./Rings.js";
 import { TabRow, panelId, tabId } from "./TabRow.js";
@@ -88,8 +89,13 @@ export function ProjectMilestones({ venture, project, picked, onPick }: {
                 onClick={() => void tickTask({ act: app.act, update: api.update, archive: api.archive, notify: app.notify }, t, venture, done)}>
                 <i aria-hidden="true">{done ? "✓" : ""}</i>
               </button>
-              <EditableText value={t.title} placeholder={words.task.toLowerCase()}
-                onSave={(title, was) => app.edit("tasks", t.id, { title }, { title: was }, `renamed ${t.title}`)} />
+              {/* The title opens the task over this page, where everything about it is, its name
+                  included. Pressing it used to start renaming it, with no way to its details. */}
+              <button type="button" className="pm-task-open" dir="auto"
+                onClick={() => navigate(projectPage(venture.id, project.id, t.id))}>
+                <span className="pm-task-title">{t.title}</span>
+                <span className="pm-task-go" aria-hidden="true">›</span>
+              </button>
             </div>
           );
         })}

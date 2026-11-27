@@ -18,10 +18,11 @@ describe("renderMarkdown", () => {
     expect(renderMarkdown("## The brief")).toEqual([{ kind: "heading", spans: [text("The brief")] }]);
   });
 
-  it("wants the space after the hashes, and only two of them", () => {
+  it("wants the space after the hashes, and takes one to three of them as the one heading", () => {
     expect(renderMarkdown("##The brief")).toEqual([{ kind: "paragraph", spans: [text("##The brief")] }]);
-    expect(renderMarkdown("### The brief")).toEqual([{ kind: "paragraph", spans: [text("### The brief")] }]);
-    expect(renderMarkdown("# The brief")).toEqual([{ kind: "paragraph", spans: [text("# The brief")] }]);
+    expect(renderMarkdown("# The brief")).toEqual([{ kind: "heading", spans: [text("The brief")] }]);
+    expect(renderMarkdown("### The brief")).toEqual([{ kind: "heading", spans: [text("The brief")] }]);
+    expect(renderMarkdown("#### The brief")).toEqual([{ kind: "paragraph", spans: [text("#### The brief")] }]);
   });
 
   it("reads a run of dashes as one list", () => {

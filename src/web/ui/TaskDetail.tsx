@@ -231,7 +231,7 @@ export function TaskBody({ located, index, links, onClose }: {
           ) : (
             <Kv label="Blocked">
               {blocking ? (
-                <AddLine placeholder="what it waits on, in words" label="Block"
+                <AddLine placeholder="what it waits on, in words" label="Block" autoFocus
                   onAdd={async (reason) => {
                     const ok = await app.act(createOnce("blockers", { taskId: task.id, reason, sinceOn: app.today }));
                     if (ok) setBlocking(false);
@@ -341,7 +341,15 @@ export function TaskBody({ located, index, links, onClose }: {
               <button type="button" className="close-button" aria-label="archive link" onClick={() => void app.archive("links", l.id, "link")}>×</button>
             </div>
           ))}
-          <AddLine placeholder="a link" onAdd={(url) => app.act(createOnce("links", { taskId: task.id, url }))} />
+          <AddLine placeholder="a link" onAdd={(url) => {
+            // A link is an address: no spaces, and a dot in its host. Anything else was saved as
+            // "https://words like these", a link that goes nowhere.
+            if (/\s/.test(url.trim()) || !/\.[a-z]{2,}/i.test(url)) {
+              app.notify("That does not look like a web address. Try one like example.com/page.");
+              return Promise.resolve(false);
+            }
+            return app.act(createOnce("links", { taskId: task.id, url }));
+          }} />
         </Group>
 
         <div className="more-foot">

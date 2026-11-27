@@ -181,7 +181,12 @@ function ProjectRow({ ventureId, project, grip, left, menu, adding, onAdding, on
   // No wrapper here: OrderedRows draws the row, so that it can move it.
   return (
     <>
-      <div className="proj-line" data-hold>
+      {/* The whole row opens the project, not only its name: a press anywhere that is not one
+          of its own controls is the name's press. The name stays the button a keyboard reaches. */}
+      <div className="proj-line" data-hold onClick={(e) => {
+        if ((e.target as Element).closest("button, a, input, textarea, [data-more], [role='menu'], .grip") !== null) return;
+        navigate(projectPage(ventureId, project.id));
+      }}>
         {grip ?? <span className="grip-space" aria-hidden="true" />}
         <button type="button" className="proj-title" dir="auto" title={project.name} onClick={() => navigate(projectPage(ventureId, project.id))}>{project.name}</button>
         <RiskTag blocked={project.blocked} atRisk={project.atRisk} />

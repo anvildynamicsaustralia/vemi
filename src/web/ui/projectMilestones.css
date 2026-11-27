@@ -46,3 +46,12 @@
 .pm-task.isdone .pm-box i { background: var(--vemi-ink); border-color: var(--vemi-ink); }
 .pm-task.isdone { color: var(--vemi-mid); }
 .pm-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-height: 44px; }
+/* A task's title opens it: the whole line to the right of its box. */
+.pm-task-open {
+  flex: 1; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 6px;
+  border: 0; border-radius: var(--r-row); background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.pm-task-open:hover { background: var(--vemi-field); }
+.pm-task-title { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.pm-task-go { color: var(--vemi-faint); }
+.pm-task.isdone .pm-task-title { text-decoration: line-through; }

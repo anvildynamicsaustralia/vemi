@@ -108,7 +108,7 @@ export function ProjectPage({ ventureId, projectId }: {
           <>
             <ProjectBrief project={project} />
             <section aria-label={words.milestones}>
-              <h3 className="pj-h">{words.milestones} <em>{counts.done} of {total} done</em></h3>
+              <h3 className="pj-h">{words.milestones} <em>{counts.done} of {total} {words.tasks.toLowerCase()} done</em></h3>
               <ProjectMilestones venture={venture} project={project} picked={picked} onPick={setPicked} />
             </section>
             <section aria-label="Notes">

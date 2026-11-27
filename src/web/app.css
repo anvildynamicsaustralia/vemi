@@ -2275,3 +2275,37 @@ body:has(.backdrop) .page.phone ~ .notice { top: calc(16px + env(safe-area-inset
 /* On a phone a notice takes the width it has, so a sentence and its Undo sit on a line or two
    instead of four. */
 @media (max-width: 719px) { .notice { width: calc(100vw - 32px); justify-content: space-between; } }
+
+/* Decisions and risks: the title takes the room; the date is a small button at the end. */
+.more-line > .editable { flex: 1 1 12ch; }
+.more-line .pick-button.ledger-date, .more-line .ledger-date { flex: none; width: auto; min-width: 0; padding-inline: 10px; }
+@media (max-width: 719px) { .more-line { flex-wrap: wrap; row-gap: 4px; } }
+
+/* The selection bar on a phone. Placed by left: 50%, it could only grow to half the screen,
+   so it came out 195px wide with a name a line. Here it spans the width above the bar, and
+   each pick row (states, projects, spaces) scrolls sideways on one line. */
+@media (max-width: 719px) {
+  .page.phone ~ .selection-bar, .page.phone .selection-bar {
+    left: 8px;
+    right: 8px;
+    transform: none;
+    animation-name: bar-in-phone;
+    max-width: none;
+    max-height: 45vh;
+    gap: 10px 16px;
+    padding: 14px 16px;
+  }
+  .selection-bar .bar-pick { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; scrollbar-width: none; padding-block: 6px; }
+  .selection-bar .bar-pick::-webkit-scrollbar { display: none; }
+  .selection-bar .bar-pick > * { flex: none; }
+}
+@keyframes bar-in-phone { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* A project row: the whole line opens it. On a phone the name wraps in full beside its grip,
+   and the row's actions sit on the line under it, with no gap between. */
+.proj-line { cursor: pointer; }
+@media (max-width: 719px) {
+  .proj-line { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; column-gap: 10px; row-gap: 6px; }
+  .proj-line > .proj-title { white-space: normal; overflow-wrap: anywhere; font-size: var(--t-row-sm); min-height: var(--touch); }
+  .proj-line > .proj-figures { grid-column: 1 / -1; justify-content: flex-end; margin-left: 0; gap: 14px; }
+}

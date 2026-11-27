@@ -18,6 +18,21 @@ Easier to use on a phone, and the things you reach for are where you reach for t
   is a place in the bar.
 - The canvas fits a phone: spaces stack in one column, it opens fitted to the screen, the
   zoom tools no longer cover the first box, and Fit puts it back.
+- One way back on each page: a space's own header, or a project's or task's trail. No more
+  three trails stacked on top of each other.
+- Today: a task typed with "today" stays on Today, a task due today shows in Coming up, a late
+  Next up offers Tomorrow, and finishing a task says so with Undo.
+- Add: a day typed in the title sets When. Search's and the palette's New project open Add on
+  Project.
+- Board: a card's menu moves it to another state, which is the way on a phone. Bulk changes
+  keep what is selected, and the selection bar fits a phone.
+- Projects: the whole row opens a project, and long names show in full on a phone. On a
+  project page, a task opens its details. Decisions and risks no longer overlap their dates.
+- Notes add on Enter. "# Heading" is a heading. A link must be a web address.
+- Phone: the canvas is a stacked list you scroll and press; segmented choices stay on one row;
+  project stages wrap; the back gesture closes an Account section.
+- Dark mode dims behind sheets instead of greying them. Tips can be told apart from fields and
+  say how to dismiss them.
 
 ## 0.1.0
 

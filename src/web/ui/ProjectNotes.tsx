@@ -5,6 +5,8 @@ import { useLevelWords } from "../levelNames.js";
 import type { Outcome } from "../outcome.js";
 import { useResource } from "../state/resources.js";
 import { useApp } from "./appContext.js";
+import { shortDate } from "../format.js";
+import { localToday } from "../monthGrid.js";
 import { LockableText, type SaveText } from "./LockableText.js";
 import { NoteText } from "./NoteText.js";
 import "./projectNotes.css";
@@ -44,7 +46,9 @@ export function NotesLog({ notes, onAdd, onEdit, onArchive }: NotesLogProps) {
     }
   };
   const submitKey = (e: KeyboardEvent<HTMLTextAreaElement>): void => {
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+    // Enter adds the note, as it does in About and every other add line; Shift+Enter is a new
+    // line. A note typed, Entered and left used to be a line break, and lost.
+    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
       e.preventDefault();
       void add();
     }
@@ -55,7 +59,7 @@ export function NotesLog({ notes, onAdd, onEdit, onArchive }: NotesLogProps) {
         <textarea dir="auto" value={draft} rows={2} placeholder="a short note" aria-label="a short note"
           onChange={(e) => setDraft(e.target.value)} onKeyDown={submitKey} />
         <div className="notes-add-row">
-          <span className="notes-hint"><code>**bold**</code> and <code>`code`</code> work</span>
+          <span className="notes-hint">Enter adds it, Shift+Enter is a new line. <code>**bold**</code> and <code>`code`</code> work</span>
           <button type="submit" className="quiet-button" disabled={adding || draft.trim() === ""}>Add note</button>
         </div>
       </form>
@@ -63,7 +67,7 @@ export function NotesLog({ notes, onAdd, onEdit, onArchive }: NotesLogProps) {
       <ol className="notes-list">
         {newestFirst(notes).map((n) => (
           <li key={n.id} className="notes-entry">
-            <time className="notes-date" dateTime={n.createdAt}>{n.createdAt.slice(0, 10)}</time>
+            <time className="notes-date" dateTime={n.createdAt}>{shortDate(n.createdAt.slice(0, 10), localToday())}</time>
             <NoteBody note={n} onEdit={onEdit} />
             <button type="button" className="close-button" aria-label="archive note" onClick={() => onArchive(n)}>×</button>
           </li>

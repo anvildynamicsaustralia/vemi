@@ -266,7 +266,8 @@ export function BoardView({ ventureId, projectId = null }: {
       redo: () => writeEach(forward),
     }).then((ok) => {
       if (!ok) return;
-      chooser.stop();
+      // The selection stays: a priority and then a project, on the same cards, without picking
+      // them again. Done or Escape ends it.
       // Said as Space says its own, so a change to many cards is never silent. A change only
       // kept on this device has its own notice already, and is not said over.
       if (ok === "sent") app.notify(done.charAt(0).toUpperCase() + done.slice(1), { undo: true });
@@ -525,6 +526,11 @@ export function BoardView({ ventureId, projectId = null }: {
                           ...(grouping === "state" ? [
                             { label: "Move up", disabled: stepInColumn(ids, shownIds, t.id, -1) === undefined, run: () => stepCard(t, key, ids, shownIds, -1) },
                             { label: "Move down", disabled: stepInColumn(ids, shownIds, t.id, 1) === undefined, run: () => stepCard(t, key, ids, shownIds, 1) },
+                            // Into another state's column, as a drag does, with its undo. The way on a
+                            // phone, where a column does not take a drag.
+                            ...columns.filter((c) => c.key !== key && c.key !== "").map((c) => ({
+                              label: `Move to ${c.name}`, run: () => move(t.id, key, c.key, null),
+                            })),
                           ] : []),
                           {
                             label: t.pickedOn === app.today ? "Take off today" : "Put on today",

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { Decision, Risk } from "@vemi/shared";
 import { api, createOnce, paths } from "../api.js";
-import { shortDate } from "../format.js";
 import { reorder } from "../order.js";
 import { useResource } from "../state/resources.js";
 import { byPosition, nextPosition } from "../treeIndex.js";
@@ -73,8 +72,10 @@ function Section({ kind, owner }: { readonly kind: keyof typeof KINDS; readonly 
                 {grip}
                 <EditableText value={e.title} placeholder={words.one}
                   onSave={(title, was) => app.edit(kind, e.id, { title }, { title: was }, `renamed the ${words.one}`)} />
-                <span className="more-note">{words.dated}{on !== null && ` ${shortDate(on, app.today)}`}</span>
-                <DatePick compact value={on} label={words.dated}
+                {/* The date is its own button: "decided 27 nov", pressed to change it. A separate
+                    "Change" field beside the date crowded the title to a word a line. */}
+                <span className="more-note">{words.dated}</span>
+                <DatePick value={on} label={words.dated} className="ledger-date"
                   onSave={(next) => void app.edit(kind, e.id, { [words.field]: next }, e, `changed the date of the ${words.one}`)} />
                 <button type="button" className="close-button" aria-label={`archive ${words.one}`}
                   onClick={() => void app.archive(kind, e.id, words.one)}>×</button>

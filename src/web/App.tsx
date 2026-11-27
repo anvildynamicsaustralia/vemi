@@ -36,6 +36,8 @@ import {
   AppContext, lastVenture, rememberVenture, UndoContext, useApp, type AppActions, type ComposeSeed, type HomeTarget, type IconTarget, type UndoState,
 } from "./ui/appContext.js";
 import { MoreMenu } from "./ui/Menu.js";
+import { RenameSheet } from "./ui/RenameSheet.js";
+import { SpaceSettings } from "./ui/SpaceSettings.js";
 import { PhoneBar, placeOf, Rail, SkipLink, StatusLine, TopBar, VentureHeader, type Place } from "./ui/Chrome.js";
 import { useNeedsCount } from "./needsCount.js";
 import { Spoken } from "./ui/controls.js";
@@ -981,13 +983,21 @@ function VentureSurface({ index, route, ventureId, tab, onTab, onBack }: {
   const app = useApp();
   const menuWords = spaceMenuWords(useLevelWords());
   const letters = useMemo(() => monograms(index.ordered), [index]);
+  const [sheet, setSheet] = useState<"rename" | "settings" | null>(null);
   const v = index.ventures.get(ventureId);
   if (v === undefined) return null;
+  const renameSpace = async (next: string, was: string): Promise<Outcome | boolean> => {
+    const name = next.trim();
+    if (name === "") return false;
+    return app.edit("ventures", ventureId, { name }, { name: was }, `renamed ${was}`);
+  };
   // On a venture's own tabs the header's ⋯ is the venture's; a project's or a task's page
   // carries its own, so a page never has two.
   const ventureMenu = route.surface !== "venture" ? null : (
     <MoreMenu label={`${menuWords.noun} ${v.name}`} items={[
       { label: menuWords.add, run: () => app.compose({ ventureId }) },
+      { label: "Rename", run: () => setSheet("rename") },
+      { label: "Settings", run: () => setSheet("settings") },
       // About sits closed at the foot of Projects: each of these opens it and shows the part asked for.
       { label: menuWords.about, run: () => { askForAbout(ventureId); navigate(venture(ventureId, "projects")); } },
       { label: "Decisions and risks", run: () => { askForLedger(ventureId); navigate(venture(ventureId, "projects")); } },
@@ -1008,7 +1018,10 @@ function VentureSurface({ index, route, ventureId, tab, onTab, onBack }: {
   })();
   return (
     <div className="venture-surface" key={ventureId}>
-      <VentureHeader name={v.name} letters={letters.get(v.id) ?? ""} icon={v.icon} tab={tab} onTab={onTab} onBack={onBack} menu={ventureMenu} views={v.views} />
+      <VentureHeader name={v.name} letters={letters.get(v.id) ?? ""} icon={v.icon} tab={tab} onTab={onTab} onBack={onBack} menu={ventureMenu} views={v.views}
+        onRename={route.surface === "venture" ? (next, was) => renameSpace(next, was ?? v.name) : undefined} />
+      {sheet === "rename" && <RenameSheet what={menuWords.noun} name={v.name} onClose={() => setSheet(null)} onRename={(next) => renameSpace(next, v.name)} />}
+      {sheet === "settings" && <SpaceSettings ventureId={ventureId} onClose={() => setSheet(null)} />}
       <div className={`venture-body venture-${route.surface === "venture" ? tab : route.surface}`}><ViewBoundary fallback={null}>{body}</ViewBoundary></div>
     </div>
   );

@@ -42,10 +42,20 @@ const WIRE_INSET = 24;
 
 export const boxKey = (kind: BoxKind, id: string): string => `${kind}:${id}`;
 
+/**
+ * How the auto layout runs: top-level spaces side by side in columns (a desk), or one under
+ * another down a single column (a phone, which has the height and not the width).
+ */
+export type LayoutFlow = "columns" | "stacked";
+
+/** The edge a stacked layout keeps: a phone has no width to spare. */
+const STACK_MARGIN = 16;
+
 /** The tree of plates as boxes, parents before children, in the order they are drawn. */
-export function autoLayout(plates: readonly Plate[]): Box[] {
+export function autoLayout(plates: readonly Plate[], flow: LayoutFlow = "columns"): Box[] {
   const out: Box[] = [];
   let left = MARGIN;
+  let top = flow === "stacked" ? STACK_MARGIN : MARGIN;
 
   /** Places one space and everything under it. Returns the y below it and the furthest right it reached. */
   const place = (plate: Plate, x: number, y: number, parent: string | null): { readonly bottom: number; readonly right: number } => {
@@ -67,8 +77,13 @@ export function autoLayout(plates: readonly Plate[]): Box[] {
   };
 
   for (const plate of plates) {
-    const done = place(plate, left, MARGIN, null);
-    left = done.right + GAP_COLUMN;
+    if (flow === "stacked") {
+      const done = place(plate, STACK_MARGIN, top, null);
+      top = done.bottom + GAP_UNDER;
+    } else {
+      const done = place(plate, left, top, null);
+      left = done.right + GAP_COLUMN;
+    }
   }
   return out;
 }
@@ -77,9 +92,9 @@ export function autoLayout(plates: readonly Plate[]): Box[] {
  * The auto layout with the person's saved positions laid over it. A saved position for a box
  * that is gone is ignored; a box with none stays where the layout puts it. Never negative.
  */
-export function resolve(plates: readonly Plate[], saved: readonly CanvasPosition[]): Box[] {
+export function resolve(plates: readonly Plate[], saved: readonly CanvasPosition[], flow: LayoutFlow = "columns"): Box[] {
   const mine = new Map(saved.map((s) => [boxKey(s.kind, s.id), s]));
-  return autoLayout(plates).map((b) => {
+  return autoLayout(plates, flow).map((b) => {
     const s = mine.get(b.key);
     return s === undefined ? b : { ...b, x: Math.max(0, s.x), y: Math.max(0, s.y) };
   });
@@ -109,13 +124,18 @@ export function wires(boxes: readonly Box[]): Wire[] {
   return out;
 }
 
-/** The size the ground needs to hold every box, with room to drag further. */
-export function groundSize(boxes: readonly Box[]): { readonly w: number; readonly h: number } {
-  let w = 1320;
-  let h = 720;
+/**
+ * The size the ground needs to hold every box, with room to drag further. A desk keeps a wide
+ * ground to drag across; a stacked phone ground is only as wide as what is on it.
+ */
+export function groundSize(boxes: readonly Box[], flow: LayoutFlow = "columns"): { readonly w: number; readonly h: number } {
+  const stacked = flow === "stacked";
+  const room = stacked ? STACK_MARGIN * 2 : MARGIN * 2;
+  let w = stacked ? 0 : 1320;
+  let h = stacked ? 400 : 720;
   for (const b of boxes) {
-    w = Math.max(w, b.x + SIZE[b.kind].w + MARGIN * 2);
-    h = Math.max(h, b.y + SIZE[b.kind].h + MARGIN * 2);
+    w = Math.max(w, b.x + SIZE[b.kind].w + room);
+    h = Math.max(h, b.y + SIZE[b.kind].h + room);
   }
   return { w, h };
 }
@@ -128,6 +148,16 @@ export const ZOOM_RESET = 1;
 export function stepZoom(zoom: number, direction: 1 | -1): number {
   const next = Math.round(zoom * 10) + direction;
   return Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, next / 10));
+}
+
+/**
+ * The zoom that shows the whole ground across a view this wide, in 10% steps, never past 100%
+ * and never under the smallest zoom. A phone opens the canvas at this, so nothing starts cut off.
+ */
+export function fitZoom(groundWidth: number, viewWidth: number): number {
+  if (groundWidth <= 0 || viewWidth <= 0) return ZOOM_RESET;
+  const fit = Math.floor((viewWidth / groundWidth) * 10) / 10;
+  return Math.min(ZOOM_RESET, Math.max(ZOOM_MIN, fit));
 }
 
 /** Pointer travel, in screen pixels, under which a press is a click. */

@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { VERSION } from "@vemi/shared";
 import { accountIdentity } from "./accountIdentity.js";
 import { createApp } from "./app.js";
 import { sessionKey } from "./sessionKey.js";
@@ -363,13 +364,14 @@ describe("GET /api/update", () => {
     try {
       expect((await c.call("GET", "/api/update")).status).toBe(401);
       expect(await (await c.call("GET", "/api/update", undefined, { cookie: c.cookie })).json()).toEqual({
-        current: "0.1.0", offer: null, canUpdate: true, auto: true, back: false, goBack: null, backed: null, keyKept: true,
+        current: VERSION, offer: null, canUpdate: true, auto: true, back: false, goBack: null, backed: null, keyKept: true,
       });
-      const good = await bundle("0.2.0", "A calmer Today.");
-      await c.store.keepUpdateCheck({ version: "0.2.0", manifest: good.manifest, signature: good.signature });
+      // Newer than whatever this code is, so it is offered whatever VERSION says.
+      const good = await bundle("99.0.0", "A calmer Today.");
+      await c.store.keepUpdateCheck({ version: "99.0.0", manifest: good.manifest, signature: good.signature });
       const res = await c.call("GET", "/api/update", undefined, { cookie: c.cookie });
       const text = await res.text();
-      expect(JSON.parse(text)).toMatchObject({ offer: { version: "0.2.0", notes: "A calmer Today." } });
+      expect(JSON.parse(text)).toMatchObject({ offer: { version: "99.0.0", notes: "A calmer Today." } });
       expect(text).not.toContain(good.signature);
       expect(text).not.toContain(TOKEN);
       expect(text).not.toContain("feed.example.org");

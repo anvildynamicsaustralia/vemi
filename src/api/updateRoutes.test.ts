@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { VERSION } from "@vemi/shared";
 import { accountIdentity } from "./accountIdentity.js";
 import { createApp } from "./app.js";
 import { sessionKey } from "./sessionKey.js";
@@ -99,7 +100,7 @@ describe("POST /api/update/start and /step", () => {
     expect(seen).toContain("files");
     expect(seen).toContain("data");
     const summary = await (await send(owner, "GET", "/api/update", { cookie })).json();
-    expect(summary).toMatchObject({ current: "0.1.0", back: true });
+    expect(summary).toMatchObject({ current: VERSION, back: true });
   });
 });
 

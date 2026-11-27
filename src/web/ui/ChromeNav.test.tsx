@@ -68,8 +68,14 @@ describe("the top bar", () => {
     expect(out).toContain('class="search-field"');
     expect(out).toMatch(/aria-keyshortcuts="(Control|Meta)\+K"/);
     expect(out).toMatch(/<kbd class="key-hint" aria-hidden="true">(Ctrl|⌘) K<\/kbd>/);
-    expect(bar("/", true)).not.toContain("search-field");
-    expect(bar("/", true)).toContain("crumbs");
+    expect(bar("/ventures/v1/projects/p1", true)).not.toContain("search-field");
+    expect(bar("/ventures/v1/projects/p1", true)).toContain("crumbs");
+  });
+
+  it("takes no room on a phone when the trail is one place long", () => {
+    expect(bar("/", true)).toBe("");
+    expect(bar("/account", true)).toBe("");
+    expect(bar("/", false)).toContain("crumbs");
   });
 
   it("uses a name that cannot be mistaken for the rail's Search", () => {

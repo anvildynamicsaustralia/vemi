@@ -32,3 +32,6 @@
 /* About: the release notes are plain text and keep their line breaks. */
 .update-notes { white-space: pre-wrap; overflow-wrap: anywhere; }
 a.row-action { text-decoration: none; }
+/* On a phone each row is a way in, so it reads as one: full ink, not the quiet desk list. */
+.account-phone .account-nav button { color: var(--vemi-ink); min-height: var(--touch); }
+.account-phone .account-nav button:active { background: var(--vemi-field); }

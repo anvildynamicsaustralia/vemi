@@ -127,9 +127,12 @@ export function Account({ onClose, onSignOut, live, waiting, known, onKnown }: {
       </div>
       <AccountLayout shown={shown} open={open} phone={phone} onOpen={setChosen}
         panel={open === null ? null : panelFor(open)} />
-      <div className="search-foot">
-        <button type="button" className="back-link" onClick={onClose}>Close</button>
-      </div>
+      {/* On a phone Account is a place in the bar, so there is nothing to close. */}
+      {!phone && (
+        <div className="search-foot">
+          <button type="button" className="back-link" onClick={onClose}>Close</button>
+        </div>
+      )}
     </div>
   );
 }

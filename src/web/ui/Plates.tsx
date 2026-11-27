@@ -4,12 +4,17 @@ import { leftShare } from "../counts.js";
 import type { LevelWords } from "../levelWords.js";
 import { navigate, projectPage, venture } from "../router.js";
 import { useApp } from "./appContext.js";
+import type { Tree } from "@vemi/shared";
+import { createOnce, paths } from "../api.js";
+import { resourceAt } from "../state/resources.js";
+import { nextPosition } from "../treeIndex.js";
 import { AddLine } from "./controls.js";
 import { Monogram } from "./Chrome.js";
 import { MoreMenu } from "./Menu.js";
 import { Ring } from "./Rings.js";
 import { Sheet } from "./Sheet.js";
 import { SpaceSettings } from "./SpaceSettings.js";
+import { RenameSheet } from "./RenameSheet.js";
 import type { Outcome } from "../outcome.js";
 
 const FLAG_WORDS: Record<Flag, string> = { blocked: "Blocked", overdue: "Overdue", "at risk": "At risk" };
@@ -37,23 +42,49 @@ function ProjectRow({ project, words }: { readonly project: PlateProject; readon
 
 function SpaceMenu({ plate, words }: { readonly plate: Plate; readonly words: LevelWords }) {
   const app = useApp();
-  const [settings, setSettings] = useState(false);
+  const [open, setOpen] = useState<"settings" | "rename" | "project" | null>(null);
+  const space = words.space.toLowerCase();
+  const project = words.project.toLowerCase();
   return (
     <>
-    <MoreMenu label={`${words.space.toLowerCase()} ${plate.name}`} className="card-more" items={[
+    <MoreMenu label={`${space} ${plate.name}`} className="card-more" items={[
       { label: "Open", run: () => navigate(venture(plate.id)) },
-      { label: "Settings", run: () => setSettings(true) },
+      { label: "Rename", run: () => setOpen("rename") },
       { label: `Add a ${words.task.toLowerCase()} here`, run: () => app.compose({ ventureId: plate.id }) },
-      { label: `Archive ${words.space.toLowerCase()}`, tone: "remove", run: () => void app.archive("ventures", plate.id, words.space.toLowerCase()) },
+      { label: `Add a ${project} here`, run: () => setOpen("project") },
+      { label: "Settings", run: () => setOpen("settings") },
+      { label: `Archive ${space}`, tone: "remove", run: () => void app.archive("ventures", plate.id, space) },
     ]} />
-    {settings && <SpaceSettings ventureId={plate.id} onClose={() => setSettings(false)} />}
+    {open === "settings" && <SpaceSettings ventureId={plate.id} onClose={() => setOpen(null)} />}
+    {open === "rename" && (
+      <RenameSheet what={space} name={plate.name} onClose={() => setOpen(null)}
+        onRename={(name) => app.edit("ventures", plate.id, { name }, { name: plate.name }, `renamed ${plate.name}`)} />
+    )}
+    {open === "project" && (
+      <Sheet onClose={() => setOpen(null)} className="new-space-sheet" placement="centre" label={`new ${project} in ${plate.name}`}>
+        <div className="sheet-head">
+          <span className="label">New {project} in {plate.name}</span>
+          <span className="fill" />
+          <button type="button" className="close-button" aria-label="close" onClick={() => setOpen(null)}>×</button>
+        </div>
+        <div className="sheet-body">
+          <AddLine placeholder={`name this ${project}`} label={`Add ${project}`} onEscape={() => setOpen(null)}
+            onAdd={async (name) => {
+              const ok = await app.act(createOnce("projects", { ventureId: plate.id, name, position: nextPosition(resourceAt<Tree>(paths.tree).data?.ventures.find((v) => v.id === plate.id)?.projects ?? []) }));
+              if (ok) setOpen(null);
+              return ok;
+            }} />
+        </div>
+      </Sheet>
+    )}
     </>
   );
 }
 
 /**
- * One plate. The header is the toggle: closed, it shows three projects and "N more"; open,
- * every project. A space nested in it is drawn inside, with its own header and its own toggle.
+ * One plate. Pressing the header opens the space, the way every other card in VEMI opens what
+ * it shows. Closed, the plate lists three projects and "N more"; "N more" shows the rest and
+ * "Show fewer" folds them back. A space nested in it is drawn inside, with its own header.
  */
 function PlateCard({ plate, words, open, toggle, inner = false }: {
   readonly plate: Plate;
@@ -69,7 +100,7 @@ function PlateCard({ plate, words, open, toggle, inner = false }: {
   return (
     <article className={`plate-card${inner ? " inner" : ""}${isOpen ? " open" : ""}`}>
       <div className="plate-card-head">
-        <button type="button" className="plate-card-toggle" aria-expanded={isOpen} onClick={() => toggle(plate.id)}>
+        <button type="button" className="plate-card-toggle" aria-label={`Open ${words.space.toLowerCase()} ${plate.name}`} onClick={() => navigate(venture(plate.id))}>
           <Monogram letters={plate.letters} icon={plate.icon} />
           <span className="plate-card-name">
             <b>{plate.name}</b>
@@ -85,8 +116,10 @@ function PlateCard({ plate, words, open, toggle, inner = false }: {
       {shown.length > 0 && (
         <div className="plate-projects">
           {shown.map((p) => <ProjectRow key={p.id} project={p} words={words} />)}
-          {!isOpen && hidden > 0 && (
-            <button type="button" className="plate-more" onClick={() => toggle(plate.id)}>{hidden} more</button>
+          {hidden > 0 && (
+            <button type="button" className="plate-more" aria-expanded={isOpen} onClick={() => toggle(plate.id)}>
+              {isOpen ? "Show fewer" : `${hidden} more`}
+            </button>
           )}
         </div>
       )}

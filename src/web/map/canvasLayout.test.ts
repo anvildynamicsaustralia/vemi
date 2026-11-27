@@ -103,3 +103,29 @@ describe("click or drag", () => {
     expect(dragged({ x: 10, y: 10 }, -100, -100, 1)).toEqual({ x: 0, y: 0 });
   });
 });
+
+describe("fitZoom", () => {
+  it("fits a wide ground into a phone's width in 10% steps", async () => {
+    const { fitZoom } = await import("./canvasLayout.js");
+    expect(fitZoom(1000, 350)).toBe(0.5);
+    expect(fitZoom(600, 350)).toBe(0.5);
+    expect(fitZoom(500, 350)).toBe(0.7);
+  });
+  it("never zooms past 100% and treats an unknown size as 100%", async () => {
+    const { fitZoom } = await import("./canvasLayout.js");
+    expect(fitZoom(200, 350)).toBe(1);
+    expect(fitZoom(0, 350)).toBe(1);
+  });
+});
+
+describe("the stacked layout", () => {
+  it("puts top-level spaces one under another, and its ground is only as wide as they are", async () => {
+    const { autoLayout, groundSize } = await import("./canvasLayout.js");
+    const plate = (id: string) => ({ id, name: id, letters: "X", icon: null, stage: null, flags: [], counts: { left: 0, done: 0, total: 0 }, projects: [], inner: [] }) as unknown as Plate;
+    const boxes = autoLayout([plate("a"), plate("b")], "stacked");
+    expect(boxes.map((b) => b.x)).toEqual([16, 16]);
+    expect(boxes[1]!.y).toBeGreaterThan(boxes[0]!.y);
+    expect(groundSize(boxes, "stacked").w).toBeLessThan(350);
+    expect(groundSize(autoLayout([plate("a"), plate("b")])).w).toBe(1320);
+  });
+});

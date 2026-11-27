@@ -3,8 +3,8 @@ import type { CanvasPosition } from "@vemi/shared";
 import { leftShare } from "../counts.js";
 import type { LevelWords } from "../levelWords.js";
 import {
-  autoLayout, dragged, gesture, groundSize, positionOf, resolve, SIZE, stepZoom, wires, ZOOM_RESET,
-  type Box, type Point,
+  autoLayout, dragged, fitZoom, gesture, groundSize, positionOf, resolve, SIZE, stepZoom, wires, ZOOM_RESET,
+  type Box, type LayoutFlow, type Point,
 } from "../map/canvasLayout.js";
 import { paths, saveCanvas } from "../api.js";
 import type { Plate, PlateProject } from "../plates.js";
@@ -42,14 +42,18 @@ export function Canvas({ plates, words }: { readonly plates: readonly Plate[]; r
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const zoomRef = useRef(zoom);
   zoomRef.current = zoom;
+  const wrap = useRef<HTMLDivElement>(null);
+  // A phone lays spaces down one column; a desk, side by side.
+  const flow: LayoutFlow = app.phone ? "stacked" : "columns";
+  const fitted = useRef(false);
 
   const ready = saved.data !== null;
   const boxes = useMemo<Box[]>(
-    () => resolve(plates, saved.data?.positions ?? []).map((b) => {
+    () => resolve(plates, saved.data?.positions ?? [], flow).map((b) => {
       const at = moved.get(b.key);
       return at === undefined ? b : { ...b, ...at };
     }),
-    [plates, saved.data, moved],
+    [plates, saved.data, moved, flow],
   );
   const byKey = useMemo(() => new Map(boxes.map((b) => [b.key, b])), [boxes]);
   const names = useMemo(() => {
@@ -127,22 +131,32 @@ export function Canvas({ plates, words }: { readonly plates: readonly Plate[]; r
   };
 
   const tidy = (): void => {
-    const fresh = autoLayout(plates);
+    const fresh = autoLayout(plates, flow);
     setMoved(new Map(fresh.map((b) => [b.key, { x: b.x, y: b.y }])));
     queue(fresh);
     flush();
   };
 
-  const ground = groundSize(boxes);
+  const ground = groundSize(boxes, flow);
   const lines = wires(boxes);
+
+  // On a phone the canvas opens fitted to the screen's width, once, the first time the boxes
+  // are known; after that the zoom is the person's.
+  useEffect(() => {
+    if (fitted.current || !ready || !app.phone || wrap.current === null) return;
+    fitted.current = true;
+    setZoom(fitZoom(ground.w, wrap.current.clientWidth));
+  }, [ready, app.phone, ground.w]);
+  const fit = (): void => { if (wrap.current !== null) setZoom(fitZoom(ground.w, wrap.current.clientWidth)); };
   const tasks = words.tasks.toLowerCase();
 
   return (
-    <div className="canvas-wrap" aria-busy={!ready}>
+    <div className="canvas-wrap" aria-busy={!ready} ref={wrap}>
       <div className="canvas-tools" role="group" aria-label="canvas">
         <button type="button" aria-label="Zoom out" onClick={() => setZoom((z) => stepZoom(z, -1))}>-</button>
         <button type="button" aria-label="Reset zoom" onClick={() => setZoom(ZOOM_RESET)}>{Math.round(zoom * 100)}%</button>
         <button type="button" aria-label="Zoom in" onClick={() => setZoom((z) => stepZoom(z, 1))}>+</button>
+        <button type="button" onClick={fit}>Fit</button>
         <button type="button" onClick={tidy}>Tidy</button>
       </div>
       <div className="canvas-scroll" style={{ width: ground.w * zoom, height: ground.h * zoom }}>

@@ -31,7 +31,7 @@ export function monogramEdit(text: string): string | null {
 type Move = (kind: "states" | "stages", items: readonly Placed[], what: string) => (id: string, to: number) => void;
 
 /**
- * Everything one space keeps about itself: its monogram, which views are on, its states and its
+ * Everything one space keeps about itself: its name, its monogram, which views are on, its states and its
  * stages. A state or stage takes its colour from its kind, so the kind is what is changed here.
  */
 export function SpaceSettingsBody({ venture, moveIn }: {
@@ -49,6 +49,14 @@ export function SpaceSettingsBody({ venture, moveIn }: {
   return (
     <div className="space-settings">
       <Group title="Identity">
+        <Kv label="Name">
+          <EditableText value={venture.name} placeholder="name"
+            onSave={(text, was) => {
+              const name = text.trim();
+              if (name === "") return Promise.resolve(false);
+              return app.edit("ventures", venture.id, { name }, { name: was ?? venture.name }, `renamed ${venture.name}`);
+            }} />
+        </Kv>
         <Kv label="Monogram">
           <EditableText value={venture.monogram} placeholder={initials(venture.name)} allowEmpty
             onSave={(text, was) => app.edit("ventures", venture.id, { monogram: monogramEdit(text) }, { monogram: was }, `changed the monogram of ${venture.name}`)} />

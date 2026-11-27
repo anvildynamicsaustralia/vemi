@@ -176,3 +176,5 @@
 .page.phone .topbar { min-height: var(--touch); margin-bottom: var(--s2); }
 .page.phone .crumb { font-size: var(--t-meta); }
 .page.phone .crumb-name { font-weight: 600; }
+/* The trail's own margin is from before it sat in the top bar; the bar spaces itself. */
+.topbar .crumbs { margin-bottom: 0; }

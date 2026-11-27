@@ -713,7 +713,8 @@ a.word-button:hover { color: var(--vemi-ink); }
 }
 .canvas-tools button { min-width: 34px; height: 32px; padding: 0 8px; border: 0; border-radius: 9px; background: transparent; color: var(--vemi-mid); font-size: var(--t-caption); font-weight: 700; }
 .canvas-tools button:hover { background: var(--vemi-field); color: var(--vemi-ink); }
-.canvas-scroll { position: relative; margin-top: -44px; }
+/* The tools hold their own row, so they never sit over the first box. */
+.canvas-scroll { position: relative; margin-top: 8px; }
 .canvas-ground {
   position: absolute; left: 0; top: 0; transform-origin: 0 0;
   background-image: radial-gradient(var(--vemi-edge) 1px, transparent 1.2px);
@@ -2246,3 +2247,11 @@ textarea.md-write { min-height: 150px; }
 @media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
   .plate-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; }
 }
+
+/* Rename: one field and its two buttons. */
+.rename-body { display: grid; gap: 14px; padding: 0 22px 22px; }
+.rename-actions { display: flex; align-items: center; gap: 16px; }
+/* Add: what is being made, above its name. */
+.add-kind { margin-bottom: 14px; }
+/* A space's name on its own page is pressed to rename it; it keeps the heading's size. */
+.venture-name .venture-name-edit { font: inherit; letter-spacing: inherit; color: inherit; text-align: left; }

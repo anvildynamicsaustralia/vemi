@@ -10,7 +10,8 @@ import { roveTo } from "../rove.js";
 import { routeHref, TABS, type Route, type Tab } from "../router.js";
 import type { LiveStatus } from "../state/live.js";
 import { useLevelWords } from "../levelNames.js";
-import { Spoken } from "./controls.js";
+import { EditableText, Spoken } from "./controls.js";
+import type { Outcome } from "../outcome.js";
 import "./chrome2.css";
 
 /**
@@ -142,6 +143,9 @@ export function TopBar({ route, ventureName, itemName, phone, onGo, onSearch }: 
   const w = useLevelWords();
   const trail = crumbsFor(route, ventureName, itemName, { board: "Board", projects: w.projects });
   const mod = keyNames(onMac()).mod.trim();
+  // On a phone a trail of one only repeats the page's own heading and the lit place in the bar
+  // below, so it takes no room. A deeper trail is where the way back lives, so it stays.
+  if (phone && trail.length <= 1) return null;
   return (
     <header className="topbar">
       <nav className="crumbs" aria-label="where you are">
@@ -214,8 +218,10 @@ export function SurfaceKicker({ children, menu }: { readonly children: ReactNode
 }
 
 /** The way into a venture's three surfaces, and the only one (decision 3). */
-export function VentureHeader({ name, letters, icon, tab, onTab, onBack, menu, views = TABS }: {
+export function VentureHeader({ name, letters, icon, tab, onTab, onBack, menu, views = TABS, onRename }: {
   readonly menu?: ReactNode;
+  /** Given, the name is pressed to rename the space in place. */
+  readonly onRename?: (next: string, was: string | null) => Promise<Outcome | boolean>;
   /** The views the space has on; a view turned off leaves the pill. */
   readonly views?: readonly Tab[];
   readonly name: string;
@@ -232,7 +238,9 @@ export function VentureHeader({ name, letters, icon, tab, onTab, onBack, menu, v
       <button type="button" className="back-link" onClick={onBack}>← Map</button>
       <div className="venture-id">
         <Monogram letters={letters} icon={icon} />
-        <h1 className="venture-name">{name}</h1>
+        <h1 className="venture-name">
+          {onRename === undefined ? name : <EditableText value={name} placeholder="name" className="venture-name-edit" onSave={onRename} />}
+        </h1>
       </div>
       <nav className="venture-tabs" aria-label={`${name}'s surfaces`}>
         {TABS.filter((t) => views.includes(t)).map((t) => (
@@ -295,7 +303,7 @@ export function PhoneBar({ at, onGo, needs = 0 }: { readonly at: Place; readonly
   return (
     <nav className="phone-bar" aria-label="places">
       {PHONE_BAR.map((s) => s.place === "add" ? (
-        <button key={s.place} type="button" className="phone-add" aria-label={`Add a ${w.task.toLowerCase()}`} onClick={() => onGo("add")}>
+        <button key={s.place} type="button" className="phone-add" aria-label={`Add a ${w.task.toLowerCase()}, ${w.project.toLowerCase()} or ${w.space.toLowerCase()}`} onClick={() => onGo("add")}>
           <PlaceIcon place="add" />
           <span className="phone-label" aria-hidden="true">{s.label}</span>
         </button>

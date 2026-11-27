@@ -5,7 +5,8 @@ import { api, createOnce, paths } from "../api.js";
 import { longDate } from "../format.js";
 import { addDays, localToday, weekEnd } from "../monthGrid.js";
 import { addedTo, makeTask, offersTags } from "../newTask.js";
-import { navigate, surface, venture as ventureRoute } from "../router.js";
+import { navigate, projectPage, surface, venture as ventureRoute } from "../router.js";
+import { nextPosition } from "../treeIndex.js";
 import { useLevelWords } from "../levelNames.js";
 import { useResource } from "../state/resources.js";
 import { tagIndex } from "../tagIndex.js";
@@ -42,6 +43,9 @@ function spendShare(): void {
   const rest = withoutShared(window.location.search);
   if (rest !== window.location.search) window.history.replaceState(null, "", `${window.location.pathname}${rest}`);
 }
+
+/** What Add makes. A task is the everyday one, so it is where Add opens. */
+type Kind = "task" | "project" | "space";
 
 type When ="today" | "tomorrow" | "week" | "date";
 
@@ -92,6 +96,9 @@ export function Compose({ seed, onClose }: { readonly seed: ComposeSeed; readonl
   // sits in vanish under the person's hand.
   const [tagsOffered] = useState(() => offersTags(seed));
   const [saving, setSaving] = useState(false);
+  const [kind, setKind] = useState<Kind>("task");
+  // A project or a space is named once, as it is made, and opened once it is.
+  const madeId = useRef<string | null>(null);
   // The task this draft makes, named once. Add pressed again after a failure, or the
   // notice's Try again, sends the same id, so a first try that did land is still one task.
   // A draft changed since — another title, venture or pick — is another task, and another id.
@@ -131,6 +138,40 @@ export function Compose({ seed, onClose }: { readonly seed: ComposeSeed; readonl
     navigate(when === "today" ? surface("today") : ventureRoute(venture.id, "board"), { replace: true });
   };
 
+  const name = smart.text.trim();
+  const readyToMake = name !== "" && !saving && (kind === "space" || venture !== null);
+  const make = async (): Promise<void> => {
+    if (!readyToMake) return;
+    setSaving(true);
+    const id = madeId.current ?? crypto.randomUUID();
+    madeId.current = id;
+    const ok = kind === "space"
+      ? await app.act(createOnce("ventures", { id, name, position: nextPosition(index?.ordered ?? []) }))
+      : venture === null ? false
+      : await app.act(createOnce("projects", { id, ventureId: venture.id, name, position: nextPosition(venture.projects) }));
+    setSaving(false);
+    if (!ok) return;
+    madeId.current = null;
+    draft.made();
+    if (kind === "space") {
+      if (ok === "sent") app.notify(`Added ${name}`);
+      navigate(ventureRoute(id), { replace: true });
+    } else if (venture !== null) {
+      rememberVenture(venture.id);
+      if (ok === "sent") app.notify(`Added ${name} to ${venture.name}`);
+      navigate(projectPage(venture.id, id), { replace: true });
+    }
+  };
+  const pickKind = (k: Kind): void => {
+    madeId.current = null;
+    setKind(k);
+  };
+  const KINDS: readonly { readonly id: Kind; readonly label: string }[] = [
+    { id: "task", label: words.task },
+    { id: "project", label: words.project },
+    { id: "space", label: words.space },
+  ];
+
   const pickWhen = (id: When): void => setWhen(when === id ? null : id);
   const pickVenture = (id: string): void => {
     if (id === venture?.id) return;
@@ -143,12 +184,48 @@ export function Compose({ seed, onClose }: { readonly seed: ComposeSeed; readonl
   return (
     <div className="add">
       <SurfaceKicker menu={<MoreMenu label="add" items={app.phoneMenu} />}>Add</SurfaceKicker>
-      <input className="big-field" dir="auto" autoFocus value={smart.text} placeholder="What needs doing?" aria-label="title"
+      <div className="chips seg add-kind" role="radiogroup" aria-label="what to add">
+        {KINDS.map((k) => (
+          <Chip key={k.id} role="radio" aria-checked={kind === k.id} on={kind === k.id} onClick={() => pickKind(k.id)}>
+            {k.label}
+          </Chip>
+        ))}
+      </div>
+      <input className="big-field" dir="auto" autoFocus value={smart.text}
+        placeholder={kind === "task" ? "What needs doing?" : `Name the ${(kind === "project" ? words.project : words.space).toLowerCase()}`}
+        aria-label={kind === "task" ? "title" : "name"}
         onChange={(e) => smart.setText(e.target.value)}
-        onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void save(); } }} />
-      <SmartChips chips={smart.chips} onRestore={smart.restore} />
+        onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void (kind === "task" ? save() : make()); } }} />
+      {kind === "task" && <SmartChips chips={smart.chips} onRestore={smart.restore} />}
 
-      {index === null && tree.error !== null ? (
+      {kind !== "task" ? (
+        <div className="add-groups">
+          {kind === "project" && (index?.ordered.length ?? 0) > 0 && (
+            <div>
+              <div className="kicker add-label">In {words.space.toLowerCase()}</div>
+              <div className="chips" role="radiogroup" aria-label={words.space.toLowerCase()}>
+                {(index?.ordered ?? []).map((v) => (
+                  <Chip key={v.id} role="radio" aria-checked={venture?.id === v.id} on={venture?.id === v.id} onClick={() => pickVenture(v.id)}>
+                    {v.name}
+                  </Chip>
+                ))}
+              </div>
+            </div>
+          )}
+          {kind === "project" && index !== null && index.ordered.length === 0 && (
+            <p className="rows-empty">Make a {words.space.toLowerCase()} first: a {words.project.toLowerCase()} lives in one.</p>
+          )}
+          <div className="add-submit">
+            <button type="button" className="primary-button" disabled={!readyToMake} onClick={() => void make()}>
+              Add {(kind === "project" ? words.project : words.space).toLowerCase()}
+            </button>
+            <span className="fill" />
+            <button type="button" className="back-link" onClick={onClose}>Cancel</button>
+          </div>
+        </div>
+      ) :
+
+      index === null && tree.error !== null ? (
         <Pending error={tree.error} onRetry={tree.refetch} />
       ) : index !== null && index.ordered.length === 0 ? (
         <div className="add-groups">

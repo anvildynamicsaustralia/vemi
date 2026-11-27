@@ -45,6 +45,7 @@ export function Palette({ onClose }: { readonly onClose: () => void }) {
       projects: ventures.flatMap((v) => v.projects),
       tasks: ventures.flatMap((v) => tasksOf(v).map((t) => ({ id: t.id, ventureId: v.id, title: t.title }))),
       spaceName: (id) => index?.ventures.get(id)?.name ?? "",
+      spaces: ventures.map((v) => ({ id: v.id, name: v.name })),
     });
   }, [tree.data, typed, words]);
   const rows = sections.flatMap((s) => s.rows);
@@ -58,6 +59,12 @@ export function Palette({ onClose }: { readonly onClose: () => void }) {
   const run = (row: PaletteEntry): void => {
     if (typeof row.to === "object" && "pin" in row.to) return;
     onClose();
+    if (row.key === "do:new-project") {
+      // Add on Project, in the last space opened when there is one.
+      const last = lastVenture();
+      app.compose({ kind: "project", ...(last === null ? {} : { ventureId: last }) });
+      return;
+    }
     if (row.to === "compose") {
       // The fallback row carries the typed text in `where`; the plain action starts empty.
       app.compose(row.where === "" ? {} : { title: row.where });

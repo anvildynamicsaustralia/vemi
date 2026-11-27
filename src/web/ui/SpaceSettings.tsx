@@ -43,7 +43,10 @@ export function SpaceSettingsBody({ venture, moveIn }: {
   const views: Record<VentureView, string> = { board: "Board", projects: w.projects };
   const switchView = (view: VentureView): void => {
     const next = toggleView(venture.views, view);
-    if (next === null) return;
+    if (next === null) {
+      app.notify(`A ${w.space.toLowerCase()} keeps one view on. Turn the other on first.`);
+      return;
+    }
     void app.edit("ventures", venture.id, { views: next }, { views: venture.views }, `changed the views of ${venture.name}`);
   };
   return (

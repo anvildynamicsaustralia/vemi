@@ -58,7 +58,7 @@ function SpaceMenu({ plate, words }: { readonly plate: Plate; readonly words: Le
     {open === "settings" && <SpaceSettings ventureId={plate.id} onClose={() => setOpen(null)} />}
     {open === "rename" && (
       <RenameSheet what={space} name={plate.name} onClose={() => setOpen(null)}
-        onRename={(name) => app.edit("ventures", plate.id, { name }, { name: plate.name }, `renamed ${plate.name}`)} />
+        onRename={(name) => app.edit("ventures", plate.id, { name }, { name: plate.name }, `renamed ${plate.name}`).then((ok) => { if (ok === "sent") app.notify(`Renamed to ${name}.`, { undo: true }); return ok; })} />
     )}
     {open === "project" && (
       <Sheet onClose={() => setOpen(null)} className="new-space-sheet" placement="centre" label={`new ${project} in ${plate.name}`}>
@@ -68,7 +68,7 @@ function SpaceMenu({ plate, words }: { readonly plate: Plate; readonly words: Le
           <button type="button" className="close-button" aria-label="close" onClick={() => setOpen(null)}>×</button>
         </div>
         <div className="sheet-body">
-          <AddLine placeholder={`name this ${project}`} label={`Add ${project}`} onEscape={() => setOpen(null)}
+          <AddLine placeholder={`name this ${project}`} label={`Add ${project}`} onEscape={() => setOpen(null)} autoFocus
             onAdd={async (name) => {
               const ok = await app.act(createOnce("projects", { ventureId: plate.id, name, position: nextPosition(resourceAt<Tree>(paths.tree).data?.ventures.find((v) => v.id === plate.id)?.projects ?? []) }));
               if (ok) setOpen(null);
@@ -99,7 +99,7 @@ function PlateCard({ plate, words, open, toggle, inner = false }: {
   const tasks = words.tasks.toLowerCase();
   return (
     <article className={`plate-card${inner ? " inner" : ""}${isOpen ? " open" : ""}`}>
-      <div className="plate-card-head">
+      <div className="plate-card-head" data-hold>
         <button type="button" className="plate-card-toggle" aria-label={`Open ${words.space.toLowerCase()} ${plate.name}`} onClick={() => navigate(venture(plate.id))}>
           <Monogram letters={plate.letters} icon={plate.icon} />
           <span className="plate-card-name">
@@ -141,10 +141,11 @@ export function NewSpaceSheet({ words, onAdd, onClose }: {
     <Sheet onClose={onClose} className="new-space-sheet" placement="centre" label={`new ${word}`}>
       <div className="sheet-head">
         <span className="label">New {word}</span>
+        <span className="fill" />
         <button type="button" className="close-button" aria-label="close" onClick={onClose}>×</button>
       </div>
       <div className="sheet-body">
-        <AddLine placeholder={`name this ${word}`} label={`Add ${word}`} onAdd={onAdd} onEscape={onClose} />
+        <AddLine placeholder={`name this ${word}`} label={`Add ${word}`} onAdd={onAdd} onEscape={onClose} autoFocus />
       </div>
     </Sheet>
   );

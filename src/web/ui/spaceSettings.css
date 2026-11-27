@@ -13,3 +13,7 @@
 .space-view:hover { color: var(--vemi-ink); }
 .space-view[aria-pressed="true"] { background: var(--vemi-ink); color: var(--vemi-page); }
 .space-settings-sheet .sheet-body { max-height: 70vh; overflow-y: auto; }
+/* The boxes sit inside the sheet's padding, in line with its heading, not on its edges. */
+.space-settings-sheet .sheet-body { padding: 0 22px 22px; }
+.space-settings .group + .group, .space-settings > * + * { margin-top: 14px; }
+@media (max-width: 719px) { .space-settings-sheet .sheet-body { padding: 0 16px 16px; } .space-view { min-height: var(--touch); } }

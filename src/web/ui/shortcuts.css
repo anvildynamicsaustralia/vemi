@@ -5,3 +5,5 @@
 .shortcuts-row dt { margin: 0; flex: none; }
 .shortcuts-row dd { margin: 0; min-width: 0; text-align: right; font-size: var(--t-row-sm); color: var(--vemi-ink); overflow-wrap: anywhere; }
 .shortcuts-keys { font: inherit; font-size: var(--t-meta); color: var(--vemi-dim); border: 1px solid var(--vemi-hair); border-radius: var(--r-button); padding: 1px 6px; white-space: pre; }
+/* The rows sit in the sheet's padding like its heading does, clear of its edges. */
+.shortcuts .sheet-body { padding: 0 22px 22px; }

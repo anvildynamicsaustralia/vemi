@@ -126,7 +126,9 @@
   --drift-3: 29s;
 
   /* Not rows of the table but mixed from them: a scrim and a hover wash from ink. */
-  --vemi-scrim: color-mix(in srgb, var(--vemi-ink) 28%, transparent);
+  /* The dim behind a sheet. Black, not ink: in dark mode ink is light, and a scrim mixed from
+     it washed the page grey instead of dimming it. Heavier in the dark, where the page already is. */
+  --vemi-scrim: rgb(0 0 0 / 0.32);
   --vemi-hover: color-mix(in srgb, var(--vemi-ink) 3.5%, transparent);
 
   --phone-bar: 78px;
@@ -705,7 +707,10 @@ a.word-button:hover { color: var(--vemi-ink); }
    The ground is scaled by the zoom; its wrapper takes the scaled size so the page scrolls
    to match. Colour is only ink, hairline and the live accent, which marks "on today". */
 .canvas-wrap { position: relative; border: 1px solid var(--vemi-hair); border-radius: var(--r-plate); background: var(--vemi-white); height: 560px; overflow: auto; }
-.page.phone .canvas-wrap { height: 520px; }
+/* On a phone the canvas is one stacked column you read and press: it grows with the page
+   instead of scrolling inside it, and a swipe that starts on a box scrolls. */
+.page.phone .canvas-wrap { height: auto; overflow-y: visible; }
+.page.phone .canvas-box { touch-action: auto; cursor: pointer; }
 .canvas-tools {
   position: sticky; left: 12px; top: 12px; z-index: 6;
   display: inline-flex; gap: 4px; margin: 12px 0 0 12px; padding: 3px;
@@ -2138,7 +2143,8 @@ textarea.md-write { min-height: 150px; }
 .map-greeting { margin: 0; font-size: var(--t-venture); font-weight: 600; letter-spacing: var(--track-name); line-height: var(--lh-name); }
 .map-date { margin: 4px 0 0; font-size: var(--t-body); color: var(--vemi-mid); }
 .map-header-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.map-overdue { font-size: var(--t-body); color: var(--vemi-live); }
+.map-overdue { font-size: var(--t-body); color: var(--vemi-live); background: none; border: 0; padding: 0; min-height: var(--target-fine); cursor: pointer; }
+.map-overdue:hover { text-decoration: underline; }
 
 .map-section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
 .map-section-title { margin: 0; font-size: var(--t-row); font-weight: 600; }
@@ -2255,3 +2261,17 @@ textarea.md-write { min-height: 150px; }
 .add-kind { margin-bottom: 14px; }
 /* A space's name on its own page is pressed to rename it; it keeps the heading's size. */
 .venture-name .venture-name-edit { font: inherit; letter-spacing: inherit; color: inherit; text-align: left; }
+
+/* Delete for good: the words to type, in their own case. */
+.delete-confirm-say { display: block; margin-bottom: 8px; font-size: var(--t-caption); color: var(--vemi-mid); }
+.delete-confirm-word { color: var(--vemi-ink); font-weight: 600; }
+/* While a sheet is open the notice speaks from the top, so it never sits over the sheet's
+   own warning, field or buttons (a phone's sheet rises from the bottom edge). */
+body:has(.backdrop) .notice,
+body:has(.backdrop) .page.phone ~ .notice { top: calc(16px + env(safe-area-inset-top)); bottom: auto; z-index: 90; }
+
+:root[data-theme="dark"] { --vemi-scrim: rgb(0 0 0 / 0.55); }
+
+/* On a phone a notice takes the width it has, so a sentence and its Undo sit on a line or two
+   instead of four. */
+@media (max-width: 719px) { .notice { width: calc(100vw - 32px); justify-content: space-between; } }

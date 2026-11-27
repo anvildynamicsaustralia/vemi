@@ -26,7 +26,10 @@ export function MapHeader({ today }: { readonly today: Today }) {
         <button type="button" className="word-button map-today" onClick={() => navigate(surface(TODAY))}>
           {counts.on} on today
         </button>
-        {counts.overdue > 0 && <span className="map-overdue">{counts.overdue} overdue</span>}
+        {/* Today lists what is late first, so that is where "overdue" goes. */}
+        {counts.overdue > 0 && (
+          <button type="button" className="map-overdue" onClick={() => navigate(surface(TODAY))}>{counts.overdue} overdue</button>
+        )}
         {!app.phone && (
           <button type="button" className="word-button map-add-task" onClick={() => app.compose()}>Add</button>
         )}

@@ -40,15 +40,17 @@ export interface Picked extends Prefill {
 }
 
 /**
- * What the Today add box saves: the task is picked for today, unless the title named a day,
- * in which case it is due that day and not picked. A repeat or a time alone leaves it picked.
+ * What the Today add box saves: the task is picked for today, unless the title named another
+ * day, in which case it is due that day and not picked. Naming today itself still picks it. A repeat or a time alone leaves it picked.
  */
 export function todayPicked(
   ventureId: string,
   on: string,
   read: { readonly dueOn: string | null; readonly repeat: string | null; readonly remindAt: string | null },
 ): Picked {
-  return { ventureId, pickedOn: read.dueOn === null ? on : null, dueOn: read.dueOn, repeat: read.repeat, remindAt: read.remindAt };
+  // "today" in the title is today: picked, as the box says, and due today as it was read.
+  const picked = read.dueOn === null || read.dueOn === on;
+  return { ventureId, pickedOn: picked ? on : null, dueOn: read.dueOn, repeat: read.repeat, remindAt: read.remindAt };
 }
 
 /** The venture the task goes in, as far as a request needs to know it. */

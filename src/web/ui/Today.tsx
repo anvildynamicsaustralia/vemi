@@ -8,7 +8,7 @@ import { addLine, todayPicked } from "../newTask.js";
 import { isStray, type LastTick } from "../tickGuard.js";
 import { tasksSender } from "../tasksSender.js";
 import { useResource } from "../state/resources.js";
-import { laterPlan, todayView, type TodayView as View } from "../todayView.js";
+import { laterPlan, moveTo, todayView, type TodayView as View } from "../todayView.js";
 import { tickTask } from "../tickTask.js";
 import { indexTree } from "../treeIndex.js";
 import { useLevelWords } from "../levelNames.js";
@@ -49,6 +49,8 @@ export interface TodayScreenProps {
   readonly onCompose: () => void;
   readonly onTick: (task: TodayTask) => void;
   readonly onLater: (task: TodayTask) => void;
+  /** Due tomorrow and off today: the way on for a task that is already late. */
+  readonly onTomorrow: (task: TodayTask) => void;
   readonly onOpen: (id: string) => void;
   readonly onOptions: (task: TodayTask) => void;
   readonly onPull: (task: Coming) => void;
@@ -116,7 +118,11 @@ export function TodayScreen(p: TodayScreenProps) {
           <TodayMeta task={view.next} where={p.whereOf(view.next)} on={p.on} />
           <div className="next-up-actions">
             <button type="button" className="primary-button" onClick={() => p.onTick(view.next!)}>Done</button>
-            <button type="button" className="quiet-button" onClick={() => p.onLater(view.next!)}>Later today</button>
+            {/* Overdue goes first whatever its place, so Later would leave it where it is. What
+                a late task wants is a new day. */}
+            {view.next.overdue
+              ? <button type="button" className="quiet-button" onClick={() => p.onTomorrow(view.next!)}>Tomorrow</button>
+              : <button type="button" className="quiet-button" onClick={() => p.onLater(view.next!)}>Later today</button>}
           </div>
         </section>
       )}
@@ -246,7 +252,11 @@ export function TodayView() {
     const done = t.stateKind === "finished" || ticked.get(t.id) === true;
     const moved = tickTask({ act: app.act, update: api.update, archive: api.archive, notify: app.notify }, at.task, at.venture, done);
     if (moved === null) return;
-    void moved;
+    // Said, with its way back, as every other change on Today is. A tick kept on this device is
+    // already said by the kept notice.
+    void moved.then((outcome) => {
+      if (outcome === "sent") app.notify(done ? `Reopened ${t.title}.` : `Done: ${t.title}.`, { undo: true });
+    });
     setTicked(new Map(ticked).set(t.id, !done));
     setPopped(done ? null : t.id);
     // The tick that leaves nothing open clears the day; only that tick bursts, and only once a day.
@@ -264,6 +274,18 @@ export function TodayView() {
       what: `moved ${t.title} later today`,
       undo: write(false),
       redo: write(true),
+    });
+  };
+
+  /** Tomorrow, for a late task: due tomorrow and off today's list, as Move to does it. */
+  const tomorrow = (t: TodayTask): void => {
+    const was = index.tasks.get(t.id)?.task;
+    const back = { dueOn: was?.dueOn ?? null, pickedOn: was?.pickedOn ?? null };
+    const patch = moveTo("tomorrow", on);
+    void app.act(() => api.update("tasks", t.id, { ...patch }), {
+      what: `moved ${t.title} to tomorrow`,
+      undo: () => api.update("tasks", t.id, back),
+      redo: () => api.update("tasks", t.id, { ...patch }),
     });
   };
 
@@ -323,7 +345,7 @@ export function TodayView() {
       <AppLockOfferHere />
       <Tip name="today" />
       <TodayScreen view={view} on={on} whereOf={whereOf} draft={draft} chips={smart.chips} onRestore={smart.restore} popped={popped} foldOpen={foldOpen} burst={burst}
-        onDraft={smart.setText} onAdd={add} onCompose={compose} onTick={tick} onLater={later}
+        onDraft={smart.setText} onAdd={add} onCompose={compose} onTick={tick} onLater={later} onTomorrow={tomorrow}
         onOpen={app.openTask} onOptions={(t) => setOptionsId(t.id)} onPull={pull} onFold={() => setFoldOpen(!foldOpen)}
         home={home()?.name ?? null} onHome={nextHome} />
       {optionsTask !== undefined && <TaskOptions key={optionsTask.id} task={optionsTask} on={on} onClose={() => setOptionsId(null)} />}

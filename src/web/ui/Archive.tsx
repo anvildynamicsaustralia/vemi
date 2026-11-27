@@ -322,7 +322,8 @@ function DeleteSheet({ what, onClose, onDone }: {
             <div className="delete-warning">This cannot be undone.</div>
 
             <label className="delete-confirm">
-              <span className="label">Type {preview.confirm} to confirm</span>
+              {/* Not in the kicker's capitals: the words are typed as they are shown. */}
+              <span className="delete-confirm-say">Type <b className="delete-confirm-word">{preview.confirm}</b> to confirm</span>
               <input
                 className="field"
                 autoFocus

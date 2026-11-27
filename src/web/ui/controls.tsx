@@ -245,7 +245,7 @@ export function EditableText({ value, onSave, placeholder, multiline = false, al
  * A line that takes `onAddMany` makes one item a line from a paste of several lines
  * (`pastedLines.ts`), and leaves what was already typed where it is.
  */
-export function AddLine({ placeholder, onAdd, onAddMany, label = "Add", onEscape, smart = false, cue = false }: {
+export function AddLine({ placeholder, onAdd, onAddMany, label = "Add", onEscape, smart = false, cue = false, autoFocus = false }: {
   readonly placeholder: string;
   /** With `smart`, `text` is the title left after the date, repeat and time words, and `read` is what they meant. */
   readonly onAdd: (text: string, read: SmartPicked) => Promise<Outcome | boolean> | void;
@@ -256,13 +256,15 @@ export function AddLine({ placeholder, onAdd, onAddMany, label = "Add", onEscape
   readonly smart?: boolean;
   /** First run's mark: the accent ring, and the line takes focus while it holds. */
   readonly cue?: boolean;
+  /** Takes the focus as it opens: the line is the one thing a sheet asks for. */
+  readonly autoFocus?: boolean;
 }) {
   const reading = useSmartTitle();
   const { text, setText } = reading;
   const field = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    if (cue) field.current?.focus();
-  }, [cue]);
+    if (cue || autoFocus) field.current?.focus();
+  }, [cue, autoFocus]);
   // The ref drops the second submit at once; the state draws the button as busy.
   const busy = useRef(false);
   const [adding, setAdding] = useState(false);

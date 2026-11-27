@@ -93,7 +93,7 @@ export function TaskOptions({ task, on, onClose }: {
         <button type="button" className="quiet-button" onClick={() => {
           void app.archive("tasks", task.id, words.task.toLowerCase());
           onClose();
-        }}>Delete</button>
+        }}>Archive</button>
         <span className="fill" />
         <button type="button" className="primary-button" onClick={onClose}>Done</button>
       </div>

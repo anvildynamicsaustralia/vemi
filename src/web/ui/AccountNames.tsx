@@ -118,12 +118,12 @@ export function AccountNames() {
             <label key={level} className="names-field">
               <span className="names-step" aria-hidden="true">{i + 1}</span>
               <span className="names-label">{LABELS[level]}</span>
-              <input value={draft[level] ?? names[level]} maxLength={30} aria-label={LABELS[level]}
+              <input className="field" value={draft[level] ?? names[level]} maxLength={30} aria-label={LABELS[level]}
                 placeholder={DEFAULT_LEVEL_NAMES[level]}
                 onChange={(e) => setDraft({ ...draft, [level]: e.target.value })}
                 onBlur={() => commitName(level)}
                 onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }} />
-              <span className="names-was">{names[level] === DEFAULT_LEVEL_NAMES[level] ? "Shipped word" : `Was ${DEFAULT_LEVEL_NAMES[level]}`}</span>
+              <span className="names-was">{names[level] === DEFAULT_LEVEL_NAMES[level] ? "Default" : `Default: ${DEFAULT_LEVEL_NAMES[level]}`}</span>
             </label>
           ))}
         </div>
@@ -151,7 +151,7 @@ export function AccountNames() {
             <label key={i} className="names-field">
               <span className="names-step" aria-hidden="true">{i + 1}</span>
               <span className="names-label">Stage {i + 1}</span>
-              <input value={stageDraft[i] ?? s.name} maxLength={60} aria-label={`Stage ${i + 1}`}
+              <input className="field" value={stageDraft[i] ?? s.name} maxLength={60} aria-label={`Stage ${i + 1}`}
                 onChange={(e) => setStageDraft({ ...stageDraft, [i]: e.target.value })}
                 onBlur={() => commitStage(i)}
                 onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); }} />

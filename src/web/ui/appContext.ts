@@ -16,6 +16,8 @@ export interface ComposeSeed extends Prefill {
   readonly body?: string;
   /** Opened from today, where a new task is almost always meant for today. */
   readonly onToday?: boolean;
+  /** What Add opens on making: a task unless said. */
+  readonly kind?: "task" | "project" | "space";
 }
 
 export interface IconTarget {

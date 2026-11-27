@@ -35,3 +35,5 @@ a.row-action { text-decoration: none; }
 /* On a phone each row is a way in, so it reads as one: full ink, not the quiet desk list. */
 .account-phone .account-nav button { color: var(--vemi-ink); min-height: var(--touch); }
 .account-phone .account-nav button:active { background: var(--vemi-field); }
+/* "‹ Account" is a way back, at the start of the line like every other. */
+.account-panel > .back-link { justify-self: start; align-self: flex-start; width: auto; text-align: left; }

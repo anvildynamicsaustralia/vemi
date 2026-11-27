@@ -49,7 +49,9 @@ export function Canvas({ plates, words }: { readonly plates: readonly Plate[]; r
 
   const ready = saved.data !== null;
   const boxes = useMemo<Box[]>(
-    () => resolve(plates, saved.data?.positions ?? [], flow).map((b) => {
+    // A phone draws the stacked layout as it is: positions were set on a desk's wide ground and
+    // would scatter the column. Nothing is dragged on a phone, so nothing it shows is saved.
+    () => resolve(plates, flow === "stacked" ? [] : saved.data?.positions ?? [], flow).map((b) => {
       const at = moved.get(b.key);
       return at === undefined ? b : { ...b, ...at };
     }),
@@ -89,6 +91,8 @@ export function Canvas({ plates, words }: { readonly plates: readonly Plate[]; r
 
   const press = (e: PointerEvent<HTMLElement>, box: Box): void => {
     if (e.button !== 0) return;
+    // On a phone a box is pressed to open it; a swipe that starts on one scrolls the canvas.
+    if (flow === "stacked") { held.current = { key: box.key, from: { x: box.x, y: box.y }, sx: e.clientX, sy: e.clientY, dragging: false }; return; }
     held.current = { key: box.key, from: { x: box.x, y: box.y }, sx: e.clientX, sy: e.clientY, dragging: false };
     try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* a pointer that is already gone */ }
   };
@@ -100,6 +104,8 @@ export function Canvas({ plates, words }: { readonly plates: readonly Plate[]; r
     const dy = e.clientY - h.sy;
     if (!h.dragging) {
       if (gesture(dx, dy) === "click") return;
+      // A phone's press that travels was a scroll, not a drag: it opens nothing either.
+      if (flow === "stacked") { held.current = null; return; }
       h.dragging = true;
       setLifted(h.key);
     }
@@ -147,7 +153,15 @@ export function Canvas({ plates, words }: { readonly plates: readonly Plate[]; r
     fitted.current = true;
     setZoom(fitZoom(ground.w, wrap.current.clientWidth));
   }, [ready, app.phone, ground.w]);
-  const fit = (): void => { if (wrap.current !== null) setZoom(fitZoom(ground.w, wrap.current.clientWidth)); };
+  // Fit shows every box: the zoom that takes what is drawn into the view both ways.
+  const fit = (): void => {
+    const el = wrap.current;
+    if (el === null) return;
+    const right = Math.max(0, ...boxes.map((b) => b.x + SIZE[b.kind].w)) + 40;
+    const bottom = Math.max(0, ...boxes.map((b) => b.y + SIZE[b.kind].h)) + 40;
+    setZoom(Math.min(fitZoom(right, el.clientWidth), fitZoom(bottom, el.clientHeight - 56)));
+    el.scrollTo({ left: 0, top: 0 });
+  };
   const tasks = words.tasks.toLowerCase();
 
   return (
@@ -157,7 +171,8 @@ export function Canvas({ plates, words }: { readonly plates: readonly Plate[]; r
         <button type="button" aria-label="Reset zoom" onClick={() => setZoom(ZOOM_RESET)}>{Math.round(zoom * 100)}%</button>
         <button type="button" aria-label="Zoom in" onClick={() => setZoom((z) => stepZoom(z, 1))}>+</button>
         <button type="button" onClick={fit}>Fit</button>
-        <button type="button" onClick={tidy}>Tidy</button>
+        {/* Tidy sets the account's layout, which is arranged on a desk. */}
+        {flow === "columns" && <button type="button" onClick={tidy}>Tidy</button>}
       </div>
       <div className="canvas-scroll" style={{ width: ground.w * zoom, height: ground.h * zoom }}>
         <div className="canvas-ground" style={{ width: ground.w, height: ground.h, transform: `scale(${zoom})` }}>

@@ -37,6 +37,8 @@ export interface PaletteSource {
   readonly projects: readonly Pinnable[];
   readonly tasks: readonly Findable[];
   readonly spaceName: (ventureId: string) => string;
+  /** The spaces, to go to by name. */
+  readonly spaces?: readonly { readonly id: string; readonly name: string }[];
 }
 
 /** The most other projects an empty field lists, and the most of any group a typed word does. */
@@ -60,14 +62,13 @@ const hinted = (row: PaletteRow): PaletteEntry => {
 
 const lower = (word: string): string => word.toLocaleLowerCase();
 
-/** New task, New project, Weekly review and Search. */
+/** New task, New project and Weekly review. Search is under Go to, once. */
 function actions(words: LevelWords, last: PaletteSource["last"]): readonly PaletteEntry[] {
   const review = places(null).find((r) => r.key === "go:review");
   const rows: readonly PaletteRow[] = [
     { key: "do:new-task", kind: "Add", title: `New ${lower(words.task)}`, where: "", to: "compose" },
     { key: "do:new-project", kind: "Add", title: `New ${lower(words.project)}`, where: last?.name ?? "", to: last === null ? HOME : venture(last.id, "projects") },
     ...(review === undefined ? [] : [{ ...review, key: "do:review", kind: "Open" }]),
-    { key: "do:search", kind: "Open", title: "Search", where: "", to: surface("search") },
   ];
   return rows.map(hinted);
 }
@@ -116,6 +117,7 @@ export function paletteSections(typed: string, source: PaletteSource): readonly 
   const found = [
     ...section("Actions", match(actions(source.words, source.last))),
     ...section("Go to", match(goTo())),
+    ...section(words.spaces, match((source.spaces ?? []).map((v) => ({ key: `space:${v.id}`, kind: words.space, title: v.name, where: "", to: venture(v.id) })))),
     ...section("Pinned", match(pinned)),
     ...section(words.projects, match(others)),
     ...section(words.tasks, match(taskRows(words, source.tasks, source.spaceName))),

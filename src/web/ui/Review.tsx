@@ -1,3 +1,4 @@
+import { navigate, surface } from "../router.js";
 import { useMemo, useState, type ReactNode } from "react";
 import type { DateOnly, Review, ReviewTask, Tree } from "@vemi/shared";
 import { reviewOf, weeklyOn } from "@vemi/shared";
@@ -78,11 +79,11 @@ export function ReviewScreen(p: ReviewScreenProps) {
       <div className="review">
         <h2 className="surface-title">Review done</h2>
         <p className="review-nothing">{p.doneOn === null ? dayStamp(p.on) : dayStamp(p.doneOn)}</p>
-        {p.repeated ? null : (
-          <div className="review-nav">
-            <button type="button" className="review-go" onClick={p.onRepeat}>Repeat every week</button>
-          </div>
-        )}
+        {/* The end leads somewhere: back to the day, and (once) a weekly reminder to come back. */}
+        <div className="review-nav">
+          <button type="button" className="primary-button" onClick={() => navigate(surface("today"))}>Go to Today</button>
+          {p.repeated ? null : <button type="button" className="review-go" onClick={p.onRepeat}>Repeat every week</button>}
+        </div>
       </div>
     );
   }
@@ -204,7 +205,9 @@ export function ReviewView() {
     void makeTasks(tasksSender(app), ["Weekly review"], venture, {
       ventureId: venture.id, dueOn: addDays(on, 7), repeat: weeklyOn(on),
     }).then((made) => {
-      if (made > 0) setRepeated(true);
+      if (made === 0) return;
+      setRepeated(true);
+      app.notify(`Added "Weekly review" to ${venture.name}, due every week from ${dayStamp(addDays(on, 7))}.`, { undo: true });
     });
   };
 

@@ -96,7 +96,7 @@ export function Compose({ seed, onClose }: { readonly seed: ComposeSeed; readonl
   // sits in vanish under the person's hand.
   const [tagsOffered] = useState(() => offersTags(seed));
   const [saving, setSaving] = useState(false);
-  const [kind, setKind] = useState<Kind>("task");
+  const [kind, setKind] = useState<Kind>(seed.kind === undefined ? "task" : seed.kind);
   // A project or a space is named once, as it is made, and opened once it is.
   const madeId = useRef<string | null>(null);
   // The task this draft makes, named once. Add pressed again after a failure, or the
@@ -105,6 +105,13 @@ export function Compose({ seed, onClose }: { readonly seed: ComposeSeed; readonl
   const named = useRef<{ readonly draft: string; readonly id: string } | null>(null);
 
   const today = app.today ?? localToday();
+  // A day typed in the title is the latest word on When: it replaces a chip set before it (Add
+  // opened from Today starts on Today), and lights the chip that says the same day.
+  const typedDue = smart.picked.dueOn;
+  useEffect(() => {
+    if (typedDue === null) return;
+    setWhen(typedDue === today ? "today" : typedDue === addDays(today, 1) ? "tomorrow" : null);
+  }, [typedDue, today]);
   const venture = index === null ? null
     : index.ventures.get(chosen ?? "") ?? index.ventures.get(homeVentureId() ?? "") ?? index.ordered[0] ?? null;
   const project = venture?.projects.find((p) => p.id === projectId) ?? null;

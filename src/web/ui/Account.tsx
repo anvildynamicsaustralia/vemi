@@ -10,6 +10,7 @@ import { refreshNewTaskVenture, useApp } from "./appContext.js";
 import { Monogram, SurfaceKicker } from "./Chrome.js";
 import { MoreMenu } from "./Menu.js";
 import { useMedia, PHONE } from "./useMedia.js";
+import { useBackCloses } from "./controls.js";
 import "./account.css";
 import "./detail.css";
 import { AccountAbout } from "./AccountAbout.js";
@@ -98,6 +99,8 @@ export function Account({ onClose, onSignOut, live, waiting, known, onKnown }: {
   const local = isLocal();
   const shown = visibleSections({ owner: who?.operator === true }, PRIVACY_READY, local);
   const open = openSection(chosen, shown, phone);
+  // On a phone an open section is a step in: the back gesture returns to the list, as a sheet's does.
+  useBackCloses(() => setChosen(null), phone && open !== null);
   const liveSaid = live === "live" ? "connected" : live === "connecting" ? "connecting" : "no connection";
 
   const panelFor = (id: SectionId): ReactNode => {

@@ -830,10 +830,11 @@ function Shell({ said, onSaid, onSignOut }: {
           setShortcutsOpen(true);
           return;
         case "project": {
-          // A new project starts on the last opened space's Projects tab.
+          // A new project opens Add on Project, in the space on screen or the last one opened.
+          // Before, with no space opened yet on this device, P went to the Map and did nothing.
           event.preventDefault();
-          const last = lastVenture();
-          to(last === null ? HOME : venture(last, "projects"));
+          const inSpace = route.ventureId ?? lastVenture();
+          compose({ kind: "project", ...(inSpace === null ? {} : { ventureId: inSpace }) });
           return;
         }
         case "search":
@@ -989,7 +990,9 @@ function VentureSurface({ index, route, ventureId, tab, onTab, onBack }: {
   const renameSpace = async (next: string, was: string): Promise<Outcome | boolean> => {
     const name = next.trim();
     if (name === "") return false;
-    return app.edit("ventures", ventureId, { name }, { name: was }, `renamed ${was}`);
+    const ok = await app.edit("ventures", ventureId, { name }, { name: was }, `renamed ${was}`);
+    if (ok === "sent") app.notify(`Renamed to ${name}.`, { undo: true });
+    return ok;
   };
   // On a venture's own tabs the header's ⋯ is the venture's; a project's or a task's page
   // carries its own, so a page never has two.

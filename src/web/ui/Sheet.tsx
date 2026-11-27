@@ -37,6 +37,18 @@ export function Sheet({ onClose, children, className, placement = "top", label }
         pressedOutside.current = false;
       }}>
       <div ref={sheet} tabIndex={-1} className={`sheet ${className ?? ""}`} role="dialog" aria-modal="true" aria-label={label}
+        onBlur={(e) => {
+          // A control that removes itself (archive a stage) drops the focus to the page, and
+          // then Escape and Tab no longer reach the sheet. Focus that leaves for nowhere comes
+          // back to the sheet; focus that leaves for somewhere (a menu, a picker) goes there.
+          if (e.relatedTarget !== null) return;
+          const el = sheet.current;
+          requestAnimationFrame(() => {
+            if (el !== null && el.isConnected && (document.activeElement === document.body || document.activeElement === null)) {
+              el.focus({ preventScroll: true });
+            }
+          });
+        }}
         onKeyDown={(e) => {
           trapTab(e);
           // Escape closes whatever is built on this, rather than only the sheets App.tsx

@@ -72,7 +72,7 @@ describe("todayView", () => {
     expect(v.done).toBe(1);
   });
 
-  it("lists coming tasks from tomorrow to 7 days ahead, unpicked, soonest first, across month end", () => {
+  it("lists coming tasks from today to 7 days ahead, unpicked, soonest first, across month end", () => {
     const on = "2026-11-27";
     const v = todayView({ on, tasks: [task("picked", { dueOn: "2026-11-29" })] }, tree([
       plain("today", "2026-11-27"),
@@ -83,7 +83,8 @@ describe("todayView", () => {
       plain("undated", null),
       plain("done", "2026-11-30", "fin"),
     ]), on);
-    expect(v.coming.map((c) => c.id)).toEqual(["a", "b"]);
+    // Due today and not picked is still today's business: it is listed first, with Do today.
+    expect(v.coming.map((c) => c.id)).toEqual(["today", "a", "b"]);
   });
 });
 
@@ -135,3 +136,4 @@ describe("moveTo", () => {
     expect(moveTo("nextWeek", "2026-11-22")).toEqual({ dueOn: "2026-11-23", pickedOn: null });
   });
 });
+

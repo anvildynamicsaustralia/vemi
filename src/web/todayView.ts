@@ -7,7 +7,7 @@
  * stable). The tool never picks work: nothing here ranks by anything but what the person
  * placed.
  *
- * Coming up is `comingUp` narrowed to tasks, to the days after today up to a week ahead,
+ * Coming up is `comingUp` narrowed to tasks, from today (due and not picked) up to a week ahead,
  * and to tasks not already picked.
  */
 import type { DateOnly, Today, TodayTask, Tree } from "@vemi/shared";
@@ -49,7 +49,7 @@ export function todayView(today: Today, tree: Tree, on: DateOnly): TodayView {
   const picked = new Set(today.tasks.filter((t) => t.picked).map((t) => t.id));
   const last = addDays(on, 7);
   const coming = comingUp(tree, today)
-    .filter((c) => c.kind === "task" && !picked.has(c.id) && c.date > on && c.date <= last)
+    .filter((c) => c.kind === "task" && !picked.has(c.id) && c.date >= on && c.date <= last)
     // Array sort is stable, so same-day tasks keep the tree's order.
     .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
 

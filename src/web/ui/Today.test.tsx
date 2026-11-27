@@ -13,7 +13,7 @@ const view = (over: Partial<TodayView>): TodayView => ({ done: 0, total: 0, next
 
 const props = (v: TodayView, over: Partial<TodayScreenProps> = {}): TodayScreenProps => ({
   view: v, on: "2026-11-17", whereOf: () => "Shed", draft: "", chips: [], onRestore: () => undefined, popped: null, foldOpen: false, burst: false, onPull: () => undefined,
-  onDraft: () => undefined, onAdd: () => undefined, onCompose: () => undefined, onTick: () => undefined,
+  onDraft: () => undefined, onAdd: () => undefined, onCompose: () => undefined, onTick: () => undefined, onTomorrow: () => undefined,
   onLater: () => undefined, onOpen: () => undefined, onOptions: () => undefined, onFold: () => undefined, ...over,
 });
 
@@ -49,7 +49,8 @@ describe("TodayScreen", () => {
     expect(out).toContain("Next up");
     expect(out).toContain("Task a");
     expect(out).toContain("Done");
-    expect(out).toContain("Later today");
+    // The Next up here is late, so its second button is Tomorrow (see "Next up when it is late").
+    expect(out).toContain(">Tomorrow</button>");
     expect(out).toContain("Also today");
     expect(out).toContain("Every day");
     expect(out).toContain("9:00 am");
@@ -131,5 +132,15 @@ describe("TodayScreen home chip", () => {
   it("shows no chip when there is no space", () => {
     expect(html(props(view({}), { home: null, onHome: () => undefined }))).not.toContain("New tasks go to");
     expect(html(props(view({})))).not.toContain("New tasks go to");
+  });
+});
+
+describe("Next up when it is late", () => {
+  it("offers Tomorrow in place of Later today, which could not move a late task", () => {
+    const late = renderToStaticMarkup(<TodayScreen {...props(view({ next: task("a", { overdue: true }), total: 1 }))} />);
+    expect(late).toContain(">Tomorrow</button>");
+    expect(late).not.toContain("Later today");
+    const fine = renderToStaticMarkup(<TodayScreen {...props(view({ next: task("a"), total: 1 }))} />);
+    expect(fine).toContain("Later today");
   });
 });

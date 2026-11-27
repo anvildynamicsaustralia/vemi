@@ -226,7 +226,7 @@ export function SearchSheet({ onClose }: { readonly onClose: () => void }) {
   const newProjectIn = last?.id ?? index?.top[0]?.id ?? null;
   const quick: readonly { readonly key: string; readonly label: string; readonly run: () => void }[] = [
     { key: "q:task", label: `New ${words.task.toLowerCase()}`, run: () => app.compose() },
-    ...(newProjectIn === null ? [] : [{ key: "q:project", label: `New ${words.project.toLowerCase()}`, run: () => navigate(venture(newProjectIn, "projects")) }]),
+    ...(newProjectIn === null ? [] : [{ key: "q:project", label: `New ${words.project.toLowerCase()}`, run: () => app.compose({ kind: "project", ventureId: newProjectIn }) }]),
     { key: "q:review", label: "Weekly review", run: () => navigate(surface("review")) },
     ...(app.phone ? [] : [{ key: "q:shortcuts", label: "Shortcuts", run: () => { window.dispatchEvent(new Event(SHORTCUTS_EVENT)); } }]),
   ];
@@ -340,7 +340,9 @@ export function SearchSheet({ onClose }: { readonly onClose: () => void }) {
   const typed = query.trim() !== "";
   const canSave = typed && settled && hits.length > 0 && needle.length <= QUERY_MOST
     && !(saved.data?.filters ?? []).some((f) => f.query === needle);
-  const rest = (i: number): string => (i === selected ? " on" : "");
+  // The selection is the keyboard's (arrows, Enter). A phone has none, and on it the first tile
+  // drawn as selected read as a filter already on.
+  const rest = (i: number): string => (!app.phone && i === selected ? " on" : "");
   let at = -1;
   const next = (): number => (at += 1);
 
@@ -493,6 +495,13 @@ export function SearchSheet({ onClose }: { readonly onClose: () => void }) {
                   else if (e.key === "Escape") { e.stopPropagation(); setNaming(null); }
                 }} />
             ))}
+          {/* A scope with none of what was found says so, and offers everything again. */}
+          {!nothing && settled && rows.length === 0 && scope !== "all" && (
+            <div className="rows-empty">
+              No {scopeWords[scope].toLowerCase()} match.{" "}
+              <button type="button" className="word-button" onClick={() => setScope("all")}>Show all</button>
+            </div>
+          )}
           {/* Search leaves archived things out, so the archive is offered before a duplicate is made. */}
           {nothing && rows.length === 0 && (
             <div className="rows-empty">

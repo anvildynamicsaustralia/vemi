@@ -84,7 +84,7 @@ export function LifecycleSection({ venture, moveIn }: {
   const stages = orderedStages(venture);
   return (
     <section className="about-block">
-      <h3 className="kicker more-kicker">Lifecycle, in order</h3>
+      <h3 className="kicker more-kicker">Stages, in order</h3>
       <OrderedRows items={stages} className="more-row" label={(s) => s.name} move={moveIn("stages", stages, "the stage")}
         row={(s, grip) => (
           <div className="more-line">

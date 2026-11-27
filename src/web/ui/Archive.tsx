@@ -222,9 +222,14 @@ export function ArchiveView() {
                 <span className="archive-title">{item.label}</span>
               )}
               <span className="archive-where">{KIND_WORDS[item.kind]} · {age(item.archivedAt)}</span>
-              <button type="button" className="row-action" onClick={() => restore(item.kind, item.id, item.label)}>Restore</button>
-              <button type="button" className="row-action quiet"
-                onClick={() => setDeleting({ kind: item.kind, id: item.id, label: item.label })}>Delete…</button>
+              {/* While choosing, a row is one thing to press, so its own actions step aside. */}
+              {!chooser.on && (
+                <>
+                  <button type="button" className="row-action" onClick={() => restore(item.kind, item.id, item.label)}>Restore</button>
+                  <button type="button" className="row-action quiet"
+                    onClick={() => setDeleting({ kind: item.kind, id: item.id, label: item.label })}>Delete…</button>
+                </>
+              )}
             </div>
           );
         })}
@@ -232,6 +237,9 @@ export function ArchiveView() {
       {chooser.on && picked.length > 0 && (
         <SelectionBar what={`${picked.length} selected`} onClear={chooser.stop}>
           <button type="button" className="bar-action" disabled={restoring} onClick={restoreSelected}>Restore</button>
+          {picked.length < view.shown.length && (
+            <button type="button" className="bar-action" onClick={() => { for (const it of view.shown) if (!chooser.has(keyOf(it))) chooser.toggle(keyOf(it), order, false); }}>Select all</button>
+          )}
         </SelectionBar>
       )}
       {deleting !== null && (

@@ -31,6 +31,17 @@ Easier to use on a phone, and the things you reach for are where you reach for t
 - Notes add on Enter. "# Heading" is a heading. A link must be a web address.
 - Phone: the canvas is a stacked list you scroll and press; segmented choices stay on one row;
   project stages wrap; the back gesture closes an Account section.
+- Swipe on a phone, as in its own lists: right to finish a task on Today or the board, left
+  for Tomorrow, Today or Archive.
+- Drag Today's tasks into your own order (hold to drag on a phone).
+- Name a new space or project right where you choose one in Add: "+ New project".
+- Reminders and repeats can be set from a task's own details, and its due date is the button
+  that changes it.
+- Names you can rename show a small pencil; on a phone, renaming has its own ✓ and ×.
+- Milestones move earlier or later from their ⋯; a project moves to another space with its
+  tasks; the archive's Select shows what is chosen and can select all.
+- An empty Today says so and offers ways to fill it. "Add a task here" from the map returns
+  to the map.
 - Dark mode dims behind sheets instead of greying them. Tips can be told apart from fields and
   say how to dismiss them.
 

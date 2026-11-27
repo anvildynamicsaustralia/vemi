@@ -125,10 +125,8 @@
   --drift-2: 31s;
   --drift-3: 29s;
 
-  /* Not rows of the table but mixed from them: a scrim and a hover wash from ink. */
-  /* The dim behind a sheet. Black, not ink: in dark mode ink is light, and a scrim mixed from
-     it washed the page grey instead of dimming it. Heavier in the dark, where the page already is. */
-  --vemi-scrim: rgb(0 0 0 / 0.32);
+  /* Not rows of the table but mixed from them: a scrim from shade, a hover wash from ink. */
+  --vemi-scrim: color-mix(in srgb, var(--vemi-shade) 48%, transparent);
   --vemi-hover: color-mix(in srgb, var(--vemi-ink) 3.5%, transparent);
 
   --phone-bar: 78px;
@@ -1415,6 +1413,8 @@ textarea.md-write { min-height: 150px; }
 }
 .proj-row.held { border-color: var(--vemi-live); background: var(--vemi-live-wash); transition: none; box-shadow: var(--sh-drag); }
 .more-row { transition: transform var(--m-slide) ease; }
+.trow-ordered { transition: transform var(--m-slide) ease; }
+.trow-ordered.held { transition: none; }
 .more-row.held { transition: none; }
 .proj-line { display: flex; align-items: center; gap: 16px; padding: 19px 20px; }
 .proj-title {
@@ -2270,21 +2270,20 @@ textarea.md-write { min-height: 150px; }
 body:has(.backdrop) .notice,
 body:has(.backdrop) .page.phone ~ .notice { top: calc(16px + env(safe-area-inset-top)); bottom: auto; z-index: 90; }
 
-:root[data-theme="dark"] { --vemi-scrim: rgb(0 0 0 / 0.55); }
 
 /* On a phone a notice takes the width it has, so a sentence and its Undo sit on a line or two
    instead of four. */
-@media (max-width: 719px) { .notice { width: calc(100vw - 32px); justify-content: space-between; } }
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) { .notice { width: calc(100vw - 32px); justify-content: space-between; } }
 
 /* Decisions and risks: the title takes the room; the date is a small button at the end. */
 .more-line > .editable { flex: 1 1 12ch; }
 .more-line .pick-button.ledger-date, .more-line .ledger-date { flex: none; width: auto; min-width: 0; padding-inline: 10px; }
-@media (max-width: 719px) { .more-line { flex-wrap: wrap; row-gap: 4px; } }
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) { .more-line { flex-wrap: wrap; row-gap: 4px; } }
 
 /* The selection bar on a phone. Placed by left: 50%, it could only grow to half the screen,
    so it came out 195px wide with a name a line. Here it spans the width above the bar, and
    each pick row (states, projects, spaces) scrolls sideways on one line. */
-@media (max-width: 719px) {
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
   .page.phone ~ .selection-bar, .page.phone .selection-bar {
     left: 8px;
     right: 8px;
@@ -2304,8 +2303,71 @@ body:has(.backdrop) .page.phone ~ .notice { top: calc(16px + env(safe-area-inset
 /* A project row: the whole line opens it. On a phone the name wraps in full beside its grip,
    and the row's actions sit on the line under it, with no gap between. */
 .proj-line { cursor: pointer; }
-@media (max-width: 719px) {
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
   .proj-line { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; column-gap: 10px; row-gap: 6px; }
   .proj-line > .proj-title { white-space: normal; overflow-wrap: anywhere; font-size: var(--t-row-sm); min-height: var(--touch); }
   .proj-line > .proj-figures { grid-column: 1 / -1; justify-content: flex-end; margin-left: 0; gap: 14px; }
+}
+
+/* "+ New …" at the end of a row of choices, and the field it turns into. */
+.new-chip { border-style: dashed; color: var(--vemi-mid); }
+.new-chip-field { display: inline-flex; align-items: center; gap: 6px; flex: 1 1 220px; min-width: 0; }
+.new-chip-field .field { flex: 1; min-width: 0; }
+
+/* ---------- what can be renamed says so ---------- */
+/* A name that is pressed to rename it carries a small pencil after it: always on a phone,
+   where there is no hover, and on hover at a desk. Drawn as a mask so it takes the text's colour. */
+:is(.venture-name, .phead-title, .detail-title, .item-title) .editable::after {
+  content: "";
+  display: inline-block;
+  width: 0.55em;
+  height: 0.55em;
+  margin-left: 0.35em;
+  vertical-align: 0.1em;
+  background: currentColor;
+  opacity: 0;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: opacity var(--m-hover) ease;
+}
+:is(.venture-name, .phead-title, .detail-title, .item-title) .editable:hover::after,
+:is(.venture-name, .phead-title, .detail-title, .item-title) .editable:focus-visible::after { opacity: 0.45; }
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  :is(.venture-name, .phead-title, .detail-title, .item-title) .editable::after { opacity: 0.4; }
+}
+/* While a name is being edited on a phone: the field, then its ✓ and ×. */
+.editing-wrap { display: flex; align-items: center; gap: 6px; width: 100%; }
+.editing-wrap > .editing { flex: 1; min-width: 0; }
+.editing-keys { display: flex; gap: 4px; flex: none; }
+.editing-key {
+  width: var(--touch); height: var(--touch); border: 1px solid var(--vemi-edge); border-radius: 50%;
+  background: var(--vemi-white); color: var(--vemi-mid); font-size: var(--t-row); line-height: 1;
+}
+.editing-key.done { background: var(--vemi-ink); border-color: var(--vemi-ink); color: var(--vemi-page); }
+
+/* Move a project to another space: the spaces, one press each. */
+.move-space-list { display: grid; padding: 0 12px 16px; }
+.move-space-row {
+  display: flex; justify-content: space-between; align-items: center; min-height: var(--touch); padding: 0 12px;
+  border: 0; border-top: 1px solid var(--vemi-hair-light); background: transparent; color: var(--vemi-ink);
+  font: inherit; font-size: var(--t-row-sm); text-align: left; cursor: pointer;
+}
+.move-space-row:hover { background: var(--vemi-field); }
+.move-space-note { margin: 10px 12px 0; font-size: var(--t-caption); color: var(--vemi-dim); }
+
+/* Choosing in the archive: each row shows the round box it is chosen by, as a phone's list does. */
+.archive-pick { display: flex; align-items: center; gap: 12px; }
+.archive-pick::before {
+  content: ""; flex: none; width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--vemi-edge); background: var(--vemi-white);
+}
+.archive-pick[aria-pressed="true"]::before {
+  border-color: var(--vemi-live); background: var(--vemi-live);
+  box-shadow: inset 0 0 0 4px var(--vemi-white);
+}
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  /* The space's header keeps one line on a phone: the name gives way (wrapping if it must),
+     not the ⋯ beside it. */
+  .venture-head > .venture-id { flex: 1 1 0; min-width: 0; }
+  .venture-head .venture-name { min-width: 0; font-size: var(--t-row); overflow-wrap: anywhere; }
 }

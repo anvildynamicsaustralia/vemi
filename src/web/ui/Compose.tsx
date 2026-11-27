@@ -17,6 +17,7 @@ import { SurfaceKicker } from "./Chrome.js";
 import { SmartChips } from "./SmartChips.js";
 import { useSmartTitle } from "./useSmartTitle.js";
 import { Chip } from "./Chip.js";
+import { NewChip } from "./NewChip.js";
 import { MoreMenu } from "./Menu.js";
 import { AddLine, Pending, StateDot } from "./controls.js";
 import { MonthGrid } from "./Picker.js";
@@ -142,7 +143,8 @@ export function Compose({ seed, onClose }: { readonly seed: ComposeSeed; readonl
     rememberVenture(venture.id);
     // Kept on this device, the notice already says so; "Added" over it would say it landed.
     if (ok === "sent") app.notify(addedTo(venture.name, project?.name ?? null));
-    navigate(when === "today" ? surface("today") : ventureRoute(venture.id, "board"), { replace: true });
+    // Opened from a space's ⋯ on the map, it goes back to the map, as that menu's other adds do.
+    navigate(seed.returnTo === "map" ? surface("map") : when === "today" ? surface("today") : ventureRoute(venture.id, "board"), { replace: true });
   };
 
   const name = smart.text.trim();
@@ -169,6 +171,24 @@ export function Compose({ seed, onClose }: { readonly seed: ComposeSeed; readonl
       navigate(projectPage(venture.id, id), { replace: true });
     }
   };
+  /** A space named in the row of spaces, made and chosen. */
+  const makeSpaceHere = async (name: string): Promise<boolean> => {
+    const id = crypto.randomUUID();
+    const ok = await app.act(createOnce("ventures", { id, name, position: nextPosition(index?.ordered ?? []) }));
+    if (!ok) return false;
+    pickVenture(id);
+    return true;
+  };
+  /** A project named in the row of projects, made in the chosen space and chosen. */
+  const makeProjectHere = async (name: string): Promise<boolean> => {
+    if (venture === null) return false;
+    const id = crypto.randomUUID();
+    const ok = await app.act(createOnce("projects", { id, ventureId: venture.id, name, position: nextPosition(venture.projects) }));
+    if (!ok) return false;
+    setProjectId(id);
+    return true;
+  };
+
   const pickKind = (k: Kind): void => {
     madeId.current = null;
     setKind(k);
@@ -216,6 +236,7 @@ export function Compose({ seed, onClose }: { readonly seed: ComposeSeed; readonl
                     {v.name}
                   </Chip>
                 ))}
+                <NewChip label={`New ${words.space.toLowerCase()}`} placeholder={`name the ${words.space.toLowerCase()}`} onMake={makeSpaceHere} />
               </div>
             </div>
           )}
@@ -251,6 +272,7 @@ export function Compose({ seed, onClose }: { readonly seed: ComposeSeed; readonl
                   {v.name}
                 </Chip>
               ))}
+              <NewChip label={`New ${words.space.toLowerCase()}`} placeholder={`name the ${words.space.toLowerCase()}`} onMake={makeSpaceHere} />
             </div>
           </div>
 
@@ -284,7 +306,7 @@ export function Compose({ seed, onClose }: { readonly seed: ComposeSeed; readonl
             </div>
           )}
 
-          {venture !== null && venture.projects.length > 0 && (
+          {venture !== null && (
             <div>
               <div className="kicker add-label">{words.project}</div>
               <div className="chips" role="radiogroup" aria-label={words.project.toLowerCase()}>
@@ -295,6 +317,7 @@ export function Compose({ seed, onClose }: { readonly seed: ComposeSeed; readonl
                     {pathOf(p, venture.projects)}
                   </Chip>
                 ))}
+                <NewChip label={`New ${words.project.toLowerCase()}`} placeholder={`name the ${words.project.toLowerCase()}`} onMake={makeProjectHere} />
               </div>
             </div>
           )}

@@ -87,6 +87,9 @@ export interface Theme {
   readonly "bar-rule": string;
   /** An action's word on the selection bar: white would shout, and it is not the count. */
   readonly "bar-ink": string;
+  /** What the dim behind a sheet is mixed from. Not ink: in the dark ink is light, and a dim
+      mixed from it washed the page grey instead of dimming it. */
+  readonly shade: string;
 }
 
 const LIGHT: Theme = {
@@ -115,6 +118,7 @@ const LIGHT: Theme = {
   tile: "#f6f4f0",
   "bar-rule": "#3a3733",
   "bar-ink": "#e8e4de",
+  shade: "#3b3733",
 };
 
 const DARK: Theme = {
@@ -143,6 +147,7 @@ const DARK: Theme = {
   tile: "#1f1d1b",
   "bar-rule": "#cfc9c0",
   "bar-ink": "#3a3733",
+  shade: "#000000",
 };
 
 export type ThemeName = "light" | "dark";
@@ -215,7 +220,7 @@ export const COLOUR_TOKENS = [
   "ink", "page", "white", "live", "live-pressed", "live-hover", "live-text", "on-live",
   "live-tint", "live-wash",
   "mid", "dim", "hair", "hair-light", "edge", "line", "field", "canvas", "frame", "hairline",
-  "link", "faint", "tile", "bar-rule", "bar-ink",
+  "link", "faint", "tile", "bar-rule", "bar-ink", "shade",
 ] as const;
 
 const HEX = /^#[0-9a-fA-F]{6}$/;

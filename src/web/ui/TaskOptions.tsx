@@ -100,3 +100,65 @@ export function TaskOptions({ task, on, onClose }: {
     </Sheet>
   );
 }
+
+/**
+ * When a task reminds and whether it repeats, as rows: the same choices as the options sheet,
+ * for the task's own details, where they were missing. Each saves at once, with its undo.
+ */
+export function RemindRepeat({ task, on }: { readonly task: Task; readonly on: DateOnly }) {
+  const app = useApp();
+  const [now, setNow] = useState<Task>(task);
+  const [picking, setPicking] = useState(false);
+  const [time, setTime] = useState(task.remindAt?.slice(11) ?? "");
+  // The task as the Worker last said it wins once it arrives.
+  const [seen, setSeen] = useState(task);
+  if (seen !== task) { setSeen(task); setNow(task); }
+  const save = (choice: Choice): void => {
+    const before = now;
+    const back = undoPatch(before, choice.patch);
+    setNow({ ...before, ...choice.patch });
+    void app.act(() => api.update("tasks", task.id, choice.patch), {
+      what: `${choice.label}: ${task.title}`,
+      undo: () => api.update("tasks", task.id, back),
+      redo: () => api.update("tasks", task.id, choice.patch),
+    }).then((ok) => {
+      if (ok === "sent") app.notify(`${choice.label[0]?.toUpperCase() ?? ""}${choice.label.slice(1)}`, { undo: true });
+      else if (ok === false) setNow(before);
+    });
+  };
+  const remind = picking ? "pick" : pressedRemind(now);
+  const repeat = pressedRepeat(now);
+  return (
+    <>
+      <div className="kv">
+        <div className="kv-k kicker">Remind me</div>
+        <div className="kv-v"><div className="chips">
+          {REMINDS.map(([key, word]) => (
+            <Chip key={key} on={remind === key} aria-pressed={remind === key} onClick={() => {
+              if (key === "pick") { setPicking(true); return; }
+              setPicking(false);
+              const choice = remindChoice(key, now, on, null);
+              if (choice !== null) save(choice);
+            }}>{word}</Chip>
+          ))}
+        </div>
+        {remind === "pick" && (
+          <input type="time" className="options-time" aria-label="Reminder time" value={time} onChange={(e) => {
+            setTime(e.target.value);
+            const choice = remindChoice("pick", now, on, e.target.value);
+            if (choice !== null) save(choice);
+          }} />
+        )}
+        </div>
+      </div>
+      <div className="kv">
+        <div className="kv-k kicker">Repeat</div>
+        <div className="kv-v"><div className="chips">
+          {REPEATS.map(([key, word]) => (
+            <Chip key={key} on={repeat === key} aria-pressed={repeat === key} onClick={() => save(repeatChoice(key, now, on))}>{word}</Chip>
+          ))}
+        </div></div>
+      </div>
+    </>
+  );
+}

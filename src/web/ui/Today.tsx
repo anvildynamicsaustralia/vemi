@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { DateOnly, SmartToken, Today, TodayTask, Tree } from "@vemi/shared";
 import { api, paths } from "../api.js";
 import type { Coming } from "../comingUp.js";
@@ -24,6 +24,9 @@ import { FirstRunHome } from "./FirstRunHome.js";
 import { FirstRunRemind } from "./FirstRunRemind.js";
 import { Ring } from "./Rings.js";
 import { SmartChips } from "./SmartChips.js";
+import { SwipeRow } from "./SwipeRow.js";
+import { navigate, surface } from "../router.js";
+import { OrderedRows } from "./OrderedRows.js";
 import { useSmartTitle } from "./useSmartTitle.js";
 import { TaskOptions } from "./TaskOptions.js";
 import { TodayMeta, TodayRow } from "./TodayRow.js";
@@ -51,6 +54,10 @@ export interface TodayScreenProps {
   readonly onLater: (task: TodayTask) => void;
   /** Due tomorrow and off today: the way on for a task that is already late. */
   readonly onTomorrow: (task: TodayTask) => void;
+  /** Into a new place among Also today; `to` counts in that list. */
+  readonly onReorder: (id: string, to: number) => void;
+  /** To the archive, with its undo: a row's swipe. */
+  readonly onArchive: (task: TodayTask) => void;
   readonly onOpen: (id: string) => void;
   readonly onOptions: (task: TodayTask) => void;
   readonly onPull: (task: Coming) => void;
@@ -72,11 +79,19 @@ export function TodayScreen(p: TodayScreenProps) {
   const extras = useExtras();
   const nothing = view.total === 0 && view.finished.length === 0;
   const cleared = view.next === null && view.finished.length > 0;
-  const rows = (tasks: readonly TodayTask[], done: boolean) =>
-    tasks.map((t) => (
-      <TodayRow key={t.id} task={t} where={p.whereOf(t)} on={p.on} done={done} pop={p.popped === t.id}
-        onTick={p.onTick} onOpen={p.onOpen} onOptions={p.onOptions} />
-    ));
+  const row = (t: TodayTask, done: boolean, grip: ReactNode = null) => (
+      // On a phone a row swipes: right to finish it (or reopen it), left for Tomorrow and Archive.
+      <SwipeRow key={t.id}
+        lead={{ label: done ? "Reopen" : "Done", tone: done ? "plain" : "done", run: () => p.onTick(t) }}
+        trail={done ? [{ label: "Archive", tone: "remove", run: () => p.onArchive(t) }] : [
+          { label: "Tomorrow", run: () => p.onTomorrow(t) },
+          { label: "Archive", tone: "remove", run: () => p.onArchive(t) },
+        ]}>
+        <TodayRow task={t} where={p.whereOf(t)} on={p.on} done={done} pop={p.popped === t.id} grip={grip}
+          onTick={p.onTick} onOpen={p.onOpen} onOptions={p.onOptions} />
+      </SwipeRow>
+  );
+  const rows = (tasks: readonly TodayTask[], done: boolean) => tasks.map((t) => row(t, done));
 
   return (
     <div className="today">
@@ -108,6 +123,23 @@ export function TodayScreen(p: TodayScreenProps) {
         <span className="fill" />
         <button type="button" className="back-link today-more" onClick={p.onCompose}>More options</button>
       </div>
+
+      {/* An empty day says so, and offers the ways to fill it, rather than a blank page. */}
+      {nothing && (
+        <section className="today-empty" aria-label="Nothing on today">
+          <p className="today-empty-say">Nothing on today yet.</p>
+          <p className="today-empty-sub">
+            Type a {words.task.toLowerCase()} above{view.coming.length > 0 ? `, or pick one of the ${view.coming.length} coming up below` : ""}.
+          </p>
+          <div className="today-empty-actions">
+            {view.coming[0] !== undefined && (
+              <button type="button" className="primary-button" onClick={() => p.onPull(view.coming[0]!)}>Do “{view.coming[0].title}” today</button>
+            )}
+            <button type="button" className="quiet-button" onClick={() => navigate(surface("map"))}>Browse the map</button>
+            <button type="button" className="quiet-button" onClick={() => navigate(surface("review"))}>Weekly review</button>
+          </div>
+        </section>
+      )}
 
       {!nothing && view.next !== null && (
         <section className="next-up" aria-label="Next up">
@@ -149,7 +181,9 @@ export function TodayScreen(p: TodayScreenProps) {
                 </p>
               </div>
             )}
-            {rows(view.also, false)}
+            {/* The day's own order: a grip to drag, held on a phone, as every ordered list does. */}
+            <OrderedRows items={view.also} className="trow-ordered" label={(t) => t.title}
+              move={(id, to) => p.onReorder(id, to)} row={(t, grip) => row(t, false, grip)} />
             {view.finished.length > 0 && (
               <button type="button" className="today-fold" aria-expanded={p.foldOpen} onClick={p.onFold}>
                 {p.foldOpen ? "Hide" : "Show"} {view.finished.length} done
@@ -200,6 +234,7 @@ function burstSpent(on: DateOnly): boolean {
  */
 export function TodayView() {
   const app = useApp();
+  const taskWord = useLevelWords().task.toLowerCase();
   const lastTick = useRef<LastTick | null>(null);
   const chosenHome = useNewTaskVenture();
   // First run's steps 6 and 7 sit above the list, so the task just picked stays in view.
@@ -277,6 +312,21 @@ export function TodayView() {
     });
   };
 
+  /**
+   * A row dragged to a new place among Also today. Next up keeps the top; every open task is
+   * given its place in the new order, so the order holds, and undo puts every place back.
+   */
+  const reorder = (id: string, to: number): void => {
+    const also = view.also.map((t) => t.id).filter((x) => x !== id);
+    also.splice(Math.max(0, Math.min(to, also.length)), 0, id);
+    const order = [...(view.next === null ? [] : [view.next.id]), ...also];
+    const was = new Map(shown.tasks.map((t) => [t.id, t.todayPosition] as const));
+    const write = (back: boolean) => () =>
+      Promise.all(order.map((x, i) => api.update("tasks", x, { todayPosition: back ? was.get(x) ?? null : i + 1 })));
+    const title = shown.tasks.find((t) => t.id === id)?.title ?? "";
+    void app.act(write(false), { what: `moved ${title} in today's order`, undo: write(true), redo: write(false) });
+  };
+
   /** Tomorrow, for a late task: due tomorrow and off today's list, as Move to does it. */
   const tomorrow = (t: TodayTask): void => {
     const was = index.tasks.get(t.id)?.task;
@@ -345,7 +395,7 @@ export function TodayView() {
       <AppLockOfferHere />
       <Tip name="today" />
       <TodayScreen view={view} on={on} whereOf={whereOf} draft={draft} chips={smart.chips} onRestore={smart.restore} popped={popped} foldOpen={foldOpen} burst={burst}
-        onDraft={smart.setText} onAdd={add} onCompose={compose} onTick={tick} onLater={later} onTomorrow={tomorrow}
+        onDraft={smart.setText} onAdd={add} onCompose={compose} onTick={tick} onLater={later} onTomorrow={tomorrow} onReorder={reorder} onArchive={(t) => void app.archive("tasks", t.id, taskWord)}
         onOpen={app.openTask} onOptions={(t) => setOptionsId(t.id)} onPull={pull} onFold={() => setFoldOpen(!foldOpen)}
         home={home()?.name ?? null} onHome={nextHome} />
       {optionsTask !== undefined && <TaskOptions key={optionsTask.id} task={optionsTask} on={on} onClose={() => setOptionsId(null)} />}

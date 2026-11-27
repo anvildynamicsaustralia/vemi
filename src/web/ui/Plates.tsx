@@ -50,7 +50,7 @@ function SpaceMenu({ plate, words }: { readonly plate: Plate; readonly words: Le
     <MoreMenu label={`${space} ${plate.name}`} className="card-more" items={[
       { label: "Open", run: () => navigate(venture(plate.id)) },
       { label: "Rename", run: () => setOpen("rename") },
-      { label: `Add a ${words.task.toLowerCase()} here`, run: () => app.compose({ ventureId: plate.id }) },
+      { label: `Add a ${words.task.toLowerCase()} here`, run: () => app.compose({ ventureId: plate.id, returnTo: "map" }) },
       { label: `Add a ${project} here`, run: () => setOpen("project") },
       { label: "Settings", run: () => setOpen("settings") },
       { label: `Archive ${space}`, tone: "remove", run: () => void app.archive("ventures", plate.id, space) },

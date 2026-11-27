@@ -16,6 +16,8 @@ export interface ComposeSeed extends Prefill {
   readonly body?: string;
   /** Opened from today, where a new task is almost always meant for today. */
   readonly onToday?: boolean;
+  /** Where to go once it is made: back to the map when Add was opened from it. */
+  readonly returnTo?: "map";
   /** What Add opens on making: a task unless said. */
   readonly kind?: "task" | "project" | "space";
 }

@@ -17,6 +17,7 @@ import { AddLine, Pending } from "./controls.js";
 import { Ledger } from "./Ledger.js";
 import { Register } from "./Register.js";
 import { MoreMenu } from "./Menu.js";
+import { useMoveToSpace } from "./MoveToSpace.js";
 import { ProjectBrief } from "./ProjectBrief.js";
 import { ProjectColumns } from "./ProjectColumns.js";
 import { ProjectHead } from "./ProjectHead.js";
@@ -39,6 +40,7 @@ export function ProjectPage({ ventureId, projectId }: {
   readonly projectId: string;
 }) {
   const app = useApp();
+  const mover = useMoveToSpace();
   const tree = useResource<Tree>(paths.tree);
   /** The milestone the person last chose; null until they choose, when the first is open. */
   const [picked, setPicked] = useState<string | null>(null);
@@ -69,6 +71,7 @@ export function ProjectPage({ ventureId, projectId }: {
       },
       riskItem(app, "projects", project),
       moveIntoItem(app.pickHome, project, venture.projects),
+      mover.item({ id: project.id, name: project.name, ventureId }),
       { label: "Choose an icon", run: () => app.pickIcon({ kind: "projects", id: project.id, label: project.name, current: project.icon }) },
       { label: `Archive ${words.project.toLowerCase()}`, tone: "remove", run: () => { void app.archive("projects", project.id, words.project.toLowerCase()).then((ok) => { if (ok) navigate(ventureRoute(ventureId, "projects")); }); } },
       ...app.phoneMenu,
@@ -93,6 +96,7 @@ export function ProjectPage({ ventureId, projectId }: {
 
   return (
     <div className="item-page pj-page">
+      {mover.sheet}
       <ProjectHead venture={venture} project={project} />
       <Tip name="project" />
       <div className="pj-bar">

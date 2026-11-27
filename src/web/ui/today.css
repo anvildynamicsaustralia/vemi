@@ -226,3 +226,11 @@
 .today-home { display: flex; align-items: center; gap: 8px; margin: 10px 0 18px; }
 .today-home .fill { flex: 1; }
 .today-home-label { font-size: var(--t-caption); color: var(--vemi-dim); }
+/* A row in the day's own order carries a grip before its box. */
+.trow.has-grip { grid-template-columns: auto auto minmax(0, 1fr) auto; }
+.trow-ordered.held { position: relative; z-index: 3; box-shadow: var(--sh-drag); background: var(--vemi-white); transition: none; }
+/* An empty day: what it is, and the ways to fill it. */
+.today-empty { display: grid; gap: 8px; padding: 22px 20px; margin-bottom: 22px; border: 1px dashed var(--vemi-edge); border-radius: var(--r-plate); }
+.today-empty-say { margin: 0; font-size: var(--t-row); font-weight: 600; color: var(--vemi-ink); }
+.today-empty-sub { margin: 0; color: var(--vemi-mid); }
+.today-empty-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }

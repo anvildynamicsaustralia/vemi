@@ -12,6 +12,7 @@ import { useApp } from "./appContext.js";
 import { AddLine, EditableText } from "./controls.js";
 import { navigate, projectPage } from "../router.js";
 import { DatePick } from "./Picker.js";
+import { MoreMenu } from "./Menu.js";
 import { Ring } from "./Rings.js";
 import { TabRow, panelId, tabId } from "./TabRow.js";
 import "./projectMilestones.css";
@@ -43,6 +44,22 @@ export function ProjectMilestones({ venture, project, picked, onPick }: {
   const tasks = open === undefined ? groups.none.tasks : open.tasks;
   const home = { id: venture.id, states: venture.states, projects: venture.projects, milestones: project.milestones };
   const finished = new Set(venture.states.filter((s) => s.kind === "finished").map((s) => s.id));
+  // The milestones in their order, and where the open one sits, for Move earlier and later.
+  const ordered = groups.milestones.map((g) => g.milestone);
+  const atIndex = open === undefined ? -1 : ordered.findIndex((m) => m.id === open.milestone.id);
+  /** Two milestones trade places, as one step with its undo. */
+  const swap = (a: number, b: number): void => {
+    const x = ordered[a];
+    const y = ordered[b];
+    if (x === undefined || y === undefined) return;
+    const write = (px: number, py: number) => () =>
+      Promise.all([api.update("milestones", x.id, { position: px }), api.update("milestones", y.id, { position: py })]);
+    void app.act(write(y.position, x.position), {
+      what: `moved ${x.name} ${b < a ? "earlier" : "later"}`,
+      undo: write(x.position, y.position),
+      redo: write(y.position, x.position),
+    }).then((ok) => { if (ok === "sent") app.notify(`Moved ${x.name} ${b < a ? "earlier" : "later"}.`, { undo: true }); });
+  };
 
   return (
     <div className="pm">
@@ -73,11 +90,15 @@ export function ProjectMilestones({ venture, project, picked, onPick }: {
           <EditableText value={open.milestone.name} placeholder={words.milestone.toLowerCase()}
             onSave={(name, was) => app.edit("milestones", open.milestone.id, { name }, { name: was }, `renamed ${open.milestone.name}`)} />
           <span className="more-note">aiming at</span>
-          <DatePick value={open.milestone.aimingOn} label="aiming at" compact
+          <DatePick value={open.milestone.aimingOn} label="aiming at" className="pm-aim"
             onSave={(aimingOn) => void app.edit("milestones", open.milestone.id, { aimingOn }, open.milestone, `${aimingOn === null ? "cleared" : "set"} the date of ${open.milestone.name}`)} />
-          {/* Archiving a milestone leaves its tasks in the project, and undo does not put them back on it. */}
-          <button type="button" className="close-button" aria-label={`archive ${words.milestone.toLowerCase()}`}
-            onClick={() => void app.archive("milestones", open.milestone.id, `${words.milestone.toLowerCase()}; its ${words.tasks.toLowerCase()} stay in the ${words.project.toLowerCase()}, and undo brings back the ${words.milestone.toLowerCase()} only`)}>×</button>
+          <MoreMenu label={`${words.milestone.toLowerCase()} ${open.milestone.name}`} items={[
+            { label: "Move earlier", disabled: atIndex <= 0, run: () => swap(atIndex, atIndex - 1) },
+            { label: "Move later", disabled: atIndex < 0 || atIndex >= ordered.length - 1, run: () => swap(atIndex, atIndex + 1) },
+            // Archiving a milestone leaves its tasks in the project, and undo does not put them back on it.
+            { label: `Archive ${words.milestone.toLowerCase()}`, tone: "remove",
+              run: () => void app.archive("milestones", open.milestone.id, `${words.milestone.toLowerCase()}; its ${words.tasks.toLowerCase()} stay in the ${words.project.toLowerCase()}, and undo brings back the ${words.milestone.toLowerCase()} only`) },
+          ]} />
         </div>
       )}
       <div className="pm-tasks" role="tabpanel" id={panelId(row)} aria-labelledby={tabId(row, selected)}>

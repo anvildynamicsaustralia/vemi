@@ -27,6 +27,7 @@ import { StagePick } from "./Lifecycle.js";
 import { SpaceSettings } from "./SpaceSettings.js";
 import { Pick } from "./Picker.js";
 import { MoreMenu } from "./Menu.js";
+import { useMoveToSpace } from "./MoveToSpace.js";
 import { NoteLine } from "./NoteLine.js";
 import { OrderedRows } from "./OrderedRows.js";
 import { RiskTag, riskItem } from "./RiskTag.js";
@@ -55,6 +56,7 @@ export function VenturePage({ ventureId }: { readonly ventureId: string }) {
   const w = useLevelWords();
   const firstRun = useFirstRun();
   const tree = useResource<Tree>(paths.tree);
+  const mover = useMoveToSpace();
   const overview = useResource<Overview>(paths.overview);
   const notes = useResource<Note[]>(paths.list("notes", { venture: ventureId }));
   const index = useMemo(() => (tree.data === null ? null : indexTree(tree.data)), [tree.data]);
@@ -94,6 +96,7 @@ export function VenturePage({ ventureId }: { readonly ventureId: string }) {
 
   return (
     <div className="projects">
+      {mover.sheet}
       <div className="venture-bar">
         <StagePick kind="ventures" id={venture.id} name={venture.name} stageId={venture.stageId} venture={venture} />
         <RiskTag blocked={venture.blocked} atRisk={venture.atRisk} />
@@ -126,6 +129,7 @@ export function VenturePage({ ventureId }: { readonly ventureId: string }) {
                 { label: "Decisions and risks", run: () => { askForLedger(p.id); navigate(projectPage(ventureId, p.id)); } },
                 riskItem(app, "projects", p),
                 moveIntoItem(app.pickHome, p, projects),
+                mover.item({ id: p.id, name: p.name, ventureId }),
                 { label: "Choose an icon", run: () => app.pickIcon({ kind: "projects", id: p.id, label: p.name, current: p.icon }) },
                 { label: `Archive ${w.project.toLowerCase()}`, tone: "remove", run: () => void app.archive("projects", p.id, w.project.toLowerCase()) },
               ]} />} />

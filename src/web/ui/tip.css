@@ -23,4 +23,4 @@
 .tip:hover,
 .tip:focus-visible { color: var(--vemi-ink); }
 .tip:hover .tip-close { color: var(--vemi-ink); }
-@media (max-width: 719px) { .tip { min-height: var(--touch); } }
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) { .tip { min-height: var(--touch); } }

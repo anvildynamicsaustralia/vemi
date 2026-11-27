@@ -3,13 +3,14 @@ import { PRIORITIES, type Link, type Tree } from "@vemi/shared";
 import { api, createOnce, paths } from "../api.js";
 import { checklistCount } from "../checklistCount.js";
 import { keyed, movedTo, stored, type KeyedStep } from "../checklistSteps.js";
-import { longDate, shortDate } from "../format.js";
+import { shortDate } from "../format.js";
 import { taskRequest } from "../newTask.js";
 import { navigate, taskPage } from "../router.js";
 import { worthSendingAgain } from "../sendAgain.js";
 import { useResource, type Resource } from "../state/resources.js";
 import { firstOfKind, indexTree, orderedStates, stateOf, type Located, type TreeIndex } from "../treeIndex.js";
 import { useLevelWords } from "../levelNames.js";
+import { RemindRepeat } from "./TaskOptions.js";
 import { useApp } from "./appContext.js";
 import { AddLine, EditableText, Pending, StateDot, trapTab, useFocusReturn } from "./controls.js";
 import { Chip } from "./Chip.js";
@@ -247,8 +248,8 @@ export function TaskBody({ located, index, links, onClose }: {
           )}
 
           <Kv label="Due">
-            <div className="detail-due">{task.dueOn === null ? "No date. It waits for you." : longDate(task.dueOn, app.today)}</div>
-            <DatePick compact value={task.dueOn} label="due" onSave={(dueOn) => change({ dueOn }, dueOn === null ? "cleared the date" : "set the date")} />
+            {/* The date is the button that changes it, as in a phone's own reminders. */}
+            <DatePick value={task.dueOn} label="due" className="detail-due-pick" onSave={(dueOn) => change({ dueOn }, dueOn === null ? "cleared the date" : "set the date")} />
           </Kv>
 
           <Kv label="Today">
@@ -257,6 +258,8 @@ export function TaskBody({ located, index, links, onClose }: {
               {picked ? `On today: ${app.phone ? "tap" : "click"} to take it off` : "Put on today"}
             </button>
           </Kv>
+
+          {app.today !== null && <RemindRepeat task={task} on={app.today} />}
         </Group>
 
         {/* Above the details, not below them: what a task actually is was the single biggest
@@ -342,7 +345,7 @@ export function TaskBody({ located, index, links, onClose }: {
             </div>
           ))}
           <AddLine placeholder="a link" onAdd={(url) => {
-            // A link is an address: no spaces, and a dot in its host. Anything else was saved as
+            // A link is an address: no spaces, and a dot in its domain. Anything else was saved as
             // "https://words like these", a link that goes nowhere.
             if (/\s/.test(url.trim()) || !/\.[a-z]{2,}/i.test(url)) {
               app.notify("That does not look like a web address. Try one like example.com/page.");

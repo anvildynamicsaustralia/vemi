@@ -55,3 +55,4 @@
 .pm-task-title { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .pm-task-go { color: var(--vemi-faint); }
 .pm-task.isdone .pm-task-title { text-decoration: line-through; }
+.pm-aim { width: auto; flex: none; }

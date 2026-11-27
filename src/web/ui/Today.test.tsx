@@ -13,7 +13,7 @@ const view = (over: Partial<TodayView>): TodayView => ({ done: 0, total: 0, next
 
 const props = (v: TodayView, over: Partial<TodayScreenProps> = {}): TodayScreenProps => ({
   view: v, on: "2026-11-17", whereOf: () => "Shed", draft: "", chips: [], onRestore: () => undefined, popped: null, foldOpen: false, burst: false, onPull: () => undefined,
-  onDraft: () => undefined, onAdd: () => undefined, onCompose: () => undefined, onTick: () => undefined, onTomorrow: () => undefined,
+  onDraft: () => undefined, onAdd: () => undefined, onCompose: () => undefined, onTick: () => undefined, onTomorrow: () => undefined, onArchive: () => undefined, onReorder: () => undefined,
   onLater: () => undefined, onOpen: () => undefined, onOptions: () => undefined, onFold: () => undefined, ...over,
 });
 

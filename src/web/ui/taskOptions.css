@@ -13,3 +13,6 @@
   color: var(--vemi-ink);
   font: inherit;
 }
+/* In a task's details the rows sit with the other fields: its word above, its chips below. */
+.detail-options { display: grid; gap: 8px; padding-block: 10px; border-top: 1px solid var(--vemi-hair-light); }
+.detail-due-pick { width: auto; min-width: 0; }

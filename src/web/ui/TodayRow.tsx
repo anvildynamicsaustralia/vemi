@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { DateOnly, TodayTask } from "@vemi/shared";
 import { metaParts } from "../todayMeta.js";
 
@@ -17,7 +18,9 @@ export function TodayMeta({ task, where, on }: { readonly task: TodayTask; reado
  * with its meta line under it, and an options button. The row only draws; what a tick or an
  * options press does is the screen's.
  */
-export function TodayRow({ task, where, on, done, pop, onTick, onOpen, onOptions }: {
+export function TodayRow({ task, where, on, done, pop, onTick, onOpen, onOptions, grip = null }: {
+  /** The drag handle, when the row is in an ordered list. */
+  readonly grip?: ReactNode;
   readonly task: TodayTask;
   readonly where: string;
   readonly on: DateOnly;
@@ -29,7 +32,8 @@ export function TodayRow({ task, where, on, done, pop, onTick, onOpen, onOptions
   readonly onOptions: (task: TodayTask) => void;
 }) {
   return (
-    <div className={`trow${done ? " isdone" : ""}${pop ? " pop" : ""}`}>
+    <div className={`trow${done ? " isdone" : ""}${pop ? " pop" : ""}${grip === null ? "" : " has-grip"}`}>
+      {grip}
       <button type="button" className="trow-box" aria-label={done ? `reopen ${task.title}` : `finish ${task.title}`}
         aria-pressed={done} onClick={() => onTick(task)}>
         <i aria-hidden="true">{done ? "✓" : ""}</i>

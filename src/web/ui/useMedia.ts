@@ -18,5 +18,7 @@ export function useMedia(query: string): boolean {
       return () => list.removeEventListener("change", changed);
     },
     () => window.matchMedia(query).matches,
+    // Drawn away from a browser (a static render, a test) there is no screen: not a phone.
+    () => false,
   );
 }

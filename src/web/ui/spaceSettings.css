@@ -16,4 +16,4 @@
 /* The boxes sit inside the sheet's padding, in line with its heading, not on its edges. */
 .space-settings-sheet .sheet-body { padding: 0 22px 22px; }
 .space-settings .group + .group, .space-settings > * + * { margin-top: 14px; }
-@media (max-width: 719px) { .space-settings-sheet .sheet-body { padding: 0 16px 16px; } .space-view { min-height: var(--touch); } }
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) { .space-settings-sheet .sheet-body { padding: 0 16px 16px; } .space-view { min-height: var(--touch); } }

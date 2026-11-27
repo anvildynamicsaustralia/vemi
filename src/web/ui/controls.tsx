@@ -1,3 +1,4 @@
+import { PHONE, useMedia } from "./useMedia.js";
 import { useEffect, useId, useRef, useState, type ClipboardEvent, type KeyboardEvent, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import type { StateKind } from "@vemi/shared";
 import { answered, shownValue, type Saving } from "../fieldSave.js";
@@ -169,6 +170,7 @@ export function EditableText({ value, onSave, placeholder, multiline = false, al
   readonly className?: string;
 }) {
   const [editing, setEditing] = useState(false);
+  const phone = useMedia(PHONE);
   const [focusing, setFocusing] = useState(true);
   const [draft, setDraft] = useState(value ?? "");
   const [reopened, setReopened] = useState(false);
@@ -222,12 +224,27 @@ export function EditableText({ value, onSave, placeholder, multiline = false, al
     }
   };
 
-  return multiline ? (
+  const field = multiline ? (
     <textarea dir="auto" className={`editing ${className ?? ""}`} value={draft} autoFocus={focusing} rows={4} aria-label={placeholder}
       onChange={(e) => setDraft(e.target.value)} onBlur={commit} onKeyDown={onKeyDown} />
   ) : (
     <input dir="auto" className={`editing ${className ?? ""}`} value={draft} autoFocus={focusing} aria-label={placeholder}
-      onChange={(e) => setDraft(e.target.value)} onBlur={commit} onKeyDown={onKeyDown} />
+      enterKeyHint="done" onChange={(e) => setDraft(e.target.value)} onBlur={commit} onKeyDown={onKeyDown} />
+  );
+  if (!phone) return field;
+  // On a phone the field carries its own ✓ and ×, as a phone's rename does: there is no Enter
+  // key to see and no Escape at all. They keep the field's focus as they are pressed, so the
+  // press is theirs and not a blur's save.
+  return (
+    <span className="editing-wrap">
+      {field}
+      <span className="editing-keys">
+        <button type="button" className="editing-key done" aria-label="Save" onPointerDown={(e) => e.preventDefault()}
+          onClick={() => { backByKey.current = true; commit(); }}>✓</button>
+        <button type="button" className="editing-key" aria-label="Cancel" onPointerDown={(e) => e.preventDefault()}
+          onClick={() => { backByKey.current = true; setDraft(shown ?? ""); setEditing(false); }}>×</button>
+      </span>
+    </span>
   );
 }
 

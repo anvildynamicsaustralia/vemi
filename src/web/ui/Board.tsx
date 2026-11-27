@@ -14,6 +14,8 @@ import { place } from "../order.js";
 import { useResource } from "../state/resources.js";
 import { tagIndex } from "../tagIndex.js";
 import { indexTree, kindOf, orderedStates } from "../treeIndex.js";
+import { tickTask } from "../tickTask.js";
+import { SwipeRow } from "./SwipeRow.js";
 import { useLevelWords } from "../levelNames.js";
 import { useApp } from "./appContext.js";
 import { Chip } from "./Chip.js";
@@ -290,6 +292,17 @@ export function BoardView({ ventureId, projectId = null }: {
     });
   };
 
+  /** On today or off it, with its undo: the card's ⋯ and its swipe. */
+  const toggleToday = (t: TaskWithBlocker): void => {
+    const on = t.pickedOn === app.today ? null : app.today;
+    void app.act(() => api.update("tasks", t.id, { pickedOn: on }), {
+      what: on === null ? `took ${t.title} off today` : `put ${t.title} on today`,
+      undo: () => api.update("tasks", t.id, { pickedOn: t.pickedOn }),
+      redo: () => api.update("tasks", t.id, { pickedOn: on }),
+    }).then((ok) => { if (ok === "sent") app.notify(on === null ? "Taken off today" : "Put on today", { undo: true }); });
+  };
+  const tickSend = { act: app.act, update: api.update, archive: api.archive, notify: app.notify };
+
   const bulkArchive = (): void => {
     void archiveAll(pickedTasks.map((t) => t.id), false).then((ok) => {
       if (ok) chooser.stop();
@@ -508,7 +521,17 @@ export function BoardView({ ventureId, projectId = null }: {
                   return (
                     // The whole card takes the pointer; its title is the button a keyboard and
                     // a screen reader reach, with the ⋯ beside it rather than inside it.
-                    <div key={t.id} data-task={t.id} data-hold
+                    // On a phone a card swipes, as a phone's list rows do: right to finish it, left
+                    // for Today and Archive. Off while choosing, where a press picks the card.
+                    <SwipeRow key={t.id} off={chooser.on}
+                      lead={kindOf(t, chosen) === "finished"
+                        ? { label: "Reopen", tone: "plain", run: () => void tickTask(tickSend, t, chosen, true) }
+                        : { label: "Done", tone: "done", run: () => void tickTask(tickSend, t, chosen, false) }}
+                      trail={[
+                        { label: t.pickedOn === app.today ? "Off today" : "Today", run: () => toggleToday(t) },
+                        { label: "Archive", tone: "remove", run: () => void app.archive("tasks", t.id, one) },
+                      ]}>
+                    <div data-task={t.id} data-hold
                       className={`task-card${inHand ? " carried" : ""}${chooser.has(t.id) ? " selected" : ""}${dropping && before === t.id ? " drop-before" : ""}`}
                       onPointerDown={pickUp(t, key)}
                       onClick={(e) => {
@@ -535,14 +558,7 @@ export function BoardView({ ventureId, projectId = null }: {
                           {
                             label: t.pickedOn === app.today ? "Take off today" : "Put on today",
                             disabled: app.today === null,
-                            run: () => {
-                              const on = t.pickedOn === app.today ? null : app.today;
-                              void app.act(() => api.update("tasks", t.id, { pickedOn: on }), {
-                                what: on === null ? `took ${t.title} off today` : `put ${t.title} on today`,
-                                undo: () => api.update("tasks", t.id, { pickedOn: t.pickedOn }),
-                                redo: () => api.update("tasks", t.id, { pickedOn: on }),
-                              }).then((ok) => { if (ok === "sent") app.notify(on === null ? "Taken off today" : "Put on today", { undo: true }); });
-                            },
+                            run: () => toggleToday(t),
                           },
                           { label: `Archive ${one}`, tone: "remove", run: () => void app.archive("tasks", t.id, one) },
                         ]} />
@@ -553,6 +569,7 @@ export function BoardView({ ventureId, projectId = null }: {
                         project={t.projectId !== null && projectId === null && grouping !== "project" ? projects.get(t.projectId) ?? null : null}
                         tags={tagIndex(every, t.tagIds, "").chosen} />
                     </div>
+                    </SwipeRow>
                   );
                 })}
                 {dropping && orderable.current && before === null && <div className="drop-end" aria-hidden="true" />}

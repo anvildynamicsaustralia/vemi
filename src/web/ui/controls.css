@@ -225,7 +225,7 @@ html :is(.field, .editing, .control-field, .add-line input, .pick-button):focus-
 /* Wrapped, a segment left its last choice alone on a second row inside the pill ("Pick a
    date" under "Today"), which reads as two controls. On a phone the row takes the width and
    shares it; if the words still cannot fit, the row scrolls sideways rather than breaking. */
-@media (max-width: 719px) {
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
   :root .seg {
     flex-wrap: nowrap;
     width: 100%;
@@ -242,7 +242,7 @@ html :is(.field, .editing, .control-field, .add-line input, .pick-button):focus-
    text, so it reads as the field taking the typing and not as a box drawn round the words. */
 html .big-field { border-radius: 8px; padding-inline: 6px; }
 html .big-field:focus-visible { outline-offset: 4px; }
-@media (max-width: 719px) {
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
   /* A switch in a section's header (Grid / Canvas) stays its own size beside the heading and
      the ⋯, rather than taking the width and pushing the ⋯ to a line of its own. */
   :root .map-section-head .seg { width: fit-content; flex: none; }

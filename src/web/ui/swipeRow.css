@@ -1,0 +1,21 @@
+/* A row that swipes on a phone. The face slides over two layers: the leading action under its
+   left edge, the trailing buttons under its right. Tokens come from app.css. */
+.swipe-row { position: relative; overflow: hidden; border-radius: var(--r-row); }
+.swipe-face { position: relative; z-index: 1; background: var(--vemi-white); touch-action: pan-y; transition: transform 220ms cubic-bezier(.2, .8, .2, 1); }
+.swipe-face.moving { transition: none; }
+.swipe-lead {
+  position: absolute; inset: 0; display: flex; align-items: center; padding-left: 20px;
+  font-weight: 700; color: var(--vemi-page); opacity: 0;
+}
+.swipe-lead.shown { opacity: 1; }
+.swipe-lead.tone-done { background: var(--vemi-ink); }
+.swipe-lead.tone-remove { background: var(--vemi-live); color: var(--vemi-on-live); }
+.swipe-lead.tone-plain { background: var(--vemi-mid); }
+.swipe-trail { position: absolute; top: 0; right: 0; bottom: 0; display: flex; }
+.swipe-button {
+  min-width: 84px; padding: 0 14px; border: 0; font: inherit; font-weight: 600; color: var(--vemi-page);
+  background: var(--vemi-mid);
+}
+.swipe-button.tone-remove { background: var(--vemi-live); color: var(--vemi-on-live); }
+.swipe-button.tone-done { background: var(--vemi-ink); }
+@media (prefers-reduced-motion: reduce) { .swipe-face { transition: none; } }

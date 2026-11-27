@@ -15,7 +15,7 @@ import type { Route } from "./router.js";
 export const SIGN_IN_TITLE = "VEMI";
 
 const TAB_NAMES = { board: "Board", projects: "Projects" } as const;
-const SURFACE_NAMES = { map: "Map", today: "Today", add: "Add", search: "Search", archive: "Archive", account: "Account", review: "Weekly review" } as const;
+const SURFACE_NAMES = { map: "Map", today: "Today", add: "Add", search: "Search", archive: "Archive", account: "Account", review: "Weekly review", upcoming: "Upcoming" } as const;
 
 export function titleFor(route: Pick<Route, "surface" | "tab">, ventureName: string | null, itemName: string | null = null): string {
   // A project's or a task's page is about that thing first, then the venture it is in.

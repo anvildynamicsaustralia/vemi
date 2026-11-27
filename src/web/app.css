@@ -2371,3 +2371,4 @@ body:has(.backdrop) .page.phone ~ .notice { top: calc(16px + env(safe-area-inset
   .venture-head > .venture-id { flex: 1 1 0; min-width: 0; }
   .venture-head .venture-name { min-width: 0; font-size: var(--t-row); overflow-wrap: anywhere; }
 }
+.proj-swipe { border-radius: var(--r-row); }

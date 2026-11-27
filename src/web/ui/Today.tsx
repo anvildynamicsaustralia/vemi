@@ -25,6 +25,7 @@ import { FirstRunRemind } from "./FirstRunRemind.js";
 import { Ring } from "./Rings.js";
 import { SmartChips } from "./SmartChips.js";
 import { SwipeRow } from "./SwipeRow.js";
+import { DaySwitch } from "./DaySwitch.js";
 import { navigate, surface } from "../router.js";
 import { OrderedRows } from "./OrderedRows.js";
 import { useSmartTitle } from "./useSmartTitle.js";
@@ -95,6 +96,7 @@ export function TodayScreen(p: TodayScreenProps) {
 
   return (
     <div className="today">
+      <DaySwitch on="today" />
       <div className="today-head">
         <h2 className="surface-title">Today</h2>
         <span className="today-stamp">{dayStamp(p.on)}</span>

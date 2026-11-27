@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { axisOf, followed, releaseOf } from "../swipe.js";
+import { haptic } from "../haptics.js";
 import { PHONE, useMedia } from "./useMedia.js";
 import "./swipeRow.css";
 
@@ -60,6 +61,8 @@ export function SwipeRow({ lead, trail = [], children, className, off = false }:
 
   const down = (e: PointerEvent<HTMLDivElement>): void => {
     if (e.pointerType === "mouse") return;
+    // A grip drags the row up and down; a press there is never a swipe.
+    if ((e.target as Element).closest(".grip") !== null) { start.current = null; return; }
     start.current = { x: e.clientX, y: e.clientY, id: e.pointerId, axis: null };
     swiped.current = false;
   };
@@ -77,7 +80,12 @@ export function SwipeRow({ lead, trail = [], children, className, off = false }:
       }
     }
     if (s.axis !== "swipe") return;
-    setDx(followed(base() + mx, lead !== undefined, trailWidth(), width()));
+    const next = followed(base() + mx, lead !== undefined, trailWidth(), width());
+    // A buzz as the swipe crosses the point where letting go would finish it, either way.
+    const was = releaseOf(dx, width(), lead !== undefined, trailWidth(), open) === "lead";
+    const now = releaseOf(next, width(), lead !== undefined, trailWidth(), open) === "lead";
+    if (was !== now) haptic("tap");
+    setDx(next);
   };
   const up = (e: PointerEvent<HTMLDivElement>): void => {
     const s = start.current;
@@ -88,7 +96,6 @@ export function SwipeRow({ lead, trail = [], children, className, off = false }:
     const said = releaseOf(total, width(), lead !== undefined, trailWidth(), open);
     if (said === "lead") {
       close();
-      if ("vibrate" in navigator) navigator.vibrate(10);
       lead?.run();
     } else if (said === "open") {
       setOpen(true);

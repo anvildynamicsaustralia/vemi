@@ -42,6 +42,13 @@ Easier to use on a phone, and the things you reach for are where you reach for t
   tasks; the archive's Select shows what is chosen and can select all.
 - An empty Today says so and offers ways to fill it. "Add a task here" from the map returns
   to the map.
+- Upcoming: the next two weeks, day by day, with what is late above, a + on each day to add
+  for it, and the same swipes as Today. Today and Upcoming are one switch apart.
+- Pull down from the top of a screen on a phone to refresh it.
+- Swipe project rows (add a task, open, archive) and the task lists in Search's filters.
+- Pick a reminder time on wheels, then Set it; the chip then shows the time.
+- A small buzz as a task is finished, a thing archived, a row picked up, or a swipe or pull
+  goes far enough, on phones whose browser allows it.
 - Dark mode dims behind sheets instead of greying them. Tips can be told apart from fields and
   say how to dismiss them.
 

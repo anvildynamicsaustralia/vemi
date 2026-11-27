@@ -1,0 +1,29 @@
+/* Upcoming: two weeks of days, each a heading, its count and its +, then its rows. */
+.upcoming { max-width: var(--w-rows); }
+.day-switch { margin-bottom: 18px; }
+.upcoming-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.upcoming-count { font-size: var(--t-caption); color: var(--vemi-dim); }
+.upcoming-day { margin-bottom: 8px; }
+.upcoming-day-head { display: flex; align-items: center; gap: 8px; min-height: var(--touch); border-bottom: 1px solid var(--vemi-hair); }
+.upcoming-day-head h3 { margin: 0; font-size: var(--t-row-sm); font-weight: 600; color: var(--vemi-ink); }
+.upcoming-day-head h3 small { margin-left: 8px; font-weight: 500; color: var(--vemi-dim); font-size: var(--t-caption); }
+.upcoming-day.late .upcoming-day-head h3 { color: var(--vemi-live-text); }
+.upcoming-day.empty .upcoming-day-head h3 { color: var(--vemi-dim); font-weight: 500; }
+.upcoming-day .fill { flex: 1; }
+.upcoming-n { font-size: var(--t-caption); color: var(--vemi-dim); }
+.upcoming-add {
+  width: 36px; height: 36px; border: 1px solid var(--vemi-edge); border-radius: 50%;
+  background: transparent; color: var(--vemi-mid); font-size: var(--t-row); line-height: 1; cursor: pointer;
+}
+.upcoming-add:hover { color: var(--vemi-live); border-color: var(--vemi-live); }
+.upcoming-row { display: flex; align-items: center; gap: 4px; min-height: 52px; border-bottom: 1px solid var(--vemi-hair-light); background: var(--vemi-white); }
+.upcoming-title {
+  flex: 1; min-width: 0; display: grid; gap: 2px; padding: 8px 6px; border: 0; background: transparent;
+  color: var(--vemi-ink); text-align: left; font: inherit; cursor: pointer;
+}
+.upcoming-title b { font-weight: 500; font-size: var(--t-body); overflow-wrap: anywhere; }
+.upcoming-title small { font-size: var(--t-caption); color: var(--vemi-dim); }
+.upcoming-today { color: var(--vemi-live-text); }
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  .upcoming-add { width: var(--touch); height: var(--touch); }
+}

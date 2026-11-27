@@ -29,7 +29,7 @@ import { useSyncExternalStore } from "react";
 import { routeMode, type RouteMode } from "./local/mode.js";
 import { onSheetEntry } from "./sheetHistory.js";
 
-export type Surface = "map" | "venture" | "project" | "task" | "today" | "add" | "search" | "archive" | "account" | "review";
+export type Surface = "map" | "venture" | "project" | "task" | "today" | "add" | "search" | "archive" | "account" | "review" | "upcoming";
 
 /** The two surfaces inside a venture, in the order the tab pill shows them. */
 export const TABS = ["board", "projects"] as const;
@@ -94,6 +94,7 @@ export function parseRoute(pathname: string, search: string): Route {
     case "archive":
     case "account":
     case "review":
+    case "upcoming":
       return surface(first, taskId);
     // Before the Today phase Today was a venture's tab, and then the horizon. Both are Today.
     case "horizon":

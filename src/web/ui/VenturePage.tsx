@@ -28,6 +28,7 @@ import { SpaceSettings } from "./SpaceSettings.js";
 import { Pick } from "./Picker.js";
 import { MoreMenu } from "./Menu.js";
 import { useMoveToSpace } from "./MoveToSpace.js";
+import { SwipeRow } from "./SwipeRow.js";
 import { NoteLine } from "./NoteLine.js";
 import { OrderedRows } from "./OrderedRows.js";
 import { RiskTag, riskItem } from "./RiskTag.js";
@@ -178,6 +179,7 @@ function ProjectRow({ ventureId, project, grip, left, menu, adding, onAdding, on
   readonly onAddMany: (titles: readonly string[]) => Promise<void>;
 }) {
   const w = useLevelWords();
+  const app = useApp();
   const line = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (adding) line.current?.querySelector("input")?.focus();
@@ -187,6 +189,12 @@ function ProjectRow({ ventureId, project, grip, left, menu, adding, onAdding, on
     <>
       {/* The whole row opens the project, not only its name: a press anywhere that is not one
           of its own controls is the name's press. The name stays the button a keyboard reaches. */}
+      <SwipeRow className="proj-swipe"
+        lead={{ label: `Add ${w.task.toLowerCase()}`, tone: "plain", run: () => onAdding(true) }}
+        trail={[
+          { label: "Open", run: () => navigate(projectPage(ventureId, project.id)) },
+          { label: "Archive", tone: "remove", run: () => void app.archive("projects", project.id, w.project.toLowerCase()) },
+        ]}>
       <div className="proj-line" data-hold onClick={(e) => {
         if ((e.target as Element).closest("button, a, input, textarea, [data-more], [role='menu'], .grip") !== null) return;
         navigate(projectPage(ventureId, project.id));
@@ -202,6 +210,7 @@ function ProjectRow({ ventureId, project, grip, left, menu, adding, onAdding, on
           {menu}
         </span>
       </div>
+      </SwipeRow>
       {/* The line's field keeps its Escape to itself, so it is handed the close; the
           wrapper's is for Escape pressed on the line's button. */}
       {adding && (

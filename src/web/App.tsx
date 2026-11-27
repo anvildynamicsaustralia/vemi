@@ -1,3 +1,5 @@
+import { haptic } from "./haptics.js";
+import { PullToRefresh } from "./ui/PullToRefresh.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { lazyNamed } from "./lazyView.js";
 import { ViewBoundary } from "./ui/ViewBoundary.js";
@@ -78,6 +80,7 @@ const ReviewView = lazyNamed(() => import("./ui/Review.js"), "ReviewView");
 const IconPicker = lazyNamed(() => import("./ui/IconPicker.js"), "IconPicker");
 const NestPicker = lazyNamed(() => import("./ui/NestPicker.js"), "NestPicker");
 const Palette = lazyNamed(() => import("./ui/Palette.js"), "Palette");
+const UpcomingView = lazyNamed(() => import("./ui/Upcoming.js"), "UpcomingView");
 const SearchSheet = lazyNamed(() => import("./ui/Search.js"), "SearchSheet");
 const Shortcuts = lazyNamed(() => import("./ui/Shortcuts.js"), "Shortcuts");
 const FirstRunUse = lazyNamed(() => import("./ui/FirstRunUse.js"), "FirstRunUse");
@@ -756,6 +759,7 @@ function Shell({ said, onSaid, onSignOut }: {
       archive: async (kind, id, what) => {
         try {
           const result = await api.archive(kind, id);
+          haptic("remove");
           if (wasKept(result)) {
             lastStep.current = null;
             say(`Kept on this device. The ${what} is archived when the connection is back.`);
@@ -887,6 +891,7 @@ function Shell({ said, onSaid, onSignOut }: {
       case "search": return <SearchSheet onClose={leave} />;
       case "archive": return <ArchiveView />;
       case "review": return <ReviewView />;
+      case "upcoming": return <UpcomingView />;
       case "account": return <Account onClose={leave} onSignOut={onSignOut} live={live} waiting={waiting}
         known={known} onKnown={setKnown} />;
     }
@@ -932,6 +937,7 @@ function Shell({ said, onSaid, onSignOut }: {
     <AppContext.Provider value={actions}>
       <UndoContext.Provider value={undoState}>
         <div className={`page${phone ? " phone" : ""}`}>
+          {phone && <PullToRefresh />}
           <SkipLink target="main" />
           {!phone && <Rail at={at} onGo={go} needs={needs} />}
           <TopBar route={route} ventureName={ventureName} itemName={itemName} phone={phone} onGo={to} onSearch={() => { setShortcutsOpen(false); setPaletteOpen(true); }} />

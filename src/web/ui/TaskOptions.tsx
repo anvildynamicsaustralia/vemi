@@ -9,6 +9,8 @@ import {
 import { useApp } from "./appContext.js";
 import { Chip } from "./Chip.js";
 import { Sheet } from "./Sheet.js";
+import { TimeWheel } from "./TimeWheel.js";
+import { said, toWheel } from "../timeWheel.js";
 import "./taskOptions.css";
 
 const MOVES: readonly (readonly [MoveKey, string])[] = [["today", "Today"], ["tomorrow", "Tomorrow"], ["week", "Next week"]];
@@ -70,13 +72,15 @@ export function TaskOptions({ task, on, onClose }: {
               setPicking(false);
               const choice = remindChoice(key, now, on, null);
               if (choice !== null) save(choice);
-            }}>{word}</Chip>
+            }}>{key === "pick" && remind === "pick" && !picking && now.remindAt !== null ? said(toWheel(now.remindAt.slice(11))) : word}</Chip>
           ))}
         </div>
-        {remind === "pick" && (
-          <input type="time" className="options-time" aria-label="Reminder time" value={time} onChange={(e) => {
-            setTime(e.target.value);
-            const choice = remindChoice("pick", now, on, e.target.value);
+        {/* A time on wheels, set with its own button, as a phone's clock sets one. */}
+        {picking && (
+          <TimeWheel value={time} onCancel={() => setPicking(false)} onSet={(value) => {
+            setTime(value);
+            setPicking(false);
+            const choice = remindChoice("pick", now, on, value);
             if (choice !== null) save(choice);
           }} />
         )}
@@ -139,13 +143,15 @@ export function RemindRepeat({ task, on }: { readonly task: Task; readonly on: D
               setPicking(false);
               const choice = remindChoice(key, now, on, null);
               if (choice !== null) save(choice);
-            }}>{word}</Chip>
+            }}>{key === "pick" && remind === "pick" && !picking && now.remindAt !== null ? said(toWheel(now.remindAt.slice(11))) : word}</Chip>
           ))}
         </div>
-        {remind === "pick" && (
-          <input type="time" className="options-time" aria-label="Reminder time" value={time} onChange={(e) => {
-            setTime(e.target.value);
-            const choice = remindChoice("pick", now, on, e.target.value);
+        {/* A time on wheels, set with its own button, as a phone's clock sets one. */}
+        {picking && (
+          <TimeWheel value={time} onCancel={() => setPicking(false)} onSet={(value) => {
+            setTime(value);
+            setPicking(false);
+            const choice = remindChoice("pick", now, on, value);
             if (choice !== null) save(choice);
           }} />
         )}

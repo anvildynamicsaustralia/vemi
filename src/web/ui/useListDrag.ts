@@ -1,3 +1,4 @@
+import { haptic } from "../haptics.js";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { liftBy, shiftFor, targetIndex, type Row } from "../dragTarget.js";
 
@@ -89,6 +90,7 @@ export function useListDrag(
     }
     // `dy` holds where the pointer began, and becomes a delta on the first move.
     setHeld({ id, from, to: from, dy: clientY, rows });
+    haptic("tap");
   };
 
   return {

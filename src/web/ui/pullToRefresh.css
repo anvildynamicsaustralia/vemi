@@ -1,0 +1,19 @@
+/* Pull to refresh: a ring that comes down from the top edge with the finger, fills once it is
+   far enough, and spins while the screen reads again. */
+.pull {
+  position: fixed; top: env(safe-area-inset-top); left: 50%; z-index: 80;
+  width: 36px; height: 36px; display: grid; place-items: center;
+  border-radius: 50%; background: var(--vemi-white); box-shadow: var(--sh-lift);
+}
+.pull-ring {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid var(--vemi-edge); border-top-color: var(--vemi-ink);
+}
+.pull.ready .pull-ring { border-color: var(--vemi-ink); border-top-color: var(--vemi-live); }
+.pull.busy .pull-ring { animation: pull-spin 700ms linear infinite; }
+@keyframes pull-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .pull.busy .pull-ring { animation: none; } }
+/* The page's own pull-to-reload would reload the app under this one. */
+@media (max-width: 719px), (pointer: coarse) and (max-height: 500px) {
+  html, body { overscroll-behavior-y: contain; }
+}

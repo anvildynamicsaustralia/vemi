@@ -234,3 +234,4 @@
 .today-empty-say { margin: 0; font-size: var(--t-row); font-weight: 600; color: var(--vemi-ink); }
 .today-empty-sub { margin: 0; color: var(--vemi-mid); }
 .today-empty-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.day-switch { margin-bottom: 18px; }

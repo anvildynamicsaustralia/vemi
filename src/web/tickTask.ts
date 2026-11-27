@@ -1,3 +1,4 @@
+import { haptic } from "./haptics.js";
 /**
  * The finish and reopen move (VEMI-013): a tick moves a task into its space's first finished
  * state, and a tick on a finished task moves it back to the first not-started one. Today and a
@@ -53,6 +54,7 @@ export function tickTask(
     spawned = spawnedId(answer);
     return answer;
   };
+  if (!done) haptic("done");
   return send.act(move, {
     what: done ? `reopened ${task.title}` : `finished ${task.title}`,
     undo: async () => {

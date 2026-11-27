@@ -5,7 +5,7 @@ import {
 } from "@vemi/shared";
 import { encryptionState } from "../sealedApi.js";
 import {
-  lockedFields, paths, removeSavedFilter, renameSavedFilter, saveFilter, type FiltersAnswer, type SearchAnswer,
+  api, lockedFields, paths, removeSavedFilter, renameSavedFilter, saveFilter, type FiltersAnswer, type SearchAnswer,
 } from "../api.js";
 import { searchAddress, searchesKept, searchKept, searchSaid, searchSettled, type SearchReads } from "../keptSearch.js";
 import { findInArchive } from "../archiveFind.js";
@@ -23,6 +23,8 @@ import { indexTree, kindOf } from "../treeIndex.js";
 import { lastVenture, useApp } from "./appContext.js";
 import { SurfaceKicker } from "./Chrome.js";
 import { Chip } from "./Chip.js";
+import { SwipeRow } from "./SwipeRow.js";
+import { tickTask } from "../tickTask.js";
 import { MoreMenu } from "./Menu.js";
 import { Tip } from "./Tip.js";
 import { useVault } from "./vaultContext.js";
@@ -372,12 +374,32 @@ export function SearchSheet({ onClose }: { readonly onClose: () => void }) {
             {card.tasks.length === 0 && <div className="rows-empty">Nothing here.</div>}
             {card.tasks.map((t) => {
               const i = next();
+              const at = index?.tasks.get(t.id);
+              // A filter's list is a list of tasks, and swipes as Today's does: right to
+              // finish, left to put it on today or archive it.
               return (
-                <button key={t.id} type="button" className={`result${rest(i)}`} onMouseEnter={() => setSelected(i)} onClick={() => openTask(t)}>
-                  <span className="result-kind">{words.task}</span>
-                  <span className="result-title">{t.title}</span>
-                  <span className="result-where">{t.where}</span>
-                </button>
+                <SwipeRow key={t.id}
+                  lead={at === undefined ? undefined : { label: "Done", tone: "done", run: () => {
+                    void tickTask({ act: app.act, update: api.update, archive: api.archive, notify: app.notify }, at.task, at.venture, false)
+                      ?.then((ok) => { if (ok === "sent") app.notify(`Done: ${t.title}.`, { undo: true }); });
+                  } }}
+                  trail={[
+                    ...(app.today === null ? [] : [{ label: "Today", run: () => {
+                      const was = at?.task.pickedOn ?? null;
+                      void app.act(() => api.update("tasks", t.id, { pickedOn: app.today }), {
+                        what: `put ${t.title} on today`,
+                        undo: () => api.update("tasks", t.id, { pickedOn: was }),
+                        redo: () => api.update("tasks", t.id, { pickedOn: app.today }),
+                      }).then((ok) => { if (ok === "sent") app.notify("Put on today", { undo: true }); });
+                    } }]),
+                    { label: "Archive", tone: "remove", run: () => void app.archive("tasks", t.id, words.task.toLowerCase()) },
+                  ]}>
+                  <button type="button" className={`result${rest(i)}`} onMouseEnter={() => setSelected(i)} onClick={() => openTask(t)}>
+                    <span className="result-kind">{words.task}</span>
+                    <span className="result-title">{t.title}</span>
+                    <span className="result-where">{t.where}</span>
+                  </button>
+                </SwipeRow>
               );
             })}
           </div>

@@ -87,8 +87,8 @@ export function Compose({ seed, onClose }: { readonly seed: ComposeSeed; readonl
   const smart = useSmartTitle(opened, (text) => draft.keep(text));
   const title = smart.title;
   const [chosen, setChosen] = useState<string | null>(seed.ventureId ?? null);
-  const [when, setWhen] = useState<When | null>(seed.onToday === true ? "today" : null);
-  const [day, setDay] = useState<string | null>(null);
+  const [when, setWhen] = useState<When | null>(seed.onToday === true ? "today" : seed.dueOn !== undefined ? "date" : null);
+  const [day, setDay] = useState<string | null>(seed.dueOn ?? null);
   const [stateId, setStateId] = useState<string | null>(seed.stateId ?? null);
   const [projectId, setProjectId] = useState<string | null>(seed.projectId ?? null);
   const [priority, setPriority] = useState<Priority | null>(seed.priority ?? null);

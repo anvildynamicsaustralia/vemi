@@ -20,7 +20,7 @@ import "./chrome2.css";
  * and the router to the same list. The rail shows four of them and the phone bar five;
  * Add is the bar's middle button, and Archive is reached from Account.
  */
-export const PLACES = ["map", "today", "add", "search", "archive", "account", "review"] as const;
+export const PLACES = ["map", "today", "add", "search", "archive", "account", "review", "upcoming"] as const;
 export type Place = (typeof PLACES)[number];
 
 interface Stop {
@@ -54,6 +54,7 @@ const DRAWINGS: Record<Place, ReactNode> = {
   review: <><path d="M5 4.5h14v15H5z" /><path d="m8.5 12 2.2 2.2 4.8-4.8" /></>,
   archive: <><path d="M4 7h16v3H4z" /><path d="M5.5 10v9h13v-9M10 14h4" /></>,
   account: <><circle cx="12" cy="8.5" r="3.8" /><path d="M4.5 20.5c1.2-4 4.2-6 7.5-6s6.3 2 7.5 6" /></>,
+  upcoming: <><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M4 10h16M9 3v4M15 3v4" /></>,
 };
 
 function PlaceIcon({ place }: { readonly place: Place }) {
@@ -62,6 +63,8 @@ function PlaceIcon({ place }: { readonly place: Place }) {
 
 /** Which dot is lit. Inside a venture it is the map's, because a venture is reached from it. */
 export function placeOf(route: Route): Place | null {
+  // Upcoming is Today's other half, reached from its switch: Today stays lit.
+  if (route.surface === "upcoming") return "today";
   return route.surface === "venture" || route.surface === "project" || route.surface === "task" ? "map" : route.surface;
 }
 

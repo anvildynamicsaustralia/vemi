@@ -1,0 +1,26 @@
+/* Time on wheels: three columns that scroll and snap, with a band across the middle where the
+   chosen row sits, as a phone's clock draws it. Tokens come from app.css. */
+.time-wheel { display: grid; gap: 10px; width: min(320px, 100%); margin-top: 10px; }
+.wheels {
+  position: relative; display: grid; grid-template-columns: 1fr 1fr 1fr; height: 180px;
+  border: 1px solid var(--vemi-hair); border-radius: var(--r-plate); background: var(--vemi-white); overflow: hidden;
+}
+.wheel-band {
+  position: absolute; left: 6px; right: 6px; top: 72px; height: 36px; pointer-events: none;
+  border-radius: var(--r-row); background: var(--vemi-field);
+}
+.wheel {
+  position: relative; height: 180px; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(transparent, currentColor 30%, currentColor 70%, transparent);
+  mask-image: linear-gradient(transparent, currentColor 30%, currentColor 70%, transparent);
+}
+.wheel::-webkit-scrollbar { display: none; }
+.wheel:focus-visible { outline: 2px solid var(--vemi-live); outline-offset: -2px; }
+.wheel-pad { height: 72px; }
+.wheel-item {
+  height: 36px; display: grid; place-items: center; scroll-snap-align: start; scroll-margin-top: 72px;
+  font-size: var(--t-row); color: var(--vemi-dim); font-variant-numeric: tabular-nums; cursor: pointer;
+}
+.wheel-item.on { color: var(--vemi-ink); font-weight: 600; }
+.time-wheel-foot { display: flex; align-items: center; gap: 12px; }
+.time-wheel-foot .fill { flex: 1; }

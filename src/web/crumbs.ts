@@ -6,7 +6,7 @@ export interface Crumb {
   readonly to: Route | null;
 }
 
-const SURFACE_NAMES = { map: "Map", today: "Today", add: "Add", search: "Search", archive: "Archive", account: "Account", review: "Weekly review" } as const;
+const SURFACE_NAMES = { map: "Map", today: "Today", add: "Add", search: "Search", archive: "Archive", account: "Account", review: "Weekly review", upcoming: "Upcoming" } as const;
 
 /**
  * Where the person is, from what the app already knows: the route and the names it has read.

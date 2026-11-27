@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { DateOnly, Tree } from "@vemi/shared";
+import type { DateOnly, Today, Tree } from "@vemi/shared";
 import { api, paths } from "../api.js";
 import { longDate, shortDate } from "../format.js";
 import { useLevelWords } from "../levelNames.js";
@@ -25,6 +25,7 @@ export function UpcomingView() {
   const app = useApp();
   const words = useLevelWords();
   const tree = useResource<Tree>(paths.tree);
+  const day = useResource<Today>(paths.today);
   const today = app.today ?? localToday();
   const rows = useMemo<readonly Row[]>(() => {
     if (tree.data === null) return [];
@@ -33,7 +34,8 @@ export function UpcomingView() {
     }));
   }, [tree.data]);
   if (tree.data === null) return <Pending error={tree.error} onRetry={tree.refetch} />;
-  const groups = upcomingGroups(rows, today);
+  const late = new Set((day.data?.tasks ?? []).filter((t) => t.overdue).map((t) => t.id));
+  const groups = upcomingGroups(rows, today, late);
   const count = upcomingCount(groups);
   const task = words.task.toLowerCase();
 

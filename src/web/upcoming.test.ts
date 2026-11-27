@@ -7,9 +7,9 @@ describe("upcomingGroups", () => {
   const groups = upcomingGroups([
     t("late", "2026-11-20"), t("later-late", "2026-11-25"), t("today", "2026-11-27"),
     t("tomorrow", "2026-11-28"), t("done", "2026-11-28", true), t("undated", null), t("far", "2027-01-30"),
-  ], "2026-11-27");
+  ], "2026-11-27", new Set(["late", "later-late"]));
 
-  it("puts overdue first, oldest first, as one group", () => {
+  it("puts what the Worker marks overdue first, as one group", () => {
     expect(groups[0]).toEqual({ on: null, tasks: [t("late", "2026-11-20"), t("later-late", "2026-11-25")] });
   });
   it("then every one of fourteen days from today, empty ones too", () => {
@@ -23,6 +23,6 @@ describe("upcomingGroups", () => {
     expect(upcomingCount(groups)).toBe(4);
   });
   it("has no overdue group when nothing is late", () => {
-    expect(upcomingGroups([t("a", "2026-11-28")], "2026-11-27")[0]?.on).toBe("2026-11-27");
+    expect(upcomingGroups([t("a", "2026-11-28")], "2026-11-27", new Set())[0]?.on).toBe("2026-11-27");
   });
 });

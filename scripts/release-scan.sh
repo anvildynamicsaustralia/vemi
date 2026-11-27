@@ -7,6 +7,8 @@
 #
 # Looks for: a Cloudflare account ID (32 hex), a D1 database ID (UUID), an API token shape, a
 # private key block (an all-zero-prefix UUID is an obvious test fixture, not a database ID), a .dev.vars file, and any email address not named in scripts/release-scan.allow.
+# The root .infisical.json may hold a UUID: it is the Infisical project ID, which names the vault
+# and opens nothing without a login to it. A UUID anywhere else, a nested copy included, is caught.
 # Skips .works/ and data/. In a git repo it reads only tracked files, so git-ignored local files
 # are never looked at. Local only: nothing here touches a network or a remote.
 set -euo pipefail
@@ -65,7 +67,7 @@ scan() {
   local out
   out=$(cd "$root" && printf '%s\0' "${files[@]}" | xargs -0 grep -H -I -n -o -E "$HEX32" 2>/dev/null | where_only | sed 's/^/LEAK Cloudflare account ID (32 hex): /' || true)
   [ -n "$out" ] && { echo "$out"; found=1; }
-  out=$(cd "$root" && printf '%s\0' "${files[@]}" | xargs -0 grep -H -I -n -o -E "$UUID" 2>/dev/null | grep -v -E "[^0-9A-Za-z]00000000-" | where_only | sed 's/^/LEAK D1 database ID (UUID): /' || true)
+  out=$(cd "$root" && printf '%s\0' "${files[@]}" | xargs -0 grep -H -I -n -o -E "$UUID" 2>/dev/null | grep -v -E "[^0-9A-Za-z]00000000-" | grep -v -E '^\.infisical\.json:[0-9]+:' | where_only | sed 's/^/LEAK D1 database ID (UUID): /' || true)
   [ -n "$out" ] && { echo "$out"; found=1; }
   out=$(cd "$root" && printf '%s\0' "${files[@]}" | xargs -0 grep -H -I -n -o -E "$TOKEN" 2>/dev/null | where_only | sed 's/^/LEAK API token shape: /' || true)
   [ -n "$out" ] && { echo "$out"; found=1; }
@@ -117,9 +119,13 @@ self_test() {
   plant devvars .dev.vars "X=1"
   plant email e.txt "mail someone@real""domain.com please"
   plant ok f.txt "mail allowed@example.test please"
-  for name in account d1 token pem devvars email; do expect_caught "$name"; done
+  plant vault .infisical.json "{ \"workspaceId\": \"$(hexn 8)-$(hexn 4)-$(hexn 4)-$(hexn 4)-$(hexn 12)\" }"
+  plant nested sub/.infisical.json "{ \"workspaceId\": \"$(hexn 8)-$(hexn 4)-$(hexn 4)-$(hexn 4)-$(hexn 12)\" }"
+  for name in account d1 token pem devvars email nested; do expect_caught "$name"; done
   set +e; scan "$tmp/ok" >/dev/null 2>&1; rc=$?; set -e
   if [ $rc -eq 0 ]; then echo "  passed: allowed address"; else echo "  WRONGLY CAUGHT: allowed address"; fails=1; fi
+  set +e; scan "$tmp/vault" >/dev/null 2>&1; rc=$?; set -e
+  if [ $rc -eq 0 ]; then echo "  passed: root .infisical.json project ID"; else echo "  WRONGLY CAUGHT: root .infisical.json project ID"; fails=1; fi
   if [ $fails -eq 0 ]; then echo "SELF-TEST PASSED"; else echo "SELF-TEST FAILED"; return 1; fi
 }
 

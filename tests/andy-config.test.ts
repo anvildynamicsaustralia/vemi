@@ -283,9 +283,17 @@ describe("nothing real is tracked", () => {
   it("holds no account ID and no D1 UUID in any tracked file", () => {
     const hits = tracked.filter((f) => {
       const text = readFileSync(join(ROOT, f), "utf8");
-      // A fixture id of zeros is a test value, not a database.
-      return ACCOUNT.test(text) || UUID.test(text.replaceAll(/\b00000000-[0-9a-f-]{27}\b/g, ""));
+      // A fixture id of zeros is a test value, not a database. The root .infisical.json names the
+      // Infisical project, which opens nothing without a login: only its workspaceId may be a UUID.
+      const checked = f === ".infisical.json" ? text.replace(/"workspaceId":\s*"[0-9a-f-]{36}"/, "") : text;
+      return ACCOUNT.test(checked) || UUID.test(checked.replaceAll(/\b00000000-[0-9a-f-]{27}\b/g, ""));
     });
     expect(hits).toEqual([]);
+  });
+
+  it("keeps .infisical.json to the project ID and the default environment", () => {
+    const config = JSON.parse(readFileSync(join(ROOT, ".infisical.json"), "utf8")) as Record<string, unknown>;
+    expect(Object.keys(config).sort()).toEqual(["defaultEnvironment", "workspaceId"]);
+    expect(config["defaultEnvironment"]).toBe("dev");
   });
 });

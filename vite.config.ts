@@ -186,8 +186,8 @@ export default defineConfig({
   server: {
     port: 5173,
     // Dev only. In production the Worker serves this client from its own origin. Locally,
-    // `wrangler dev` answers on 8787; set ORIGIN=http://localhost:5173 in .dev.vars
-    // so the sign-in and the WebSocket accept this page.
+    // `wrangler dev` answers on 8787; set ORIGIN=http://localhost:5173 in .dev.vars (or in
+    // the environment `pnpm run dev` runs in) so the sign-in and the WebSocket accept this page.
     proxy: {
       "/api": { target: "http://127.0.0.1:8787", ws: true },
       "/auth": { target: "http://127.0.0.1:8787" },

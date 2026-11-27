@@ -34,7 +34,7 @@ Optional. Without it, people sign in with an email and a password. To add Contin
 | `GOOGLE_CLIENT_ID` | The client id from Google. |
 | `GOOGLE_CLIENT_SECRET` | The client secret from the same place. |
 
-In Cloudflare, add `GOOGLE_CLIENT_ID` as a variable and `GOOGLE_CLIENT_SECRET` as a secret on your Worker. To run a copy on your own machine, copy `.dev.vars.example` to `.dev.vars` and fill them in there. Leave both empty for passwords only. Never paste a secret into a chat, an issue or a page.
+In Cloudflare, add `GOOGLE_CLIENT_ID` as a variable and `GOOGLE_CLIENT_SECRET` as a secret on your Worker. To run a copy on your own machine, copy `.dev.vars.example` to `.dev.vars` and fill them in there. Setting the same names in the environment `pnpm run dev` runs in works too, and is used ahead of `.dev.vars`. Leave both empty for passwords only. Never paste a secret into a chat, an issue or a page.
 
 Three more names in `.dev.vars.example` are optional, and a copy starts without them:
 

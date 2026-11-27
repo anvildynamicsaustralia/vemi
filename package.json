@@ -36,7 +36,7 @@
     "e2e": "pnpm run build && playwright test",
     "verify": "pnpm run build && pnpm run typecheck && pnpm run lint && pnpm run test",
     "release": "pnpm run build && node scripts/build-release.mjs",
-    "dev": "wrangler d1 migrations apply DB --local && wrangler dev",
+    "dev": "wrangler d1 migrations apply DB --local && node scripts/dev.mjs",
     "dev:web": "vite",
     "deploy": "wrangler d1 migrations apply DB --remote && wrangler deploy",
     "deploy:production": "pnpm run verify && node scripts/proven-on-staging.mjs && node scripts/andy-config.mjs production && wrangler d1 migrations apply DB --remote --config wrangler.andy.jsonc && wrangler deploy --config wrangler.andy.jsonc",

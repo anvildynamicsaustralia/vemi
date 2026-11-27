@@ -1,16 +1,26 @@
-/* One tip per screen: a quiet line that goes on a tap. Tokens come from app.css. */
+/* One tip per screen: a hint that goes when pressed, its × saying so. Tokens come from app.css.
+   It sits on the content's edge, as wide as its words, so it is not mistaken for a field. */
 .tip {
-  display: block;
-  margin: 8px 16px;
-  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 4px 0 16px;
+  padding: 8px 10px 8px 12px;
   border: 1px solid var(--vemi-hair);
-  border-radius: 8px;
-  background: transparent;
+  border-radius: var(--r-row);
+  background: var(--vemi-field);
   color: var(--vemi-mid);
   font: inherit;
   font-size: var(--t-caption);
   text-align: left;
   cursor: pointer;
 }
+.tip-mark { flex: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.tip-line { flex: 1; min-width: 0; }
+.tip-close { flex: none; font-size: 16px; line-height: 1; color: var(--vemi-dim); }
 .tip:hover,
 .tip:focus-visible { color: var(--vemi-ink); }
+.tip:hover .tip-close { color: var(--vemi-ink); }
+@media (max-width: 719px) { .tip { min-height: var(--touch); } }

@@ -34,15 +34,16 @@ const brief = (p: TreeProject): string =>
   renderToStaticMarkup(<AppContext.Provider value={app}><ProjectBrief project={p} /></AppContext.Provider>);
 
 describe("ProjectHead", () => {
-  it("draws Map, the space and the project in the breadcrumb", () => {
+  it("draws Map and the space in the breadcrumb, and leaves the name to the heading below it", () => {
     const out = head(project());
-    expect(out).toMatch(/>Map<.*>Anvil Dynamics<.*crumb-here">Vemi Build</s);
+    expect(out).toMatch(/>Map<.*>Anvil Dynamics<.*settings</s);
+    expect(out).not.toContain("crumb-here");
   });
 
   it("adds the parent project as one more step", () => {
     const parent = project({ id: "p0", name: "Parent Project" });
     const out = head(project({ parentId: "p0" }), [parent, project({ parentId: "p0" })]);
-    expect(out).toMatch(/>Anvil Dynamics<.*>Parent Project<.*crumb-here">Vemi Build</s);
+    expect(out).toMatch(/>Anvil Dynamics<.*>Parent Project<.*settings</s);
   });
 
   it("draws the monogram and the ring", () => {

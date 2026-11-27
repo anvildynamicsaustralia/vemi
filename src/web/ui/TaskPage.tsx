@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import type { Link, Tree } from "@vemi/shared";
 import { api, paths } from "../api.js";
-import { navigate, projectPage, venture as ventureRoute } from "../router.js";
+import { navigate, projectPage, surface, venture as ventureRoute } from "../router.js";
 import { useResource } from "../state/resources.js";
 import { indexTree } from "../treeIndex.js";
 import { useLevelWords } from "../levelNames.js";
@@ -50,7 +50,9 @@ export function TaskPage({ ventureId, taskId }: {
   return (
     <div className="item-page task-page">
       <nav className="crumbs" aria-label="where this is">
-        <button type="button" className="back-link" onClick={() => navigate(ventureRoute(ventureId, "board"))}>Board</button>
+        <button type="button" className="back-link" onClick={() => navigate(surface("map"))}>Map</button>
+        <span className="crumb-sep" aria-hidden="true">›</span>
+        <button type="button" className="back-link" onClick={() => navigate(ventureRoute(ventureId, "board"))}>{located.venture.name}</button>
         {located.project !== null && parent !== undefined && (
           <>
             <span className="crumb-sep" aria-hidden="true">›</span>
@@ -63,8 +65,7 @@ export function TaskPage({ ventureId, taskId }: {
             <button type="button" className="back-link" onClick={() => navigate(projectPage(ventureId, located.project?.id ?? ""))}>{located.project.name}</button>
           </>
         )}
-        <span className="crumb-sep" aria-hidden="true">›</span>
-        <span className="crumb-here">{located.task.title}</span>
+        {/* The task's own title is the heading just below, so the trail stops at where it lives. */}
         <span className="fill" />
         {menu}
       </nav>

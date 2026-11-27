@@ -55,3 +55,10 @@
   .phead-title { font-size: var(--t-head); }
 }
 .crumb-settings { margin-left: auto; }
+/* On a phone the stages do not fit one strip, and a strip that scrolls cut the last one off
+   mid-word with nothing to say there was more. Each stage is its own pill, and they wrap. */
+@media (max-width: 719px) {
+  .phead-stages { flex-wrap: wrap; gap: 6px; width: auto; padding: 0; border: 0; overflow: visible; }
+  .phead-stage { border: 1px solid var(--vemi-edge); min-height: var(--touch); }
+  .phead-stage[aria-pressed="true"] { border-color: var(--vemi-ink); }
+}

@@ -55,12 +55,16 @@ describe("the top bar", () => {
   const bar = (path: string, phone: boolean): string =>
     renderToStaticMarkup(<TopBar route={parseRoute(path, "")} ventureName="Shed" itemName="Roof" phone={phone} onGo={none} onSearch={none} />);
 
-  it("says where you are, with earlier steps as links and the page as current", () => {
-    const out = bar("/ventures/v1/projects/p1", false);
+  it("says where you are on a place of its own, with the page as current", () => {
+    const out = bar("/today", false);
     expect(out).toContain('aria-label="where you are"');
-    expect(out).toContain(">Map</a>");
-    expect(out).toContain(">Shed</a>");
-    expect(out).toContain('aria-current="page">Roof</span>');
+    expect(out).toContain('aria-current="page">Today</span>');
+  });
+
+  it("leaves the trail to the page inside a space, which draws its own", () => {
+    expect(bar("/ventures/v1/projects/p1", false)).not.toContain("where you are");
+    expect(bar("/ventures/v1/projects/p1", false)).toContain('class="search-field"');
+    expect(bar("/ventures/v1/projects/p1", true)).toBe("");
   });
 
   it("has a search field button with the real palette key shown as a hint", () => {
@@ -68,8 +72,7 @@ describe("the top bar", () => {
     expect(out).toContain('class="search-field"');
     expect(out).toMatch(/aria-keyshortcuts="(Control|Meta)\+K"/);
     expect(out).toMatch(/<kbd class="key-hint" aria-hidden="true">(Ctrl|⌘) K<\/kbd>/);
-    expect(bar("/ventures/v1/projects/p1", true)).not.toContain("search-field");
-    expect(bar("/ventures/v1/projects/p1", true)).toContain("crumbs");
+    expect(bar("/today", true)).not.toContain("search-field");
   });
 
   it("takes no room on a phone when the trail is one place long", () => {

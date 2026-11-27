@@ -348,7 +348,7 @@ export function SearchSheet({ onClose }: { readonly onClose: () => void }) {
     <div className="search">
       <SurfaceKicker menu={<MoreMenu label="search" items={app.phoneMenu} />}>Search</SurfaceKicker>
       <Tip name="search" />
-      <input className="big-field search-field" autoFocus value={query} placeholder="Search" aria-label="search"
+      <input className="big-field search-input" autoFocus value={query} placeholder="Search" aria-label="search"
         onChange={(e) => { waiting.current = false; setOpenCard(null); setQuery(e.target.value); }} onKeyDown={onKeyDown} />
       <div className="search-scopes seg" role="group" aria-label="scope">
         {SCOPES.map((s) => (
@@ -505,9 +505,7 @@ export function SearchSheet({ onClose }: { readonly onClose: () => void }) {
           {failed !== null && <div className="rows-empty">{failed}</div>}
         </div>
       )}
-      <div className="search-foot">
-        <button type="button" className="back-link" onClick={onClose}>Close</button>
-      </div>
+      {/* Search is a place of its own (the bar and the rail go there): nothing to close. */}
     </div>
   );
 }

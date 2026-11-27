@@ -1,7 +1,6 @@
 /* Weekly review: three steps and the end. Tokens come from app.css. */
 .review { display: flex; flex-direction: column; gap: 16px; max-width: 640px; }
-.review-steps { display: flex; gap: 6px; font-size: var(--t-caption); color: var(--vemi-dim); }
-.review-steps b { color: var(--vemi-ink); }
+.review-steps { margin: 6px 0 18px; }
 .review-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .review-row {
   display: flex;

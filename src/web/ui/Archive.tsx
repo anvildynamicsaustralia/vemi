@@ -155,7 +155,8 @@ export function ArchiveView() {
     });
   };
 
-  const said = view.of === 0 ? "Nothing archived."
+  // Empty, the explanation below says it; the count line stays as the status region, quiet.
+  const said = view.of === 0 ? ""
     : narrowed ? `${view.shown.length} of ${view.of}`
     : `${view.of} archived`;
 
@@ -177,7 +178,7 @@ export function ArchiveView() {
     <div className="archive">
       <SurfaceKicker menu={<MoreMenu label="archive" items={app.phoneMenu} />}>Archive</SurfaceKicker>
       {view.of > 0 && (
-        <input className="big-field search-field" value={typed} placeholder="Search the archive"
+        <input className="big-field search-input" value={typed} placeholder="Search the archive"
           aria-label="search the archive" onChange={(e) => setTyped(e.target.value)} />
       )}
       <p className="archive-said" role="status">{said}</p>

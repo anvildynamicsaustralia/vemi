@@ -1669,7 +1669,7 @@ textarea.md-write { min-height: 150px; }
 }
 .big-field::placeholder { color: var(--vemi-faint); }
 .big-field:focus-visible { outline: none; border-bottom-color: var(--vemi-live); }
-.search-field { font-size: var(--t-field); margin-bottom: 8px; }
+.search-input { font-size: var(--t-field); margin-bottom: 8px; }
 .add-groups { display: flex; flex-direction: column; gap: 22px; }
 .add-label { margin-bottom: 10px; }
 .add-submit { display: flex; align-items: center; gap: 16px; margin-top: 6px; flex-wrap: wrap; }

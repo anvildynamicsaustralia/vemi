@@ -222,3 +222,7 @@
   .trow.pop .trow-box i { animation: none; }
   .trow-box i { transition: none; }
 }
+/* Under the add line: where it files, and the way to the full Add. */
+.today-home { display: flex; align-items: center; gap: 8px; margin: 10px 0 18px; }
+.today-home .fill { flex: 1; }
+.today-home-label { font-size: var(--t-caption); color: var(--vemi-dim); }

@@ -87,7 +87,6 @@ export function TodayScreen(p: TodayScreenProps) {
             <span><b>{view.done}</b> of {view.total} done</span>
           </span>
         )}
-        <button type="button" className="today-add-sheet" onClick={p.onCompose}>Add</button>
       </div>
 
       <form className="today-add" onSubmit={(e) => { e.preventDefault(); p.onAdd(); }}>
@@ -95,11 +94,18 @@ export function TodayScreen(p: TodayScreenProps) {
         <button type="submit" className="primary-button" disabled={p.draft.trim() === ""}>Add</button>
       </form>
       <SmartChips chips={p.chips} onRestore={p.onRestore} />
-      {p.home != null && p.onHome !== undefined && (
-        <div className="chips today-home">
-          <Chip aria-label={`New ${words.tasks.toLowerCase()} go to ${p.home}`} onClick={p.onHome}>{p.home}</Chip>
-        </div>
-      )}
+      {/* Where the line above files a task, said as such (a bare space name read as a filter),
+          and the full Add for a date, a project or a priority, carrying what was typed. */}
+      <div className="today-home">
+        {p.home != null && p.onHome !== undefined && (
+          <>
+            <span className="today-home-label">Goes to</span>
+            <Chip aria-label={`New ${words.tasks.toLowerCase()} go to ${p.home}. Press for the next ${words.space.toLowerCase()}`} onClick={p.onHome}>{p.home} ›</Chip>
+          </>
+        )}
+        <span className="fill" />
+        <button type="button" className="back-link today-more" onClick={p.onCompose}>More options</button>
+      </div>
 
       {!nothing && view.next !== null && (
         <section className="next-up" aria-label="Next up">

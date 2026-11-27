@@ -219,3 +219,26 @@ html :is(.field, .editing, .control-field, .add-line input, .pick-button):focus-
 }
 :root .reminder-banner { width: min(440px, calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right))); }
 :root .selection-bar { max-width: calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)); }
+
+/* ---------- a segmented control on a phone: one row across the width ---------- */
+
+/* Wrapped, a segment left its last choice alone on a second row inside the pill ("Pick a
+   date" under "Today"), which reads as two controls. On a phone the row takes the width and
+   shares it; if the words still cannot fit, the row scrolls sideways rather than breaking. */
+@media (max-width: 719px) {
+  :root .seg {
+    flex-wrap: nowrap;
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  :root .seg::-webkit-scrollbar { display: none; }
+  :root .seg > .chip, :root .seg > button { flex: 1 0 auto; padding: 6px 10px; white-space: nowrap; }
+  /* Rows that hold a field beside the segment keep their own width. */
+  :root .choices.seg, :root .app-lock-choices.seg { width: fit-content; flex-wrap: wrap; }
+}
+
+/* The big title field keeps the ring every field has, shaped to it: rounded and clear of the
+   text, so it reads as the field taking the typing and not as a box drawn round the words. */
+html .big-field { border-radius: 8px; padding-inline: 6px; }
+html .big-field:focus-visible { outline-offset: 4px; }

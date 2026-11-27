@@ -90,8 +90,12 @@ export function ReviewScreen(p: ReviewScreenProps) {
   return (
     <div className="review">
       <h2 className="surface-title">Weekly review</h2>
-      <div className="review-steps" aria-label="Steps">
-        {STEPS.map((name, i) => (i === p.step ? <b key={name}>{name}</b> : <span key={name}>{name}</span>))}
+      {/* The steps are also the way between them: any can be gone back or forward to. */}
+      <div className="review-steps seg" role="group" aria-label="Steps">
+        {STEPS.map((name, i) => (
+          <button key={name} type="button" aria-pressed={i === p.step} aria-current={i === p.step ? "step" : undefined}
+            onClick={() => p.onStep(i as ReviewStep)}>{name}</button>
+        ))}
       </div>
 
       {p.step === 0 && (

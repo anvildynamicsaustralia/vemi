@@ -6,6 +6,7 @@ import { pinEdit, stageEdit } from "../projectHeadEdits.js";
 import { navigate, projectPage, surface, venture as ventureRoute } from "../router.js";
 import { byPosition } from "../treeIndex.js";
 import { useApp } from "./appContext.js";
+import { useLevelWords } from "../levelNames.js";
 import { EditableText } from "./controls.js";
 import { Group } from "./Group.js";
 import { Ring } from "./Rings.js";
@@ -23,6 +24,7 @@ export function ProjectHead({ venture, project }: {
   readonly project: TreeProject;
 }) {
   const app = useApp();
+  const w = useLevelWords();
   const [settings, setSettings] = useState(false);
   const counts = projectCounts(project, kindsOf(venture));
   const parent = project.parentId === null ? undefined : venture.projects.find((p) => p.id === project.parentId);
@@ -44,15 +46,15 @@ export function ProjectHead({ venture, project }: {
         <button type="button" className="back-link" onClick={() => navigate(surface("map"))}>Map</button>
         <span className="crumb-sep" aria-hidden="true">›</span>
         <button type="button" className="back-link" onClick={() => navigate(ventureRoute(venture.id, "projects"))}>{venture.name}</button>
-        <span className="crumb-sep" aria-hidden="true">›</span>
         {parent !== undefined && (
           <>
-            <button type="button" className="back-link" onClick={() => navigate(projectPage(venture.id, parent.id))}>{parent.name}</button>
             <span className="crumb-sep" aria-hidden="true">›</span>
+            <button type="button" className="back-link" onClick={() => navigate(projectPage(venture.id, parent.id))}>{parent.name}</button>
           </>
         )}
-        <span className="crumb-here">{project.name}</span>
-        <button type="button" className="back-link crumb-settings" onClick={() => setSettings(true)}>Settings</button>
+        {/* The project's name is the heading just below, so the trail stops at where it lives. */}
+        <span className="fill" />
+        <button type="button" className="back-link crumb-settings" onClick={() => setSettings(true)}>{w.space} settings</button>
       </nav>
       {settings && <SpaceSettings ventureId={venture.id} onClose={() => setSettings(false)} />}
       <div className="phead">

@@ -143,11 +143,16 @@ export function TopBar({ route, ventureName, itemName, phone, onGo, onSearch }: 
   const w = useLevelWords();
   const trail = crumbsFor(route, ventureName, itemName, { board: "Board", projects: w.projects });
   const mod = keyNames(onMac()).mod.trim();
+  // Inside a space the page draws its own way back: the space's header on its board and
+  // projects, and the project's or task's own trail, which knows the parent project too. A
+  // second trail above it would say the same thing again, so this one stays out.
+  const inSpace = route.surface === "venture" || route.surface === "project" || route.surface === "task";
   // On a phone a trail of one only repeats the page's own heading and the lit place in the bar
-  // below, so it takes no room. A deeper trail is where the way back lives, so it stays.
-  if (phone && trail.length <= 1) return null;
+  // below, so it takes no room either.
+  if (phone && (inSpace || trail.length <= 1)) return null;
   return (
     <header className="topbar">
+      {inSpace ? <span className="fill" /> : (
       <nav className="crumbs" aria-label="where you are">
         <ol>
           {trail.map((c, i) => {
@@ -168,6 +173,7 @@ export function TopBar({ route, ventureName, itemName, phone, onGo, onSearch }: 
           })}
         </ol>
       </nav>
+      )}
       {!phone && (
         <button type="button" className="search-field" aria-keyshortcuts={onMac() ? "Meta+K" : "Control+K"} onClick={onSearch}>
           <PlaceIcon place="search" />

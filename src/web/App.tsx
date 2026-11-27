@@ -1018,8 +1018,8 @@ function VentureSurface({ index, route, ventureId, tab, onTab, onBack }: {
   })();
   return (
     <div className="venture-surface" key={ventureId}>
-      <VentureHeader name={v.name} letters={letters.get(v.id) ?? ""} icon={v.icon} tab={tab} onTab={onTab} onBack={onBack} menu={ventureMenu} views={v.views}
-        onRename={route.surface === "venture" ? (next, was) => renameSpace(next, was ?? v.name) : undefined} />
+      {route.surface === "venture" && <VentureHeader name={v.name} letters={letters.get(v.id) ?? ""} icon={v.icon} tab={tab} onTab={onTab} onBack={onBack} menu={ventureMenu} views={v.views}
+        onRename={(next, was) => renameSpace(next, was ?? v.name)} />}
       {sheet === "rename" && <RenameSheet what={menuWords.noun} name={v.name} onClose={() => setSheet(null)} onRename={(next) => renameSpace(next, v.name)} />}
       {sheet === "settings" && <SpaceSettings ventureId={ventureId} onClose={() => setSheet(null)} />}
       <div className={`venture-body venture-${route.surface === "venture" ? tab : route.surface}`}><ViewBoundary fallback={null}>{body}</ViewBoundary></div>

@@ -59,6 +59,9 @@ Easier to use on a phone, and the things you reach for are where you reach for t
 - Sign in: Show beside every password, a Caps Lock warning, "Forgot password?" beside the
   password, the copy's address under the title, and a six-digit code goes in by itself. On a
   phone the dark panel is a slim band, so the form starts near the top.
+- Accessibility: small orange text (Overdue, due dates, Change, Sign out and the like) is a shade
+  darker so it is easy to read; Search's filter cards no longer show a grey box in dark mode; the
+  time wheels work with Home and End and tell a screen reader where they are.
 - Setup walks you through Cloudflare: numbered steps for each page, a "Stuck?" list of common
   snags with the way round each, the step names under the progress bars, Paste pointed out when
   you come back from Cloudflare, names to press, Copy for your new address, and what to do next.

@@ -139,3 +139,64 @@
   .gate-main { padding: 28px 16px max(32px, env(safe-area-inset-bottom)); }
   .gate-title { font-size: 28px; }
 }
+
+/* Which copy this is, under the title: a small dot and the address. */
+.gate p.gate-where {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  max-width: 100%;
+  margin: 12px 0 0;
+  padding: 5px 12px;
+  border: 1px solid var(--vemi-hair);
+  border-radius: 99px;
+  color: var(--vemi-mid);
+  font-size: var(--t-chip);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.gate-where-dot { flex: none; width: 8px; height: 8px; border-radius: 99px; background: var(--vemi-live); }
+
+/* A link at the end of a field's label row. */
+.gate-aside { margin-left: auto; }
+.gate .gate-aside .quiet-button { width: auto; padding: 4px 0; min-height: 32px; font-size: var(--t-chip); }
+
+/* A password with Show beside it, inside the same box. */
+.gate-secret { position: relative; display: flex; }
+.gate-secret .field { flex: 1; min-width: 0; padding-right: 72px; }
+.gate .gate-reveal {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  bottom: 4px;
+  min-width: 60px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--vemi-mid);
+  font: 700 var(--t-chip)/1 var(--vemi-ui);
+  cursor: pointer;
+}
+.gate .gate-reveal:hover { color: var(--vemi-ink); background: var(--vemi-field); }
+.gate .gate-reveal:focus-visible { outline: 2px solid var(--vemi-live-pressed); outline-offset: 0; }
+
+/* Who was here last, kept on this device, with a way to say it is someone else. */
+.gate .gate-remembered { display: flex; align-items: center; gap: 10px; margin-top: 20px; padding: 10px 12px; border: 1px solid var(--vemi-hair); border-radius: 10px; }
+.gate .gate-remembered b { flex: 1; min-width: 0; overflow-wrap: anywhere; font-size: var(--t-body); }
+.gate .gate-remembered .quiet-button { width: auto; padding: 6px 4px; font-size: var(--t-chip); }
+.gate-avatar { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 99px; background: var(--vemi-ink); color: var(--vemi-page); font-weight: 800; }
+
+/* A quiet line under the form: help, and where this copy lives. */
+.gate .gate-foot { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--vemi-hair); color: var(--vemi-dim); font-size: var(--t-chip); line-height: 1.5; text-align: center; }
+.gate .gate-foot .quiet-button { display: inline; width: auto; padding: 0; color: var(--vemi-ink); text-decoration: underline; font-size: inherit; }
+
+/* On a phone the dark panel is a short band, so the form starts high on the screen. */
+@media (max-width: 819px) {
+  .gate-side { flex-direction: row; align-items: center; justify-content: space-between; padding-bottom: 18px; gap: 16px; }
+  .gate-side > div { display: none; }
+  .gate-side .gate-made { display: none; }
+  .gate-logo { height: 22px; }
+  .gate-main { padding-top: 24px; }
+}

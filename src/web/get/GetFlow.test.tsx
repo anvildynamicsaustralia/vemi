@@ -11,7 +11,7 @@ const ADDRESS = "https://mine.sub.workers.dev";
 const none = (): void => undefined;
 const on: GetActions = {
   signUpOpened: none, typeKey: none, pasteKey: none, typeName: none, next: none, back: none, retry: none, keepUpdated: none, finish: none,
-  typeEmail: none, typePassword: none, pickFile: none, proveKey: none,
+  typeEmail: none, typePassword: none, pickFile: none, proveKey: none, keyPageOpened: none, copyAddress: none,
 };
 
 const run = (state: GetState, ...actions: Action[]): GetState => actions.reduce(reduce, state);
@@ -94,8 +94,8 @@ describe("the setup screens", () => {
 
   it("draw five dots for the numbered steps and none on Done", () => {
     const all = screens();
-    expect(all["account"]).toContain('aria-label="Step 1 of 5"');
-    expect(all["update"]).toContain('aria-label="Step 5 of 5"');
+    expect(all["account"]).toContain('aria-label="Step 1 of 5: Account"');
+    expect(all["update"]).toContain('aria-label="Step 5 of 5: Finish"');
     expect(all["doneKept"]).not.toContain("get-dots");
     expect(all["account"]?.match(/<i[ />]/g)).toHaveLength(5);
   });
@@ -224,5 +224,27 @@ describe("Done", () => {
     expect(html).toContain(WORDS.done.keyLeft);
     expect(html).toContain(`href="${KEY_LIST_LINK}"`);
     expect(html).not.toMatch(/deleted|removed your key/i);
+  });
+});
+
+describe("the hand-holding", () => {
+  it("numbers what to do on Cloudflare's pages, and folds the common snags away", () => {
+    const all = screens();
+    expect(all["account"]).toContain('class="get-guide"');
+    expect(all["permission"]).toContain("Continue to summary");
+    expect(all["permission"]).toContain("Create Token");
+    expect(all["permission"]).toContain('<details class="get-stuck">');
+    expect(all["account"]).toContain('href="/"');
+  });
+  it("names each step under the bars", () => {
+    expect(screens()["name"]).toContain('<li class="now">Name</li>');
+  });
+});
+
+describe("names to press", () => {
+  it("are VEMI's own and VEMI with the account's first word", async () => {
+    const { nameIdeas } = await import("./GetFlow.js");
+    expect(nameIdeas(null)).toEqual(["vemi", "my-vemi"]);
+    expect(nameIdeas("Sam's Account")).toEqual(["vemi", "my-vemi", "vemi-sam", "sam-vemi"]);
   });
 });

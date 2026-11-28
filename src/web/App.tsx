@@ -6,6 +6,7 @@ import { ViewBoundary } from "./ui/ViewBoundary.js";
 import type { Today, Tree } from "@vemi/shared";
 import { api, askFrontLanding, paths } from "./api.js";
 import { showsLanding } from "./landingLinks.js";
+import { asksForSignIn, keepReturning, loadReturning } from "./returning.js";
 import { VaultProvider } from "./ui/Vault.js";
 import { finishSignOut, me, signOut, type Me } from "./auth.js";
 import { install, useInstallOffer } from "./installPrompt.js";
@@ -209,7 +210,14 @@ function Gated() {
   // Signed out at `/`, the copy's front page may show first. Asked once the gate says out; until
   // answered the screen stays blank, and a failed ask reads as off.
   const [landing, setLanding] = useState<boolean | null>(null);
-  const [choseSignIn, setChoseSignIn] = useState(false);
+  // Someone who has signed in here before, or came from the home page's Open, goes to the card.
+  const [choseSignIn, setChoseSignIn] = useState(() => asksForSignIn(window.location.search) || loadReturning().been);
+  useEffect(() => {
+    if (!asksForSignIn(window.location.search)) return;
+    const url = new URL(window.location.href);
+    url.searchParams.delete("signin");
+    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+  }, []);
   useEffect(() => {
     if (gate !== "out") return;
     let mounted = true;
@@ -256,6 +264,8 @@ function Gated() {
     ownOutbox(null);
     clearOutbox();
     const heard = await signOut();
+    // Signing out forgets what this device kept, the email on the card too; the card still comes first.
+    keepReturning("");
     signedOut(heard ? null : SIGNED_OUT_OFFLINE);
   }, [signedOut]);
 
@@ -272,6 +282,10 @@ function Gated() {
     return (
       <ViewBoundary fallback={<div className="boot" />}>
       <SignIn googleReady={googleReady} claimable={claimable} signedIn={gate === "in"} link={link} notice={cardSaid}
+        onAbout={landing === true && !tokenPage && link === null ? () => {
+          if (window.location.pathname !== "/") window.history.pushState(null, "", "/");
+          setChoseSignIn(false);
+        } : undefined}
         // Out, the card is what is left; signed in, the shell is.
         onLeave={() => setLink(null)}
         onSignedIn={async () => {
@@ -279,6 +293,7 @@ function Gated() {
           // and a second press would open a second session.
           const m = await me({ patient: false });
           if (!m.signedIn) throw new Error("The sign-in did not hold. Try again.");
+          keepReturning(m.email ?? "");
           // A token page may have signed another account in over the one this tab was showing.
           await enter(m.email ?? null, tokenPage);
           setLink(null);

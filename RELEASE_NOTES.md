@@ -51,6 +51,17 @@ Easier to use on a phone, and the things you reach for are where you reach for t
   goes far enough, on phones whose browser allows it.
 - Dark mode dims behind sheets instead of greying them. Tips can be told apart from fields and
   say how to dismiss them.
+- The VEMI home page is a real page now, not a jump to setup. "Your VEMI" sits at the top: type
+  your copy's address once and it opens in one press from then on. Setup saves your new address
+  there by itself, and Account, About has "Save on home page" for a copy you already have.
+- Your copy opens on sign-in, not its front page, once you have signed in on that browser. Your
+  email is filled in; "Not you?" clears it.
+- Sign in: Show beside every password, a Caps Lock warning, "Forgot password?" beside the
+  password, the copy's address under the title, and a six-digit code goes in by itself. On a
+  phone the dark panel is a slim band, so the form starts near the top.
+- Setup walks you through Cloudflare: numbered steps for each page, a "Stuck?" list of common
+  snags with the way round each, the step names under the progress bars, Paste pointed out when
+  you come back from Cloudflare, names to press, Copy for your new address, and what to do next.
 
 ## 0.1.0
 

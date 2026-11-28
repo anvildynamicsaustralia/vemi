@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -22,6 +22,9 @@ afterEach(() => {
 const built = {
   "dist/web/get/index.html": "<!doctype html>get",
   "dist/web/try/index.html": "<!doctype html>try",
+  "dist/web/home/index.html": "<!doctype html>home",
+  "dist/web/landing/desk-today.png": "png",
+  "dist/web/icon.svg": "<svg/>",
   "dist/web/try/sw.js": "try worker",
   "dist/web/try/assets/dbWorker-1.js": "db",
   "dist/web/assets/app-1.js": "app",
@@ -47,12 +50,16 @@ describe("buildFront", () => {
     expect(files).toContain("release/latest.json");
     expect(files).toContain("release/0.1.0/manifest.json");
     expect(files).toContain("release/0.1.0/worker/index.js");
-    for (const left of ["index.html", "sw.js", "manifest.webmanifest"]) expect(files).not.toContain(left);
+    expect(files).toContain("landing/desk-today.png");
+    expect(files).toContain("icon.svg");
+    for (const left of ["sw.js", "manifest.webmanifest"]) expect(files).not.toContain(left);
+    // `/` is the home page, never the app's shell.
+    expect(readFileSync(join(out, "index.html"), "utf8")).toBe("<!doctype html>home");
   });
 
-  it("redirects / to /get/ as a static rule, and lets any page read the release", () => {
+  it("answers / with the home page, not a redirect, and lets any page read the release", () => {
     const out = buildFront(project(built)) as string;
-    expect(readFileSync(join(out, "_redirects"), "utf8")).toBe("/ /get/ 302\n");
+    expect(existsSync(join(out, "_redirects"))).toBe(false);
     const headers = readFileSync(join(out, "_headers"), "utf8");
     expect(headers).toContain("X-Frame-Options: DENY");
     // The local page's own policy block comes with the app's headers, detaching the main one.
@@ -72,6 +79,7 @@ describe("buildFront", () => {
     expect(() => buildFront(project({}))).toThrow(/dist\/web is missing/);
     expect(() => buildFront(project({ "dist/web/index.html": "x" }))).toThrow(/get\/index.html/);
     expect(() => buildFront(project({ "dist/web/get/index.html": "x" }))).toThrow(/try\/index.html/);
-    expect(() => buildFront(project({ "dist/web/get/index.html": "x", "dist/web/try/index.html": "x" }))).toThrow(/latest.json/);
+    expect(() => buildFront(project({ "dist/web/get/index.html": "x", "dist/web/try/index.html": "x" }))).toThrow(/home\/index.html/);
+    expect(() => buildFront(project({ "dist/web/get/index.html": "x", "dist/web/try/index.html": "x", "dist/web/home/index.html": "x" }))).toThrow(/latest.json/);
   });
 });

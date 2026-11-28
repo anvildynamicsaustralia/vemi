@@ -9,7 +9,7 @@ import {
   restore, saveText, type FlowStep, type RowState,
 } from "../../shared/setup/getFlow.js";
 import { tokenLink } from "../../shared/setup/tokenLink.js";
-import { canGoNext, canMove, initial, reduce, toSaved, type GetState } from "./getFlowState.js";
+import { accountName, canGoNext, canMove, initial, reduce, toSaved, type GetState } from "./getFlowState.js";
 import { handOver } from "./handOver.js";
 import { lightBundle, loadBundle, loadManifest } from "./loadRelease.js";
 import { createRelayFetch } from "./relayFetch.js";
@@ -21,6 +21,7 @@ import { MoveLogin, MoveMissing, moveRow, type MoveActions } from "./MoveBuild.j
 // The one piece of the app's own code this page takes: the small i and its note. It imports React and
 // its own stylesheet and nothing else, and tests/get-page.test.ts holds it to that.
 import { InfoTip } from "../ui/InfoTip.js";
+import { loadCopies, rememberCopy, saveCopies } from "../myCopies.js";
 
 /** The one place the page keeps its place for a closed tab. Never the key or the claim code. */
 export const SAVED_KEY = "vemi:get:v1";
@@ -64,6 +65,10 @@ export const WORDS = {
   },
   next: "Next",
   back: "Back",
+  stuck: "Stuck? Common snags",
+  steps: ["Account", "Connect", "Name", "Build", "Finish"],
+  already: "Already have a VEMI?",
+  openMine: "Open it from the home page",
 } as const;
 
 export interface GetActions extends MoveActions {
@@ -76,6 +81,9 @@ export interface GetActions extends MoveActions {
   retry(): void;
   keepUpdated(on: boolean): void;
   finish(): void;
+  /** Cloudflare's key page was opened in a new tab. */
+  keyPageOpened(): void;
+  copyAddress(): void;
 }
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
@@ -116,8 +124,13 @@ function Dots({ step }: { step: FlowStep }): ReactElement | null {
   const at = NUMBERED_STEPS.indexOf(dotStep(step));
   if (at < 0) return null;
   return (
-    <div className="get-dots" role="img" aria-label={`Step ${at + 1} of ${NUMBERED_STEPS.length}`}>
-      {NUMBERED_STEPS.map((s, i) => <i key={s} className={i <= at ? "on" : ""} />)}
+    <div className="get-progress">
+      <div className="get-dots" role="img" aria-label={`Step ${at + 1} of ${NUMBERED_STEPS.length}: ${WORDS.steps[at] ?? ""}`}>
+        {NUMBERED_STEPS.map((s, i) => <i key={s} className={i <= at ? "on" : ""} />)}
+      </div>
+      <ol className="get-step-names" aria-hidden="true">
+        {NUMBERED_STEPS.map((s, i) => <li key={s} className={i === at ? "now" : i < at ? "past" : ""}>{WORDS.steps[i]}</li>)}
+      </ol>
     </div>
   );
 }
@@ -138,6 +151,46 @@ function Problem({ title, reason, children }: { title: string; reason: string; c
   );
 }
 
+/** What to do, in order, as numbered lines: the hand-holding a first-timer needs beside each button. */
+function Guide({ items, label }: { items: readonly ReactNode[]; label: string }): ReactElement {
+  return (
+    <ol className="get-guide" aria-label={label}>
+      {items.map((item, i) => <li key={i}><span className="get-guide-n" aria-hidden="true">{i + 1}</span><span>{item}</span></li>)}
+    </ol>
+  );
+}
+
+/** The common snags of a step and their way round, folded away until someone needs them. */
+function Stuck({ items }: { items: readonly { q: string; a: ReactNode }[] }): ReactElement {
+  return (
+    <details className="get-stuck">
+      <summary>{WORDS.stuck}</summary>
+      <dl>
+        {items.map((item) => (
+          <div key={item.q}><dt>{item.q}</dt><dd>{item.a}</dd></div>
+        ))}
+      </dl>
+    </details>
+  );
+}
+
+/** Words for a key step's numbered guide, shown beside the button that opens Cloudflare. */
+const KEY_GUIDE: readonly ReactNode[] = [
+  <>Press <b>{WORDS.permission.open}</b>. Cloudflare opens in a new tab with the key already filled in. Sign in if it asks, and pick your account if it asks which one.</>,
+  <>Scroll to the bottom and press <b>Continue to summary</b>.</>,
+  <>Press <b>Create Token</b>.</>,
+  <>Press <b>Copy</b> beside the key. Cloudflare shows it only once.</>,
+  <>Come back to this tab and press <b>{WORDS.permission.paste}</b>.</>,
+];
+
+const KEY_STUCK = [
+  { q: "Cloudflare says to verify my email first", a: "Open the email Cloudflare sent you and press its link. Then press Open the permission page again." },
+  { q: "The Cloudflare page has nothing filled in", a: <>Press <b>Create Token</b>, then <b>Create Custom Token</b>. Add three permissions: Account, Workers Scripts, Edit; Account, D1, Edit; Account, Account Settings, Read. Then Continue to summary and Create Token.</> },
+  { q: "Paste does nothing", a: "Your browser kept the clipboard to itself. Press in the box and paste there: hold your finger in the box on a phone, or press Ctrl+V (Cmd+V on a Mac)." },
+  { q: "It says the key did not work", a: "Copy it again from Cloudflare, all of it, with nothing extra at either end. If that tab is closed, press Open the permission page and make a new key the same way." },
+  { q: "I closed Cloudflare before copying the key", a: "Press Open the permission page again and make a new one. An unused key does nothing; you can tidy it away later from your Cloudflare keys." },
+] as const;
+
 function Nav({ state, on, last }: { state: GetState; on: GetActions; last?: string }): ReactElement {
   return (
     <div className="get-acts">
@@ -152,26 +205,39 @@ function Nav({ state, on, last }: { state: GetState; on: GetActions; last?: stri
 function Account({ state, on }: { state: GetState; on: GetActions }): ReactElement {
   return (
     <section className="get-step" aria-labelledby="get-h">
-      <h1 id="get-h">{WORDS.account.title}</h1>
-      <p className="get-lede">{WORDS.account.line}</p>
+      <h1 id="get-h" tabIndex={-1}>{WORDS.account.title}</h1>
+      <p className="get-lede">{WORDS.account.line} Its free plan is plenty, and it needs no card. All five steps take about five minutes.</p>
+      <Guide label="What to do" items={[
+        <>Press <b>{WORDS.account.make}</b>. It opens in a new tab.</>,
+        <>Sign up with your email and a password.</>,
+        <>Cloudflare emails you a link. Open it to verify your email: the next step needs it.</>,
+        <>Come back to this tab and press <b>{WORDS.account.have}</b>.</>,
+      ]} />
       <div className="get-acts">
         <a className="get-primary" href={SIGN_UP_LINK} {...ext} onClick={on.signUpOpened}>
           {WORDS.account.make} <Icon name="lucide:external-link" size={18} />
         </a>
         <button type="button" className={state.signUpOpened ? "get-secondary" : "get-link"} onClick={on.next}>{WORDS.account.have}</button>
       </div>
+      <Stuck items={[
+        { q: "Cloudflare asks what I want to build, or which plan", a: "Pick the Free plan, or skip the question. You do not need a domain or a website for VEMI." },
+        { q: "I already use Cloudflare for other things", a: <>Press <b>{WORDS.account.have}</b>. VEMI goes in beside what is there, under its own name, and changes none of it.</> },
+        { q: "The verify email has not come", a: "Look in spam and promotions. From your Cloudflare dashboard you can ask for it again." },
+      ]} />
+      <p className="get-hint get-already"><span>{WORDS.already}</span> <a className="get-link" href="/">{WORDS.openMine}</a></p>
     </section>
   );
 }
 
-function Permission({ state, on }: { state: GetState; on: GetActions }): ReactElement {
+function Permission({ state, on, back = false }: { state: GetState; on: GetActions; back?: boolean }): ReactElement {
   const check = state.keyCheck;
   return (
     <section className="get-step" aria-labelledby="get-h">
-      <h1 id="get-h">{WORDS.permission.title}</h1>
+      <h1 id="get-h" tabIndex={-1}>{WORDS.permission.title}</h1>
       <p className="get-lede">{WORDS.permission.lede}</p>
+      <Guide label="What to do" items={KEY_GUIDE} />
       <div className="get-acts">
-        <a className="get-primary" href={tokenLink()} {...ext}>
+        <a className="get-primary" href={tokenLink()} {...ext} onClick={on.keyPageOpened}>
           {WORDS.permission.open} <Icon name="lucide:external-link" size={18} />
         </a>
       </div>
@@ -191,9 +257,10 @@ function Permission({ state, on }: { state: GetState; on: GetActions }): ReactEl
             spellCheck={false}
             onChange={(e) => on.typeKey(e.target.value)}
           />
-          <button type="button" className="get-secondary" onClick={on.pasteKey}>{WORDS.permission.paste}</button>
+          <button type="button" className={`get-secondary${back && state.key === "" ? " get-nudge" : ""}`} onClick={on.pasteKey}>{WORDS.permission.paste}</button>
         </div>
         <div className="get-status" aria-live="polite">
+          {back && state.key === "" && <p className="get-quiet">Welcome back. Press Paste to bring the key in.</p>}
           {check.kind === "checking" && <p className="get-quiet">{WORDS.permission.checking}</p>}
           {check.kind === "ok" && (
             <p className="get-ok"><Icon name="lucide:check" size={18} /><span>Connected to {check.accountName}</span></p>
@@ -202,16 +269,26 @@ function Permission({ state, on }: { state: GetState; on: GetActions }): ReactEl
         </div>
       </div>
       <p className="get-hint"><Icon name="lucide:lock" size={16} /><span>{WORDS.permission.line}</span></p>
+      <Stuck items={KEY_STUCK} />
       <Nav state={state} on={on} />
     </section>
   );
+}
+
+/** A few names to press instead of type: VEMI's own, and VEMI with the account's first word. */
+export function nameIdeas(account: string | null): string[] {
+  const word = (account ?? "").toLowerCase().replace(/'s\b/g, "").split(/[^a-z0-9]+/).find((w) => w.length >= 2 && w !== "account") ?? "";
+  const ideas = ["vemi", "my-vemi"];
+  if (word !== "" && word !== "vemi") ideas.push(`vemi-${word}`.slice(0, 40), `${word}-vemi`.slice(0, 40));
+  return ideas;
 }
 
 function Name({ state, on }: { state: GetState; on: GetActions }): ReactElement {
   const check = state.nameCheck;
   return (
     <section className="get-step" aria-labelledby="get-h">
-      <h1 id="get-h">{WORDS.name.title}</h1>
+      <h1 id="get-h" tabIndex={-1}>{WORDS.name.title}</h1>
+      <p className="get-lede">It starts your address. Short and easy to type is best; you can give it your own domain later.</p>
       <div className="get-field">
         <div className="get-label">
           <label htmlFor="get-name">{WORDS.name.field}</label>
@@ -225,6 +302,11 @@ function Name({ state, on }: { state: GetState; on: GetActions }): ReactElement 
         </div>
       </div>
       {check.kind === "bad" && <Problem title="That name will not work" reason={check.reason} />}
+      <div className="get-chips" role="group" aria-label="Ideas for a name">
+        {nameIdeas(accountName(state)).filter((idea) => idea !== nameFrom(state.name)).map((idea) => (
+          <button key={idea} type="button" className="get-chip" onClick={() => on.typeName(idea)}>{idea}</button>
+        ))}
+      </div>
       {state.withMove && <MoveLogin state={state} on={on} />}
       <Nav state={state} on={on} last={WORDS.name.build} />
     </section>
@@ -254,8 +336,9 @@ function Build({ state, on, loading }: { state: GetState; on: GetActions; loadin
   const percent = Math.round(((state.build.done.length + (copy?.state === "ok" ? 1 : 0)) / total) * 100);
   return (
     <section className="get-step" aria-labelledby="get-h">
-      <h1 id="get-h">{finished ? WORDS.build.built : WORDS.build.title}</h1>
-      <div className="get-meter" aria-hidden="true"><i style={{ width: `${percent}%` }} /></div>
+      <h1 id="get-h" tabIndex={-1}>{finished ? WORDS.build.built : WORDS.build.title}</h1>
+      {!finished && !failed && <p className="get-lede">About a minute. Keep this tab open: you can switch to another app and come back.</p>}
+      <div className="get-meter" role="progressbar" aria-label="Build" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}><i style={{ width: `${percent}%` }} /></div>
       {loading !== null && !failed && <p className="get-quiet">{loading}</p>}
       <ul className="get-build">
         {rows.map((row) => <Row key={row.step} row={row} />)}
@@ -291,7 +374,8 @@ function Update({ state, on }: { state: GetState; on: GetActions }): ReactElemen
   const working = state.finish.kind === "working";
   return (
     <section className="get-step" aria-labelledby="get-h">
-      <h1 id="get-h">{WORDS.update.title}</h1>
+      <h1 id="get-h" tabIndex={-1}>{WORDS.update.title}</h1>
+      <p className="get-lede">On is the easy choice: new versions arrive by themselves, and Account still shows each one.</p>
       <div className="get-toggle">
         <span className="get-toggle-label">
           <b id="get-switch-label">{WORDS.update.switch}</b>
@@ -316,17 +400,30 @@ function Update({ state, on }: { state: GetState; on: GetActions }): ReactElemen
   );
 }
 
-function Done({ state }: { state: GetState }): ReactElement {
+function Done({ state, on, copied = false }: { state: GetState; on: GetActions; copied?: boolean }): ReactElement {
   const address = state.address ?? "";
+  const home = typeof window === "undefined" || window.location.hostname === "" ? "the VEMI home page" : window.location.origin.replace(/^https:\/\//, "");
   return (
     <section className="get-step" aria-labelledby="get-h">
       <span className="get-badge"><Icon name="lucide:check" size={14} />{WORDS.done.badge}</span>
-      <h1 id="get-h">{WORDS.done.title}</h1>
-      <p className="get-address"><b>{address.replace(/^https:\/\//, "")}</b></p>
+      <h1 id="get-h" tabIndex={-1}>{WORDS.done.title}</h1>
+      <div className="get-address get-address-row">
+        <b>{address.replace(/^https:\/\//, "")}</b>
+        <button type="button" className="get-secondary get-copy" onClick={on.copyAddress}>{copied ? "Copied" : "Copy"}</button>
+      </div>
+      <p className="get-hint"><Icon name="lucide:bookmark" size={16} /><span>Saved on this device. Next time, go to <b>{home}</b> and press <b>Open my VEMI</b>.</span></p>
       {state.move.kind === "ok" ? <MoveDone state={state} /> : (
-        <div className="get-acts">
-          <a className="get-primary" href={openLinkFor(state)}>{WORDS.done.open} <Icon name="lucide:external-link" size={18} /></a>
-        </div>
+        <>
+          <Guide label="What comes next" items={[
+            <>Press <b>{WORDS.done.open}</b>.</>,
+            <>Make the owner account with your email and a password. The first account owns the copy, so make it now.</>,
+            <>Keep the recovery code it shows somewhere safe, such as a password manager.</>,
+            <>On a phone, add VEMI to your home screen (Share, then Add to Home Screen) so it opens like an app.</>,
+          ]} />
+          <div className="get-acts">
+            <a className="get-primary" href={openLinkFor(state)}>{WORDS.done.open} <Icon name="lucide:external-link" size={18} /></a>
+          </div>
+        </>
       )}
       {state.kept === true && (
         <p className="get-hint">
@@ -345,8 +442,26 @@ function Done({ state }: { state: GetState }): ReactElement {
 }
 
 /** One screen, from state alone. The container below owns the effects. */
-export function GetScreen({ state, on, loading = null }: { state: GetState; on: GetActions; loading?: string | null }): ReactElement {
+export function GetScreen({ state, on, loading = null, back = false, copied = false }: {
+  state: GetState;
+  on: GetActions;
+  loading?: string | null;
+  /** The person came back from Cloudflare's key page with nothing pasted yet. */
+  back?: boolean;
+  copied?: boolean;
+}): ReactElement {
   const side = sideFor(state);
+  // A new step's heading takes the focus, so a screen reader says where the person now is,
+  // and a phone shows the top of the step rather than the button pressed at the bottom.
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    window.scrollTo?.({ top: 0 });
+    document.getElementById("get-h")?.focus({ preventScroll: true });
+  }, [state.step]);
   return (
     <div className="get-page">
       <aside className="get-side" style={SIDE_COLOURS}>
@@ -361,11 +476,11 @@ export function GetScreen({ state, on, loading = null }: { state: GetState; on: 
         <div className="get-panel">
           <Dots step={state.step} />
           {state.step === "account" && <Account state={state} on={on} />}
-          {state.step === "permission" && <Permission state={state} on={on} />}
+          {state.step === "permission" && <Permission state={state} on={on} back={back} />}
           {state.step === "name" && <Name state={state} on={on} />}
           {(state.step === "build" || state.step === "move") && <Build state={state} on={on} loading={loading} />}
           {state.step === "update" && <Update state={state} on={on} />}
-          {state.step === "done" && <Done state={state} />}
+          {state.step === "done" && <Done state={state} on={on} copied={copied} />}
         </div>
       </main>
     </div>
@@ -404,6 +519,25 @@ export function GetFlow({ source: given }: { source?: MoveSource } = {}): ReactE
   const filed = useRef<{ document: Record<string, unknown>; proved: boolean } | null>(null);
   const [loading, setLoading] = useState<string | null>(null);
   const [round, setRound] = useState(0);
+  const [away, setAway] = useState(false);
+  const [back, setBack] = useState(false);
+  const [copied, setCopied] = useState(false);
+  // Back from Cloudflare's key page with nothing pasted: the Paste button is pointed out.
+  useEffect(() => {
+    if (!away) return;
+    const onBack = (): void => { if (document.visibilityState !== "hidden") setBack(true); };
+    window.addEventListener("focus", onBack);
+    document.addEventListener("visibilitychange", onBack);
+    return () => {
+      window.removeEventListener("focus", onBack);
+      document.removeEventListener("visibilitychange", onBack);
+    };
+  }, [away]);
+  // A finished copy is remembered by the home page on this device, so its Open comes straight back here.
+  useEffect(() => {
+    if (state.step !== "done" || state.address === null) return;
+    saveCopies(rememberCopy(loadCopies(), state.address, Date.now()));
+  }, [state.step, state.address]);
   const live = useRef(state);
   live.current = state;
   /** What one key has made: its relay, its client, and the manifest read so far. */
@@ -596,6 +730,12 @@ export function GetFlow({ source: given }: { source?: MoveSource } = {}): ReactE
       setRound((n) => n + 1);
     },
     keepUpdated: (value) => dispatch({ type: "keepUpdated", on: value }),
+    keyPageOpened: () => { setAway(true); setBack(false); },
+    copyAddress: () => {
+      const address = live.current.address;
+      if (address === null) return;
+      void navigator.clipboard?.writeText(address).then(() => setCopied(true), () => undefined);
+    },
     finish: () => {
       const now = live.current;
       const address = now.address;
@@ -611,6 +751,6 @@ export function GetFlow({ source: given }: { source?: MoveSource } = {}): ReactE
     },
   };
 
-  return <GetScreen state={state} on={on} loading={loading} />;
+  return <GetScreen state={state} on={on} loading={loading} back={back} copied={copied} />;
 }
 

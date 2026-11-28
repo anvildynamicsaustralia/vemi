@@ -8,6 +8,17 @@
 2. **Get my own VEMI.** The setup helper makes a copy of VEMI in your own free Cloudflare account and hands you over to it.
 3. **The Deploy button.** On the project's page, the Deploy to Cloudflare button makes a copy in your Cloudflare account too. The first person to make an account on a copy owns it. After that it is invite only.
 
+## Coming back
+
+The VEMI home page keeps your copy's address on each device you open it from. Press **Open my
+VEMI** at the top and you are at your copy's sign-in. The first time, type the address you got
+at the end of setup (it ends in `workers.dev` unless you gave it your own domain). Setup saves
+it for you. For a copy you already had, open Account, About in it and press **Save on home
+page**. Adding your copy to your phone's home screen works too, and opens it like an app.
+
+Once you have signed in on a browser, your copy opens straight on its sign-in card there, with
+your email filled in.
+
 Whoever runs a copy can invite other people. Each account is one person, and nobody sees anyone else's data.
 
 ## First run

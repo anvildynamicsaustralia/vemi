@@ -5,6 +5,7 @@ import { googleRefusal, type AuthLink } from "../authLinks.js";
 import { inviteGreeting } from "../peopleRows.js";
 import { SIGN_IN_TITLE } from "../pageTitle.js";
 import { signInRefused } from "../signInWords.js";
+import { forgetReturning, loadReturning } from "../returning.js";
 import { Field, Gate } from "./Gate.js";
 
 type Token = Extract<AuthLink, { token: string }>;
@@ -66,7 +67,11 @@ function Refusal({ error }: { readonly error: string | null }) {
  * (`/reset`, `/invite`) opens its own form for a new password, signed in or not, after
  * asking the Worker whose it is and whether it still works.
  */
-export function SignIn({ googleReady, claimable, signedIn, link, notice, onLeave, onSignedIn }: {
+/** This copy's address as a person reads it, said on the card so nobody signs in to the wrong one. */
+const here = (): string | undefined =>
+  (typeof window === "undefined" || window.location.hostname === "" ? undefined : window.location.origin.replace(/^https:\/\//, ""));
+
+export function SignIn({ googleReady, claimable, signedIn, link, notice, onLeave, onSignedIn, onAbout }: {
   readonly googleReady: boolean;
   /** No owner account exists yet, so this copy can be claimed. */
   readonly claimable: boolean;
@@ -80,6 +85,8 @@ export function SignIn({ googleReady, claimable, signedIn, link, notice, onLeave
   readonly onLeave: () => void;
   /** Settles who is now signed in. A failure shows here, as a refusal would. */
   readonly onSignedIn: () => Promise<void>;
+  /** Back to this copy's front page, when it has one. */
+  readonly onAbout?: () => void;
 }) {
   const token = link !== null && link.kind !== "google" ? link : null;
   const [stage, setStage] = useState<"sign-in" | "claim" | "recover">("sign-in");
@@ -92,7 +99,10 @@ export function SignIn({ googleReady, claimable, signedIn, link, notice, onLeave
   const [shown, setShown] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(() => googleRefusal(link));
-  const [email, setEmail] = useState("");
+  // Whoever signed in on this browser last: their email is put back, and the password is next.
+  const [returning] = useState(loadReturning);
+  const [email, setEmail] = useState(returning.email);
+  const [knownEmail, setKnownEmail] = useState(returning.email !== "");
   const [password, setPassword] = useState("");
   const [again, setAgain] = useState("");
   // The tab says where it is here too, not whatever the shell or a docs page last said.
@@ -229,7 +239,7 @@ export function SignIn({ googleReady, claimable, signedIn, link, notice, onLeave
   if (stage === "claim") {
     if (!claimable) return <Gate side="inviteOnly" title="Sign up"><InviteOnly onSignIn={backToSignIn} /></Gate>;
     return (
-      <Gate side="claim" title="Create your account" lede="A recovery code comes next.">
+      <Gate side="claim" title="Create your account" lede="You will own this copy. A recovery code comes next, so keep a pen or a password manager handy." where={here()}>
         <ClaimForm email={email} password={password} again={again} busy={busy} error={error}
           onEmail={setEmail} onPassword={setPassword} onAgain={setAgain} onBack={backToSignIn}
           onSubmit={() => {
@@ -246,7 +256,8 @@ export function SignIn({ googleReady, claimable, signedIn, link, notice, onLeave
 
   if (stage === "recover") {
     return (
-      <Gate side="recover" title="Use a recovery code" lede="Set a new password with the code you were shown.">
+      <Gate side="recover" title="Use a recovery code" where={here()}
+        lede="Set a new password with the code you were shown when the account was made. No code? Ask whoever invited you to send a reset link from Account, People.">
         <form onSubmit={(e) => {
           e.preventDefault();
           if (busy) return;
@@ -274,17 +285,23 @@ export function SignIn({ googleReady, claimable, signedIn, link, notice, onLeave
   }
 
   if (needCode) {
+    const sendCode = (value: string): void => {
+      if (busy || value.trim() === "") return;
+      void attempt(async () => { await signIn(email.trim(), password, value.trim()); await onSignedIn(); },
+        (err) => signInRefused(err, { googleReady }));
+    };
     return (
-      <Gate side="code" title="Enter your code" lede="From your authenticator app, or a backup code.">
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          if (busy || code.trim() === "") return;
-          void attempt(async () => { await signIn(email.trim(), password, code.trim()); await onSignedIn(); },
-            (err) => signInRefused(err, { googleReady }));
-        }}>
+      <Gate side="code" title="Enter your code" lede="From your authenticator app, or a backup code." where={here()}>
+        <form onSubmit={(e) => { e.preventDefault(); sendCode(code); }}>
           <Field label="6-digit code or backup code" aria="Code" className="gate-code-input" inputMode="numeric" autoComplete="one-time-code"
-            autoFocus value={code} onChange={(e) => setCode(e.target.value)} />
-          <button type="submit" className="primary-button" disabled={busy || code.trim() === ""}>Sign in</button>
+            enterKeyHint="go" autoFocus value={code} help="Six digits go in by themselves."
+            onChange={(e) => {
+              const value = e.target.value;
+              setCode(value);
+              // Six digits from the app, typed or filled in by the phone, are sent at once.
+              if (/^\s*\d{3}\s?\d{3}\s*$/.test(value) && error === null) sendCode(value.replace(/\s/g, ""));
+            }} />
+          <button type="submit" className="primary-button" disabled={busy || code.trim() === ""}>{busy ? "Checking" : "Sign in"}</button>
         </form>
         <Refusal error={error} />
         <button type="button" className="quiet-button" disabled={busy}
@@ -299,8 +316,9 @@ export function SignIn({ googleReady, claimable, signedIn, link, notice, onLeave
     );
   }
 
+  const toRecover = (): void => { setStage("recover"); setPassword(""); setError(null); };
   return (
-    <Gate side="signIn" title="Welcome back" lede="Sign in to your VEMI.">
+    <Gate side="signIn" title={returning.been ? "Welcome back" : "Sign in"} lede="Sign in to your VEMI." where={here()}>
       {notice !== null && <p className="gate-notice">{notice}</p>}
       <form onSubmit={(e) => {
         e.preventDefault();
@@ -316,10 +334,15 @@ export function SignIn({ googleReady, claimable, signedIn, link, notice, onLeave
             });
         }
       }}>
-        <Field label="Email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <Field label="Password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)}
-          tip={{ label: "If you are locked out", note: "Lost your password? Use a recovery code instead." }} />
-        <button type="submit" className="primary-button" disabled={busy || email.trim() === "" || password === ""}>Sign in</button>
+        <Field label="Email" type="email" autoComplete="email" inputMode="email" autoCapitalize="off" spellCheck={false}
+          autoFocus={!knownEmail} enterKeyHint="next" value={email} onChange={(e) => { setEmail(e.target.value); setKnownEmail(false); }}
+          aside={knownEmail ? (
+            <button type="button" className="quiet-button" onClick={() => { forgetReturning(); setEmail(""); setKnownEmail(false); }}>Not you?</button>
+          ) : undefined} />
+        <Field label="Password" type="password" autoComplete="current-password" autoFocus={knownEmail} enterKeyHint="go"
+          value={password} onChange={(e) => setPassword(e.target.value)}
+          aside={<button type="button" className="quiet-button" disabled={busy} onClick={toRecover}>Forgot password?</button>} />
+        <button type="submit" className="primary-button" disabled={busy || email.trim() === "" || password === ""}>{busy ? "Signing in" : "Sign in"}</button>
       </form>
       {/* Next to the button that met it, not under Google and the help link. */}
       <Refusal error={error} />
@@ -332,15 +355,18 @@ export function SignIn({ googleReady, claimable, signedIn, link, notice, onLeave
         </>
       )}
       <div className="gate-alt">
-        <button type="button" className="quiet-button" disabled={busy} onClick={() => { setStage("recover"); setPassword(""); setError(null); }}>
-          Use a recovery code
-        </button>
         {/* While no owner account exists it makes one; after that it says the copy is invite only. */}
         <button type="button" className={claimable ? "quiet-button gate-outline" : "quiet-button"} disabled={busy}
           onClick={() => { setStage("claim"); setError(null); }}>
-          {claimable ? "Create the owner account" : "Sign up"}
+          {claimable ? "Create the owner account" : "New here? Sign up"}
         </button>
       </div>
+      <p className="gate-foot">
+        {claimable
+          ? "Nobody owns this copy yet. Whoever makes the first account owns it."
+          : "Tip: add this page to your home screen or bookmarks, so VEMI is one tap away."}
+        {onAbout !== undefined && <> <button type="button" className="quiet-button" onClick={onAbout}>What is VEMI?</button></>}
+      </p>
     </Gate>
   );
 }

@@ -273,6 +273,50 @@ body { overflow: auto; }
 .get-recovery { margin: 0; font-size: var(--t-chip); color: var(--vemi-mid); overflow-wrap: anywhere; }
 .get-recovery code { font-family: var(--vemi-mono); color: var(--vemi-ink); }
 
+
+/* The named steps under the bars. */
+.get-progress { display: grid; gap: var(--s3); }
+.get-step-names { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; font-size: var(--t-caption); color: var(--vemi-dim); }
+.get-step-names li { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.get-step-names li.past { color: var(--vemi-mid); }
+.get-step-names li.now { color: var(--vemi-ink); font-weight: 700; }
+.get-step h1:focus { outline: none; }
+.get-step h1:focus-visible { outline: 2px solid var(--vemi-live); outline-offset: 4px; border-radius: 4px; }
+
+/* What to do, numbered, beside the button that does it. */
+.get-guide { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--s4); counter-reset: none; }
+.get-guide li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: var(--s4); align-items: start; font-size: var(--t-body); line-height: 1.5; color: var(--vemi-mid); }
+.get-guide li b { color: var(--vemi-ink); font-weight: 700; }
+.get-guide-n { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--vemi-field); border: 1px solid var(--vemi-hair); color: var(--vemi-ink); font-weight: 800; font-size: var(--t-caption); }
+
+/* Stuck? The common snags of a step, folded away. */
+.get-stuck { border: 1px solid var(--vemi-hair); border-radius: var(--r-row); background: var(--vemi-white); }
+.get-stuck summary { display: flex; align-items: center; min-height: var(--touch); padding: var(--s3) var(--s6); font-size: var(--t-body); font-weight: 700; cursor: pointer; list-style: none; }
+.get-stuck summary::-webkit-details-marker { display: none; }
+.get-stuck summary::after { content: "+"; margin-left: auto; font-size: 20px; font-weight: 500; color: var(--vemi-mid); }
+.get-stuck[open] summary::after { content: "\2212"; }
+.get-stuck summary:focus-visible { outline: 2px solid var(--vemi-live); outline-offset: 2px; border-radius: var(--r-row); }
+.get-stuck dl { margin: 0; padding: 0 var(--s6) var(--s6); display: grid; gap: var(--s6); }
+.get-stuck dt { font-weight: 700; font-size: var(--t-body); }
+.get-stuck dd { margin: var(--s1) 0 0; color: var(--vemi-mid); font-size: var(--t-body); line-height: 1.5; }
+.get-stuck dd b { color: var(--vemi-ink); }
+
+/* Back from Cloudflare with nothing pasted: Paste is the next press. */
+.get-paste .get-nudge { background: var(--vemi-live-pressed); border-color: var(--vemi-live-pressed); color: var(--vemi-on-live); }
+
+/* Names to press instead of type. */
+.get-chips { display: flex; flex-wrap: wrap; gap: var(--s3); }
+.get-chip { min-height: 40px; padding: 0 var(--s6); border: 1.5px solid var(--vemi-edge); border-radius: var(--r-chip); background: var(--vemi-white); color: var(--vemi-ink); font: 600 var(--t-body)/1 var(--vemi-mono); cursor: pointer; }
+.get-chip:hover { border-color: var(--vemi-ink); }
+
+/* The new address, with Copy beside it. */
+.get-address-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s4); }
+.get-address-row b { min-width: 0; overflow-wrap: anywhere; }
+.get-address-row .get-copy { flex: none; min-height: 36px; padding: var(--s2) var(--s5); font-family: var(--vemi-ui); }
+.get-hint b { color: var(--vemi-ink); }
+.get-already { justify-content: center; align-items: center; }
+.get-already .get-link { min-height: 0; }
+
 /* Movement only where the person has not asked for less. */
 @media (prefers-reduced-motion: no-preference) {
   .get-row.run .get-tick { animation: get-spin 1s linear infinite; }

@@ -163,7 +163,7 @@ export default defineConfig({
     // icons but runs none of its code and calls none of its routes, and the copy at /try/,
     // which is the app with its data kept in the browser. Only that page loads the database.
     rollupOptions: {
-      input: { main: source("./index.html"), get: source("./get/index.html"), try: source("./try/index.html") },
+      input: { main: source("./index.html"), get: source("./get/index.html"), try: source("./try/index.html"), home: source("./home/index.html") },
       output: {
         // What the screens share goes in one file, not a dozen small ones: every file is a
         // request, and a phone on a slow link pays for each.

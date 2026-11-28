@@ -13,7 +13,7 @@ const OPEN = `${ADDRESS}/auth/move-in?t=hand`;
 const none = (): void => undefined;
 const on: GetActions = {
   signUpOpened: none, typeKey: none, pasteKey: none, typeName: none, next: none, back: none, retry: none, keepUpdated: none, finish: none,
-  typeEmail: none, typePassword: none, pickFile: none, proveKey: none,
+  typeEmail: none, typePassword: none, pickFile: none, proveKey: none, keyPageOpened: none, copyAddress: none,
 };
 const run = (state: GetState, ...actions: Action[]): GetState => actions.reduce(reduce, state);
 const draw = (state: GetState): string => renderToStaticMarkup(<GetScreen state={state} on={on} />);
@@ -52,7 +52,7 @@ describe("the helper's sixth row", () => {
 
   it("works on the move's step and keeps the build's dot", () => {
     expect(screens()["working"]).toMatch(/class="get-row run"[^>]*>(?:(?!<\/li>).)*Copying your stuff/s);
-    expect(screens()["working"]).toContain('aria-label="Step 4 of 5"');
+    expect(screens()["working"]).toContain('aria-label="Step 4 of 5: Build"');
   });
 
   it("asks for the email and password on the name step, with the copy's own password line", () => {

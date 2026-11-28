@@ -4,6 +4,7 @@ import { askFrontLanding, saveFrontLanding } from "../api.js";
 import { changeFirstRunStep } from "../firstRunState.js";
 import { install, IOS_STEPS, useInstallOffer } from "../installPrompt.js";
 import { isLocal } from "../local/mode.js";
+import { LANDING_FLAGS } from "../landingLinks.js";
 import { HOME, navigate } from "../router.js";
 import { useApp } from "./appContext.js";
 import { Switch } from "./Switch.js";
@@ -40,6 +41,39 @@ function FrontPageRow() {
         <span className="account-row-note">What someone signed out sees at the address of this copy.</span>
       </span>
       <Switch on={on} label="Front page" onChange={choose} />
+    </div>
+  );
+}
+
+/**
+ * This copy's address, to copy, and a way to keep it on the VEMI home page: opening the home
+ * page with `?mine=` saves it there, on this device, so its "Open my VEMI" comes straight here.
+ */
+export function AddressRow({ origin: given, home = LANDING_FLAGS.getUrl }: { readonly origin?: string; readonly home?: string | null }) {
+  const app = useApp();
+  const origin = given ?? (typeof window === "undefined" ? "" : window.location.origin);
+  if (origin === "") return null;
+  const shown = origin.replace(/^https:\/\//, "");
+  const copy = (): void => {
+    void navigator.clipboard?.writeText(origin).then(() => app.notify("Address copied."), () => app.notify(`Your address is ${shown}.`));
+  };
+  const onHome = home !== null && !origin.startsWith(home);
+  return (
+    <div className="account-row account-row-wrap">
+      <span className="account-row-title">
+        Your address
+        <span className="account-row-note">
+          <b>{shown}</b>{onHome ? ". Save it on the VEMI home page and its Open button brings you here." : "."}
+        </span>
+      </span>
+      <span className="account-row-acts">
+        <button type="button" className="row-action" onClick={copy}>Copy</button>
+        {onHome && (
+          <a className="row-action" href={`${home.replace(/\/+$/, "")}/?mine=${encodeURIComponent(origin)}`} target="_blank" rel="noopener noreferrer">
+            Save on home page
+          </a>
+        )}
+      </span>
     </div>
   );
 }
@@ -82,6 +116,7 @@ export function AccountAbout({ owner = false, local = isLocal() }: { readonly ow
         <span className="account-row-title">Version</span>
         <span className="account-row-note">{VERSION}</span>
       </div>
+      {!local && <AddressRow />}
       {!local && <UpdateRow />}
       {owner && !local && <AccountUpdate />}
       <div className="account-row">

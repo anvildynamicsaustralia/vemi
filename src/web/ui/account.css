@@ -37,3 +37,8 @@ a.row-action { text-decoration: none; }
 .account-phone .account-nav button:active { background: var(--vemi-field); }
 /* "‹ Account" is a way back, at the start of the line like every other. */
 .account-panel > .back-link { justify-self: start; align-self: flex-start; width: auto; text-align: left; }
+
+/* A row with two actions side by side, that wrap under the words when the row is narrow. */
+.account-row-acts { display: inline-flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.account-row-wrap { flex-wrap: wrap; row-gap: 10px; }
+.account-row-wrap .account-row-note b { color: var(--vemi-ink); font-weight: 600; overflow-wrap: anywhere; }

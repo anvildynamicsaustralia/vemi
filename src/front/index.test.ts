@@ -20,7 +20,7 @@ function parts() {
 }
 
 describe("the front", () => {
-  it("leaves / to the static files: the redirect to /get/ is the _redirects rule, tested in build-front.test.ts", async () => {
+  it("leaves / to the static files: the home page is put there by build-front, and tested there", async () => {
     const p = parts();
     expect(await (await front(new Request(`${ORIGIN}/`), p)).text()).toBe("a file");
     expect(p.assets.fetch).toHaveBeenCalledTimes(1);

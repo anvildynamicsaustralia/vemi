@@ -23,7 +23,8 @@ describe("the sign-in page", () => {
     expect(out).toContain('aria-label="VEMI"');
     expect(out).toContain("<em>everything</em>");
     expect(out).toContain("<h1");
-    expect(out).toContain("Welcome back");
+    // "Welcome back" is for someone who has signed in on this browser before.
+    expect(out).toContain(">Sign in</h1>");
   });
   it("keeps the names its fields always had", () => {
     const out = card(false);
@@ -36,10 +37,15 @@ describe("the sign-in page", () => {
     const out = card(false);
     expect(out).toMatch(/<label for="([^"]+)">Email<\/label><\/div><input[^>]* id="\1"/);
   });
-  it("has one small note, on Password, and no help button", () => {
+  it("puts Forgot password beside Password, as a link anyone expects, and no small note", () => {
     const out = card(false);
-    expect(out.match(/info-tip-button/g)).toHaveLength(1);
-    expect(out).not.toMatch(/aria-label="Forgot password"/);
+    expect(out).not.toContain("info-tip-button");
+    expect(out).toMatch(/>Password<\/label><span class="gate-aside"><button type="button" class="quiet-button">Forgot password\?<\/button>/);
+  });
+  it("lets the password be shown, and says which", () => {
+    const out = card(false);
+    expect(out).toContain('aria-pressed="false"');
+    expect(out).toContain('aria-label="Show password"');
   });
 });
 

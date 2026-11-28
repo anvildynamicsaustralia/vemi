@@ -1,8 +1,8 @@
 /**
  * vemi-front: the front door. Static files for /get/ and /release/ come straight from assets
  * (free, and not counted against the Worker's daily requests). This Worker runs only for the
- * relay routes under /get/relay (wrangler.front.jsonc runs it for no other path). The redirect of
- * / to /get/ is a static `_redirects` rule written by scripts/build-front.mjs and tested there.
+ * relay routes under /get/relay (wrangler.front.jsonc runs it for no other path). The front
+ * / is the home page, a static file put there by scripts/build-front.mjs and tested there.
  *
  * No D1, no Durable Object, no cron. One KV namespace, RELAY_DAY, holds a count of tickets a day.
  */

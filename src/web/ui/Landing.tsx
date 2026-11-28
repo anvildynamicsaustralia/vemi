@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import wordmarkSource from "../../../brand/vemi-wordmark.svg?raw";
 import { landingLinks, LANDING_LABELS, LANDING_SHOTS, type LandingFlags } from "../landingLinks.js";
 import { HeroField } from "./HeroField.js";
@@ -40,9 +40,15 @@ const CARDS: readonly { readonly head: string; readonly body: string }[] = [
  * sub line, real screens of the app in a monitor and a phone, and Sign in. A link to Try it or
  * to a new copy is drawn only when `landingLinks` says it has somewhere to go.
  */
-export function Landing({ onSignIn, flags }: {
+export function Landing({ onSignIn, flags, mine, signInLabel = "Sign in", haveLabel = "I have an account" }: {
   readonly onSignIn: () => void;
   readonly flags?: LandingFlags;
+  /** Drawn first in the hero, above the headline: the home page's "Your VEMI" panel. */
+  readonly mine?: ReactNode;
+  /** The nav's own way in: "Sign in" on a copy, "Open my VEMI" on the home page. */
+  readonly signInLabel?: string;
+  /** The same way in at the foot of the page. */
+  readonly haveLabel?: string;
 }) {
   const page = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -65,7 +71,7 @@ export function Landing({ onSignIn, flags }: {
           <a className="landing-nav-link" href="#see">See it</a>
           <a className="landing-nav-link" href="#own">Your own copy</a>
           {tryLink !== undefined && <a className="landing-nav-link" href="#try">Try it</a>}
-          <button type="button" className="landing-btn landing-btn-small" onClick={onSignIn}>Sign in</button>
+          <button type="button" className="landing-btn landing-btn-small" onClick={onSignIn}>{signInLabel}</button>
         </nav>
       </header>
 
@@ -73,6 +79,7 @@ export function Landing({ onSignIn, flags }: {
         <div className="landing-hero-wrap">
           <HeroField />
           <section className="landing-wrap landing-hero">
+            {mine}
             <span className="landing-kicker landing-kicker-pill">Free and open source</span>
             <h1 className="landing-title">{LINE_START}<em>{LINE_END}</em></h1>
             <p className="landing-sub">{LANDING_PITCH}</p>
@@ -147,7 +154,7 @@ export function Landing({ onSignIn, flags }: {
           <div className="landing-acts landing-cta-acts">
             {tryLink !== undefined && <a className="landing-btn landing-btn-live" href={tryLink.href}>Try it now</a>}
             <button type="button" className={`landing-btn ${tryLink === undefined ? "landing-btn-live" : "landing-btn-ghost"}`} onClick={onSignIn}>
-              I have an account
+              {haveLabel}
             </button>
           </div>
         </section>

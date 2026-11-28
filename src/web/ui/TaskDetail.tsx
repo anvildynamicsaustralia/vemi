@@ -42,7 +42,7 @@ export function TaskDetail({ taskId, onClose }: { readonly taskId: string; reado
   const words = useLevelWords();
 
   return (
-    <aside className="detail" role="dialog" aria-label={words.task.toLowerCase()} onKeyDown={trapTab}>
+    <div className="detail" role="dialog" aria-label={words.task.toLowerCase()} onKeyDown={trapTab}>
       <div className="detail-head">
         <span className="detail-trail">
           {located === null ? words.task : `${located.venture.name}${located.project === null ? "" : ` · ${located.project.name}`}`}
@@ -56,7 +56,7 @@ export function TaskDetail({ taskId, onClose }: { readonly taskId: string; reado
       {index === null ? <Pending error={tree.error} onRetry={tree.refetch} />
         : located === null ? <p className="rows-empty">This {words.task.toLowerCase()} is archived or does not exist. The archive can restore it.</p>
         : <TaskBody key={taskId} located={located} index={index} links={links} onClose={onClose} />}
-    </aside>
+    </div>
   );
 }
 

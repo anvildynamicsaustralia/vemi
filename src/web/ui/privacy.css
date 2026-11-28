@@ -3,7 +3,7 @@
 .privacy-home { margin: 0; line-height: 1.5; }
 .privacy-rows { display: grid; gap: 12px; min-width: 0; }
 .privacy-device-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-width: 0; }
-.privacy-tag { font-size: var(--t-caption); color: var(--vemi-live); margin-left: 8px; }
+.privacy-tag { font-size: var(--t-caption); color: var(--vemi-live-text); margin-left: 8px; }
 .privacy-ways { display: grid; gap: 10px; }
 .key-pair, .pair-approve, .key-offer, .key-unlock { min-width: 0; }
 .pair-link { font-size: var(--t-caption); line-height: 1.5; overflow-wrap: anywhere; }

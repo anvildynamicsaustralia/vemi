@@ -218,7 +218,7 @@ a:hover { color: var(--vemi-live-hover); }
 }
 .dim { color: var(--vemi-dim); }
 .mid { color: var(--vemi-mid); }
-.hand { color: var(--vemi-live); }
+.hand { color: var(--vemi-live-text); }
 .placeholder { color: var(--vemi-dim); }
 
 .surface-title {
@@ -259,8 +259,8 @@ a:hover { color: var(--vemi-live-hover); }
   color: var(--vemi-ink);
   transition: all var(--m-hover) ease;
 }
-.chip:hover:not(:disabled) { border-color: var(--vemi-live); color: var(--vemi-live); }
-.chip.on { border-color: var(--vemi-live); background: var(--vemi-live-tint); color: var(--vemi-live); }
+.chip:hover:not(:disabled) { border-color: var(--vemi-live); color: var(--vemi-live-text); }
+.chip.on { border-color: var(--vemi-live); background: var(--vemi-live-tint); color: var(--vemi-live-text); }
 .chip:disabled { color: var(--vemi-faint); cursor: default; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 
@@ -313,10 +313,10 @@ a:hover { color: var(--vemi-live-hover); }
 }
 .quiet-button:hover:not(:disabled) { color: var(--vemi-ink); border-color: var(--vemi-live); }
 .quiet-button:disabled { color: var(--vemi-faint); cursor: default; }
-.link-button { color: var(--vemi-live); font-size: inherit; }
+.link-button { color: var(--vemi-live-text); font-size: inherit; }
 .link-button:hover { color: var(--vemi-live-pressed); }
 .close-button { color: var(--vemi-dim); font-size: var(--t-glyph-lg); line-height: 1; padding: 2px 4px; transition: color var(--m-hover) ease; }
-.close-button:hover { color: var(--vemi-live); }
+.close-button:hover { color: var(--vemi-live-text); }
 
 .editable { color: inherit; width: 100%; min-height: 1.4em; text-wrap: pretty; border-radius: var(--r-xs); }
 .editable:hover { background: var(--vemi-hover); }
@@ -370,7 +370,7 @@ textarea.editing { resize: vertical; line-height: 1.5; }
   font-weight: 600;
   letter-spacing: var(--track-tag);
   text-transform: uppercase;
-  color: var(--vemi-live);
+  color: var(--vemi-live-text);
 }
 .notice-action:hover { color: var(--vemi-white); }
 .notice-close { background: transparent; border: 0; padding: 0 0 0 2px; color: var(--vemi-dim); font-size: var(--t-glyph); line-height: 1; }
@@ -501,7 +501,7 @@ body:has(.selection-bar) .page.phone ~ .notice {
   color: var(--vemi-dim);
   transition: color var(--m-hover) ease;
 }
-.back-link:hover { color: var(--vemi-live); }
+.back-link:hover { color: var(--vemi-live-text); }
 .venture-id { display: flex; align-items: center; gap: 11px; min-width: 0; }
 .venture-name { margin: 0; font-size: var(--t-head); font-weight: 600; letter-spacing: var(--track-name); line-height: 1.2; }
 .monogram {
@@ -597,7 +597,7 @@ a.word-button:hover { color: var(--vemi-ink); }
   border-radius: var(--r-small);
   box-shadow: var(--sh-rest);
   font-size: var(--t-meta);
-  color: var(--vemi-live);
+  color: var(--vemi-live-text);
   z-index: 50;
   pointer-events: none;
 }
@@ -688,7 +688,7 @@ a.word-button:hover { color: var(--vemi-ink); }
   background: transparent;
   color: var(--vemi-ink);
 }
-.recent-row:hover .recent-title { color: var(--vemi-live); }
+.recent-row:hover .recent-title { color: var(--vemi-live-text); }
 /* The transition sits where the colour changes: the hover recolours the title, not the row. */
 .recent-title { flex: 1; min-width: 0; font-size: var(--t-row-sm); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: color var(--m-hover) ease; }
 .recent-kind {
@@ -791,7 +791,7 @@ a.word-button:hover { color: var(--vemi-ink); }
 .picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 4px; padding: 0 18px 12px; }
 .picker-cell { height: 48px; display: flex; align-items: center; justify-content: center; background: var(--vemi-white); border: 1px solid transparent; border-radius: var(--r-small); color: var(--vemi-mid); }
 .picker-cell:hover { background: var(--vemi-field); color: var(--vemi-ink); }
-.picker-cell.on { color: var(--vemi-live); border-color: var(--vemi-live); background: var(--vemi-live-tint); }
+.picker-cell.on { color: var(--vemi-live-text); border-color: var(--vemi-live); background: var(--vemi-live-tint); }
 .picker-section { padding: 12px 22px 8px; }
 
 /* ---------- the task sheet ---------- */
@@ -840,7 +840,7 @@ a.word-button:hover { color: var(--vemi-ink); }
   border-radius: var(--r-button);
   border: 1px solid var(--vemi-live);
   background: var(--vemi-white);
-  color: var(--vemi-live);
+  color: var(--vemi-live-text);
   font-size: var(--t-chip);
   font-weight: 600;
   text-align: center;
@@ -875,7 +875,7 @@ a.word-button:hover { color: var(--vemi-ink); }
 .md-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
 .md-list li { position: relative; padding-left: 15px; line-height: 1.5; }
 .md-list li::before { content: "-"; position: absolute; left: 0; color: var(--vemi-edge); }
-.md-link { color: var(--vemi-live); text-decoration: underline; }
+.md-link { color: var(--vemi-live-text); text-decoration: underline; }
 /* 24px apart, so on a phone the three controls' 44px reaches meet and never overlap. */
 .md-tools { display: flex; gap: 24px; }
 .md-tool { padding: 2px 0; }
@@ -887,7 +887,7 @@ textarea.md-write { min-height: 150px; }
 .check .text.done { color: var(--vemi-dim); text-decoration: line-through; }
 .row-action:disabled { color: var(--vemi-faint); cursor: default; }
 .row-action.quiet { color: var(--vemi-dim); }
-.row-action.quiet:hover { color: var(--vemi-live); }
+.row-action.quiet:hover { color: var(--vemi-live-text); }
 
 /* ---------- archive and account: rows with one action each ---------- */
 
@@ -930,7 +930,7 @@ textarea.md-write { min-height: 150px; }
    export pair, and the two answers of a row that is asking before it acts. */
 .account-row-actions { display: flex; flex-wrap: wrap; gap: 8px 16px; flex: 0 1 auto; min-width: 0; }
 .account-row-title { font-size: var(--t-task); }
-.account-row-title.failed { color: var(--vemi-live); }
+.account-row-title.failed { color: var(--vemi-live-text); }
 .account-row-note { display: block; margin-top: 4px; font-size: var(--t-chip); font-weight: 400; color: var(--vemi-dim); }
 .account-id { display: flex; align-items: center; gap: 16px; margin-bottom: 34px; }
 .account-name { font-size: var(--t-account); font-weight: 600; letter-spacing: var(--track-owned); }
@@ -950,7 +950,7 @@ textarea.md-write { min-height: 150px; }
 .link-code { font-size: var(--t-field); font-weight: 600; letter-spacing: 0.14em; color: var(--vemi-ink); user-select: all; }
 
 /* A refusal, said where the form that met it is: the sign-in card's, the account's. */
-.error { color: var(--vemi-live); font-size: var(--t-chip); }
+.error { color: var(--vemi-live-text); font-size: var(--t-chip); }
 
 /* ---------- the pages before the app ---------- */
 
@@ -1013,7 +1013,7 @@ textarea.md-write { min-height: 150px; }
   color: var(--vemi-bar-ink);
   transition: color var(--m-hover) ease;
 }
-.bar-action:hover:not(:disabled), .bar-action.on { color: var(--vemi-live); }
+.bar-action:hover:not(:disabled), .bar-action.on { color: var(--vemi-live-text); }
 .bar-action:disabled { color: var(--vemi-dim); cursor: default; }
 .bar-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .bar-label { font-size: var(--t-meta); color: var(--vemi-dim); }
@@ -1037,7 +1037,7 @@ textarea.md-write { min-height: 150px; }
   box-shadow: var(--sh-ghost);
 }
 
-.word-button.on { border-color: var(--vemi-live); color: var(--vemi-live); }
+.word-button.on { border-color: var(--vemi-live); color: var(--vemi-live-text); }
 
 /* ---------- pickers and the calendar ---------- */
 
@@ -1070,7 +1070,7 @@ textarea.md-write { min-height: 150px; }
    type and a phone's reach), not a light field on the dark. */
 .pick-button.bar-date { width: auto; min-height: 0; padding: 0; gap: 6px; border: 0; background: transparent; color: var(--vemi-bar-ink); font-size: var(--t-meta); }
 .pick-button.bar-date .pick-mark { color: inherit; }
-.pick-button.bar-date:hover, .pick-button.bar-date.open { color: var(--vemi-live); }
+.pick-button.bar-date:hover, .pick-button.bar-date.open { color: var(--vemi-live-text); }
 
 .picker {
   position: fixed;
@@ -1109,7 +1109,7 @@ textarea.md-write { min-height: 150px; }
 .picker-item.nested { padding-left: 24px; }
 .picker-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .picker-sub { flex: none; font-size: var(--t-caption); color: var(--vemi-dim); }
-.picker-tick { flex: none; display: inline-flex; color: var(--vemi-live); }
+.picker-tick { flex: none; display: inline-flex; color: var(--vemi-live-text); }
 .picker-none { padding: 10px 8px; font-size: var(--t-chip); color: var(--vemi-dim); }
 
 /* The tag picker: what is already there, then the field, then what it matches — and the
@@ -1120,7 +1120,7 @@ textarea.md-write { min-height: 150px; }
 .pill-list { max-height: 240px; margin-top: 10px; padding: 0; }
 .pill-new { margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--vemi-hairline); border-radius: 0; color: var(--vemi-dim); }
 .pill-new:disabled { color: var(--vemi-faint); cursor: default; }
-.pill-said { margin-top: 10px; font-size: var(--t-caption); color: var(--vemi-live); }
+.pill-said { margin-top: 10px; font-size: var(--t-caption); color: var(--vemi-live-text); }
 
 /* Decision 14. Seven columns of squares a finger can land on. */
 .cal { padding: 16px; overflow: auto; }
@@ -1177,8 +1177,8 @@ textarea.md-write { min-height: 150px; }
 .delete-list { margin: 6px 0 0; padding-left: 18px; font-size: var(--t-chip); line-height: 1.6; color: var(--vemi-ink); }
 .delete-refusal, .delete-warning, .delete-failed { font-size: var(--t-chip); line-height: 1.5; text-wrap: pretty; }
 .delete-refusal { color: var(--vemi-ink); border-left: 2px solid var(--vemi-live); padding-left: 10px; }
-.delete-warning { margin-top: 12px; color: var(--vemi-live); }
-.delete-failed { margin-top: 10px; color: var(--vemi-live); }
+.delete-warning { margin-top: 12px; color: var(--vemi-live-text); }
+.delete-failed { margin-top: 10px; color: var(--vemi-live-text); }
 .delete-confirm { display: block; margin-top: 14px; }
 .delete-confirm .label { display: block; margin-bottom: 5px; }
 .delete-confirm .field { width: 100%; }
@@ -1330,7 +1330,7 @@ textarea.md-write { min-height: 150px; }
   font-weight: 600;
   letter-spacing: var(--track-tight);
   text-transform: uppercase;
-  color: var(--vemi-live);
+  color: var(--vemi-live-text);
 }
 .tag-blocked {
   font-size: var(--t-micro);
@@ -1373,7 +1373,7 @@ textarea.md-write { min-height: 150px; }
   color: var(--vemi-dim);
   transition: color var(--m-hover) ease;
 }
-.column-add:hover { color: var(--vemi-live); }
+.column-add:hover { color: var(--vemi-live-text); }
 .column-add-form { margin-top: 14px; }
 .column-add-form .control-field { width: 100%; }
 /* More: the same line taken to Add, pre-fill and all. Its reach is .row-action's. */
@@ -1431,7 +1431,7 @@ textarea.md-write { min-height: 150px; }
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.proj-title:hover { color: var(--vemi-live); }
+.proj-title:hover { color: var(--vemi-live-text); }
 .proj-figures { margin-left: auto; display: flex; align-items: center; gap: 18px; flex: none; }
 .proj-left {
   width: 58px;
@@ -1440,7 +1440,7 @@ textarea.md-write { min-height: 150px; }
   font-weight: 600;
   letter-spacing: var(--track-label);
   text-transform: uppercase;
-  color: var(--vemi-live);
+  color: var(--vemi-live-text);
 }
 .grip-space { width: 23px; flex: none; }
 .rows-add { margin: 14px 0 34px; max-width: 420px; }
@@ -1474,7 +1474,7 @@ textarea.md-write { min-height: 150px; }
   font-weight: 600;
   letter-spacing: var(--track-label);
   text-transform: uppercase;
-  color: var(--vemi-live);
+  color: var(--vemi-live-text);
 }
 .row-action:hover { color: var(--vemi-live-pressed); }
 .row-action { white-space: nowrap; flex: none; }
@@ -1532,7 +1532,7 @@ textarea.md-write { min-height: 150px; }
   align-items: center;
   justify-content: center;
 }
-.icon-button:hover { color: var(--vemi-live); border-color: var(--vemi-live); }
+.icon-button:hover { color: var(--vemi-live-text); border-color: var(--vemi-live); }
 .icon-button.small { padding: 3px; min-width: 28px; min-height: 28px; }
 
 /* ---------- Today ---------- */
@@ -1603,7 +1603,7 @@ textarea.md-write { min-height: 150px; }
   font-weight: 600;
   letter-spacing: var(--track-tight);
   text-transform: uppercase;
-  color: var(--vemi-live);
+  color: var(--vemi-live-text);
 }
 .unpick {
   flex: none;
@@ -1615,7 +1615,7 @@ textarea.md-write { min-height: 150px; }
   color: var(--vemi-edge);
   transition: color var(--m-hover) ease;
 }
-.unpick:hover { color: var(--vemi-live); }
+.unpick:hover { color: var(--vemi-live-text); }
 .today-section { margin-bottom: 34px; }
 .today-kicker { margin-bottom: 14px; }
 .pick-group { margin-top: 16px; }
@@ -1645,7 +1645,7 @@ textarea.md-write { min-height: 150px; }
   font-weight: 600;
   letter-spacing: var(--track-tight);
   text-transform: uppercase;
-  color: var(--vemi-live);
+  color: var(--vemi-live-text);
 }
 .needs-where { margin-left: auto; font-size: var(--t-micro); font-weight: 600; letter-spacing: var(--track-tag); text-transform: uppercase; color: var(--vemi-dim); }
 .needs-title { font-size: var(--t-body); font-weight: 500; line-height: 1.35; overflow-wrap: anywhere; }
@@ -1742,7 +1742,7 @@ textarea.md-write { min-height: 150px; }
   background: transparent;
   color: var(--vemi-dim);
 }
-.month-step:hover { color: var(--vemi-live); }
+.month-step:hover { color: var(--vemi-live-text); }
 .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
 /* The day names, as the panel's calendar has them, so a column says which day it is. */
 .month-dow { text-align: center; font-size: var(--t-caption); color: var(--vemi-dim); padding: 2px 0 4px; }
@@ -1825,7 +1825,7 @@ textarea.md-write { min-height: 150px; }
   cursor: pointer;
   transition: color var(--m-hover) ease, border-color var(--m-hover) ease;
 }
-.more-button:hover, .more-button.open { color: var(--vemi-live); border-color: var(--vemi-hair); }
+.more-button:hover, .more-button.open { color: var(--vemi-live-text); border-color: var(--vemi-hair); }
 .card-more { margin: -4px -6px -4px auto; }
 .plate-mark .card-more, .owned-mark .card-more { margin-left: auto; }
 .owned-mark { margin-bottom: 6px; }
@@ -1841,7 +1841,7 @@ textarea.md-write { min-height: 150px; }
 
 .menu-list { display: flex; flex-direction: column; padding: 6px; }
 .menu-item { width: 100%; }
-.menu-item.remove { color: var(--vemi-live); }
+.menu-item.remove { color: var(--vemi-live-text); }
 .menu-item:disabled { color: var(--vemi-faint); cursor: default; }
 .menu-note { padding: 8px 10px; font-size: var(--t-caption); color: var(--vemi-dim); line-height: 1.4; border-top: 1px solid var(--vemi-hairline); border-bottom: 1px solid var(--vemi-hairline); margin: 4px 0; }
 
@@ -2143,7 +2143,7 @@ textarea.md-write { min-height: 150px; }
 .map-greeting { margin: 0; font-size: var(--t-venture); font-weight: 600; letter-spacing: var(--track-name); line-height: var(--lh-name); }
 .map-date { margin: 4px 0 0; font-size: var(--t-body); color: var(--vemi-mid); }
 .map-header-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.map-overdue { font-size: var(--t-body); color: var(--vemi-live); background: none; border: 0; padding: 0; min-height: var(--target-fine); cursor: pointer; }
+.map-overdue { font-size: var(--t-body); color: var(--vemi-live-text); background: none; border: 0; padding: 0; min-height: var(--target-fine); cursor: pointer; }
 .map-overdue:hover { text-decoration: underline; }
 
 .map-section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -2190,7 +2190,7 @@ textarea.md-write { min-height: 150px; }
   color: var(--vemi-mid);
   white-space: nowrap;
 }
-.plate-chip.flag { background: var(--vemi-live-tint); border-color: var(--vemi-live); color: var(--vemi-live); }
+.plate-chip.flag { background: var(--vemi-live-tint); border-color: var(--vemi-live); color: var(--vemi-live-text); }
 .plate-chip.risk { border-style: dashed; background: transparent; }
 
 .plate-projects { display: grid; padding: 0 8px 8px; }

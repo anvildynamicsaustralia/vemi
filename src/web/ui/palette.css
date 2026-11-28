@@ -30,6 +30,6 @@
 }
 .palette-row.on { background: var(--vemi-field); }
 .palette-title { min-width: 0; flex: 1 1 auto; font-size: var(--t-row-sm); overflow-wrap: anywhere; }
-.palette-mark { background: transparent; color: var(--vemi-live); font-weight: 700; }
+.palette-mark { background: transparent; color: var(--vemi-live-text); font-weight: 700; }
 .palette-where { flex: none; max-width: 40%; font-size: var(--t-meta); color: var(--vemi-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .palette-hint { flex: none; font-size: var(--t-meta); color: var(--vemi-dim); border: 1px solid var(--vemi-hair); border-radius: var(--r-button); padding: 1px 6px; }

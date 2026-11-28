@@ -1,7 +1,7 @@
 /* The Search screen: scope pills, filter cards, recent searches and quick actions. */
 .search-scopes { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
 .search-count { margin-left: 6px; font-variant-numeric: tabular-nums; color: var(--vemi-dim); }
-.search-mark { background: transparent; color: var(--vemi-live); font-weight: 700; }
+.search-mark { background: transparent; color: var(--vemi-live-text); font-weight: 700; }
 
 .search-card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 
@@ -22,6 +22,12 @@
   padding: 14px 16px;
   text-align: left;
   color: var(--vemi-ink);
+  /* A button: without these it wears the browser's own grey, dark grey in dark mode. */
+  background: none;
+  border: 0;
+  border-radius: inherit;
+  font: inherit;
+  cursor: pointer;
 }
 .search-card-open b { font-size: var(--t-venture); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
 .search-card-open span { font-size: var(--t-meta); font-weight: 600; color: var(--vemi-dim); }

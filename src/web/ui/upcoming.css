@@ -15,7 +15,7 @@
   width: 36px; height: 36px; border: 1px solid var(--vemi-edge); border-radius: 50%;
   background: transparent; color: var(--vemi-mid); font-size: var(--t-row); line-height: 1; cursor: pointer;
 }
-.upcoming-add:hover { color: var(--vemi-live); border-color: var(--vemi-live); }
+.upcoming-add:hover { color: var(--vemi-live-text); border-color: var(--vemi-live); }
 .upcoming-row { display: flex; align-items: center; gap: 4px; min-height: 52px; border-bottom: 1px solid var(--vemi-hair-light); background: var(--vemi-white); }
 .upcoming-title {
   flex: 1; min-width: 0; display: grid; gap: 2px; padding: 8px 6px; border: 0; background: transparent;

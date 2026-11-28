@@ -61,7 +61,7 @@ export function MapSurface() {
       <Tip name="map" />
       <section className="map-section" aria-label={words.spaces}>
         <div className="map-section-head">
-          <h3 className="map-section-title">{words.spaces}</h3>
+          <h2 className="map-section-title">{words.spaces}</h2>
           <div className="chips seg" role="radiogroup" aria-label="map style">
             {MAP_STYLES.map((s) => (
               <Chip key={s} role="radio" aria-checked={appearance.mapStyle === s} on={appearance.mapStyle === s}

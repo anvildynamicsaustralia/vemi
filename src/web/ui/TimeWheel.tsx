@@ -32,14 +32,20 @@ function Wheel<T>({ items, value, show, label, onPick }: {
     }, 90);
   };
   const onKey = (e: KeyboardEvent<HTMLDivElement>): void => {
-    const step = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0;
-    if (step === 0) return;
+    // Up and down step, wrapping as a wheel does; Home and End go to the first and the last.
+    const to = e.key === "ArrowDown" ? (at + 1) % items.length
+      : e.key === "ArrowUp" ? (at - 1 + items.length) % items.length
+      : e.key === "Home" ? 0
+      : e.key === "End" ? items.length - 1
+      : -1;
+    if (to < 0) return;
     e.preventDefault();
-    const next = items[(at + step + items.length) % items.length];
+    const next = items[to];
     if (next !== undefined) onPick(next);
   };
   return (
     <div ref={box} className="wheel" role="spinbutton" tabIndex={0} aria-label={label} aria-valuetext={show(value)}
+      aria-valuenow={at} aria-valuemin={0} aria-valuemax={items.length - 1}
       onScroll={onScroll} onKeyDown={onKey}>
       <div className="wheel-pad" aria-hidden="true" />
       {items.map((v, i) => (
